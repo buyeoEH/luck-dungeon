@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>운빨던전 v0.1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <header class="topbar">
+      <div>
+        <h1>🎲 운빨던전</h1>
+        <span class="version">v0.1 핵심 전투 테스트</span>
+      </div>
+      <button id="restartBtn" class="small-btn">처음부터</button>
+    </header>
+
+    <section id="deckSelectScreen" class="screen">
+      <h2>시작 덱을 선택하세요</h2>
+      <p class="muted">선택한 덱에서 5장이 추가되고, 기본 공격 3장 + 자원 3장으로 총 11장으로 시작합니다.</p>
+      <div id="deckChoices" class="deck-grid"></div>
+    </section>
+
+    <section id="gameScreen" class="screen hidden">
+      <section class="status-panel">
+        <div class="status-row">
+          <span>❤️ <b id="playerHp">30</b>/30</span>
+          <span>🛡️ <b id="block">0</b></span>
+          <span>💰 <b id="resources">0</b></span>
+          <span>라운드 <b id="round">1</b></span>
+        </div>
+        <div class="enemy-box">
+          <div>
+            <span id="enemyEmoji">👹</span>
+            <b id="enemyName">훈련용 몬스터</b>
+          </div>
+          <div>HP <b id="enemyHp">20</b> · 다음 공격 <b id="enemyIntent">6</b></div>
+        </div>
+      </section>
+
+      <section class="battle-log" id="battleLog"></section>
+
+      <section class="hand-section">
+        <div class="section-title">
+          <h2>내 손패</h2>
+          <span id="handCount"></span>
+        </div>
+        <div id="hand" class="hand"></div>
+      </section>
+
+      <div class="action-row">
+        <button id="endTurnBtn" class="primary-btn">라운드 종료</button>
+      </div>
+    </section>
+
+    <section id="shopScreen" class="screen hidden">
+      <h2>🛒 라운드 보상</h2>
+      <p id="shopSummary"></p>
+      <div id="shopCards" class="shop-grid"></div>
+      <div class="shop-actions">
+        <button id="nextRoundBtn" class="primary-btn">구매 종료 → 다음 라운드</button>
+      </div>
+    </section>
+
+    <section id="gameOverScreen" class="screen hidden">
+      <div class="result-box">
+        <h2 id="resultTitle"></h2>
+        <p id="resultText"></p>
+        <button id="restartBtn2" class="primary-btn">다시 시작</button>
+      </div>
+    </section>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
