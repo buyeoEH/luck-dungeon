@@ -1,76 +1,145 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>운빨던전 v0.1</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luck Dungeon v0.2.16 Tutorial - 카드 덱빌딩 ROGUELIKE</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="app">
-    <header class="topbar">
-      <div>
-        <h1>🎲 운빨던전</h1>
-        <span class="version">v0.1 핵심 전투 테스트</span>
-      </div>
-      <button id="restartBtn" class="small-btn">처음부터</button>
-    </header>
+  <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="welcome-card"><div class="welcome-kicker">LUCK DUNGEON · v0.2.16</div>
+      <h1 id="welcomeTitle">네르 오르 뒤나미스</h1>
+      <p>덱을 성장시키고, 적의 디버프를 읽고, 30라운드를 돌파하세요.</p>
+      <label class="welcome-sound"><input id="welcomeBgmToggle" type="checkbox"> 🎵 시작 화면부터 BGM 재생</label>
+      <div class="welcome-options">
+        <button id="welcomeTutorial" class="welcome-option"><strong>📖 튜토리얼 플레이</strong><span>카드 사용 → 상점 → 전투 → 콤보·디버프 → 승급까지 실제 게임에서 배웁니다.</span></button>
+        <button id="welcomeNormal" class="welcome-option"><strong>⚔ 일반 게임</strong><span>안내 없이 기존 규칙 그대로 플레이합니다.</span></button>
+      </div><small>튜토리얼은 실제 게임과 동일한 난이도·점수 규칙을 사용합니다.</small>
+    </div></div>
+  <div id="tutorialShade" class="tutorial-shade hide"></div><div id="tutorialSpotCoach" class="tutorial-spot-coach hide" aria-live="polite"></div>
+  <div id="app">
+    <!-- 스크롤 시 최상단 고정 구역: 상태창 + 다음 진행 버튼 + 적/보호력 한 줄 요약 -->
+    <div class="sticky-header">
+      <header class="dashboard">
+        <div class="dash-item">ROUND <b id="round">1</b></div>
+        <div class="dash-item">💰 <b id="res">0</b></div>
+        <div class="dash-item">💎 <b id="gem">0</b> <span id="gemActionBox"></span></div>
 
-    <section id="deckSelectScreen" class="screen">
-      <h2>시작 덱을 선택하세요</h2>
-      <p class="muted">선택한 덱에서 5장이 추가되고, 기본 공격 3장 + 자원 3장으로 총 11장으로 시작합니다.</p>
-      <div id="deckChoices" class="deck-grid"></div>
-    </section>
-
-    <section id="gameScreen" class="screen hidden">
-      <section class="status-panel">
-        <div class="status-row">
-          <span>❤️ <b id="playerHp">30</b>/30</span>
-          <span>🛡️ <b id="block">0</b></span>
-          <span>💰 <b id="resources">0</b></span>
-          <span>라운드 <b id="round">1</b></span>
+        <!-- 공격력 및 상세 산출 툴팁 컨테이너 -->
+        <div class="dash-item" id="atkContainer" tabindex="0" title="클릭하여 공격력 상세 산출 방식 보기">
+          ⚔️ <b id="atk">0</b>
+          <div id="atkTooltip" class="atk-tooltip hide"></div>
         </div>
-        <div class="enemy-box">
-          <div>
-            <span id="enemyEmoji">👹</span>
-            <b id="enemyName">훈련용 몬스터</b>
-          </div>
-          <div>HP <b id="enemyHp">20</b> · 다음 공격 <b id="enemyIntent">6</b></div>
+
+        <div class="dash-item">📚 <b id="dc">0</b>장 <span id="pileInfo" class="pile-info"></span> <button id="deckBtn">덱 보기</button></div>
+        <div class="dash-item"><b id="phase" class="highlight">① 손패 사용</b></div>
+        <div class="dash-item score-dash">🏆 <b id="score">0</b></div>
+        <div class="dash-item time-dash">⏱ <b id="playTime">00:00</b></div>
+        <div class="dash-item mode-dash"><b id="runMode">🏆 OFFICIAL R1–30</b><small id="officialRecord">R30 기록 대기</small></div>
+
+        <!-- 다음 진행 버튼 (상태창과 함께 고정) -->
+        <button id="nextBtn" class="action-btn">손패 완료 → 상점</button>
+      </header>
+
+      <div class="mini-status">
+        <div id="enemyChips" class="enemy-chips"></div>
+        <div id="protections" class="protection-grid"></div>
+      </div>
+    </div>
+
+    <!-- 스크롤 가능한 하단 콘텐츠 구역 -->
+    <section id="enemySection" class="enemy-section">
+      <div class="section-title">
+        <span>👹 출전한 적 상세 (총 <b id="enemyCount">0</b>마리 / 누적 HP: <b id="enemyTotal">0</b>)</span>
+      </div>
+      <div class="sub-info" style="margin-bottom:6px;">우선 타겟: <b id="currentEnemyName">-</b> (<span id="currentEnemyHp">-</span>) | 디버프: <span id="currentEnemyDebuff">-</span></div>
+      <div id="debuffForecast" class="debuff-forecast" aria-live="polite"></div>
+      <div id="nextPreview" class="next-preview"></div>
+      <div id="enemies" class="enemy-grid"></div>
+    </section>
+
+    <section id="battleStage" class="battle-stage hide"></section>
+
+    <!-- 비주얼 모드 OFF 시 표시되는 최근 로그 -->
+    <div id="recentLog" class="recent-log hide"></div>
+
+    <section class="hand-section">
+      <div class="section-title">
+        <span>🃏 현재 손패 <span id="handCount">(0장)</span></span>
+      </div>
+      <div id="tutorialCoach" class="tutorial-coach hide" aria-live="polite"></div>
+      <div id="tutorialHint" class="tutorial-hint hide" aria-live="polite"></div>
+      <div id="hand" class="card-grid"></div>
+    </section>
+
+    <section id="shopPanel" class="shop-section hide">
+      <div class="section-title">🛒 카드 상점</div>
+      <div id="shopPreview" class="next-preview"></div>
+      <div class="shop-container">
+        <div class="shop-group">
+          <h4>기본 상점</h4>
+          <div id="basicShop" class="shop-grid"></div>
         </div>
-      </section>
-
-      <section class="battle-log" id="battleLog"></section>
-
-      <section class="hand-section">
-        <div class="section-title">
-          <h2>내 손패</h2>
-          <span id="handCount"></span>
+        <div class="shop-group">
+          <h4>랜덤 상점</h4>
+          <div id="randomShop" class="shop-grid"></div>
         </div>
-        <div id="hand" class="hand"></div>
-      </section>
-
-      <div class="action-row">
-        <button id="endTurnBtn" class="primary-btn">라운드 종료</button>
       </div>
     </section>
 
-    <section id="shopScreen" class="screen hidden">
-      <h2>🛒 라운드 보상</h2>
-      <p id="shopSummary"></p>
-      <div id="shopCards" class="shop-grid"></div>
-      <div class="shop-actions">
-        <button id="nextRoundBtn" class="primary-btn">구매 종료 → 다음 라운드</button>
-      </div>
+    <section id="promoPanel" class="shop-section hide">
+      <div class="section-title">⬆️ 승급 / 전직 · 테크트리</div>
+      <div class="sub-info" style="margin-bottom:6px;">덱의 재료 카드를 소모해 더 강한 카드 1장으로 바꿉니다. 초기 카드가 걸림돌이 되기 전에 정리하세요.</div>
+      <div id="promoList" class="shop-grid"></div>
     </section>
 
-    <section id="gameOverScreen" class="screen hidden">
-      <div class="result-box">
-        <h2 id="resultTitle"></h2>
-        <p id="resultText"></p>
-        <button id="restartBtn2" class="primary-btn">다시 시작</button>
-      </div>
+    <section id="rewardPanel" class="reward-section hide">
+      <div class="section-title">👑 보스 처치 보상</div>
+      <div id="rewards" class="reward-grid"></div>
     </section>
-  </main>
+
+    <footer class="footer-section">
+      <div class="footer-controls">
+        <button id="battleBtn" class="primary-btn">전투 진행</button>
+        <button id="tutorialBtn" type="button" class="mini-btn">📖 튜토리얼 안내</button>
+        <label class="sound-control"><input id="bgmToggle" type="checkbox"> 🎵 BGM ON</label>
+        <label style="font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+          <input type="checkbox" id="visualModeToggle" checked> 🎬 비주얼 모드
+        </label>
+        <label style="font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+          <input type="checkbox" id="battleMotionSkipToggle"> ⏩ 전투 모션 스킵
+        </label>
+        <label style="font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+          <input type="checkbox" id="persistToggle" checked> ♻️ 이어가기 드로우
+        </label>
+      </div>
+      <div class="log-box">
+        <div class="log-title">📜 전투 및 액션 로그 <button id="copyLogBtn" class="mini-btn">로그 복사</button> <button id="historyBtn" class="mini-btn" type="button">📊 내 플레이 기록</button> <button id="cloudRecordsBtn" class="mini-btn" type="button">☁️ 온라인 기록</button> <span id="cloudStatus" style="font-size:11px">☁️ 준비 중</span> <button id="cardTableBtn" class="mini-btn">전체 카드 전략 도감</button></div>
+        <div id="log" class="log-content"></div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="modal" class="modal-overlay hide">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="modalTitle">안내</h3>
+        <button id="close" class="close-btn">✕</button>
+      </div>
+      <div id="modalContent" class="modal-body"></div>
+    </div>
+  </div>
+
+  <div style="display:none;">
+    <span id="nextEnemy"></span>
+    <span id="nextSpec"></span>
+  </div>
+
   <script src="game.js"></script>
+<script src="cloud/config.js"></script>
+<script src="cloud/cloud.js"></script>
+<script src="history.js"></script>
+<script src="autolab.js"></script>
 </body>
 </html>
