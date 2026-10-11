@@ -1,0 +1,48 @@
+name: AutoLab Cloud Runner
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: 'Runs per strategy (1-1000)'
+        required: true
+        default: '10'
+      strategies:
+        description: 'Comma-separated strategies'
+        required: true
+        default: 'random,economy,attack,aoe,link,survival'
+  schedule:
+    - cron: '0 3 * * 1'
+permissions:
+  contents: read
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install playwright
+      - run: sudo apt-get update && sudo apt-get install -y chromium
+      - name: Run AutoLab
+        env:
+          RUNS: ${{ github.event.inputs.runs || '10' }}
+          STRATEGIES: ${{ github.event.inputs.strategies || 'random,economy,attack,aoe,link,survival' }}
+        run: |
+          python - <<'PY'
+          import os,subprocess
+          runs=int(os.environ['RUNS'])
+          if not 1<=runs<=1000:raise SystemExit('runs must be 1..1000')
+          subprocess.run(['python','run_autolab.py','--runs',str(runs),'--strategies',os.environ['STRATEGIES']],check=True)
+          PY
+      - name: Upload bot runs to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python cloud/upload_results.py results/runs.csv
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autolab-results
+          path: results/
