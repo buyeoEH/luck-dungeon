@@ -29,10 +29,10 @@ def main():
      page.evaluate('(s)=>AutoLab.begin(s)',seed)
      result=page.evaluate('(profile)=>AutoLab.run(profile)',profile)
      st=result['final'];stats=st['stats']
-     row={'strategy':profile,'seed':seed,'round':st['round'],'phase':st['phase'],'score':st['score'],'cleared':int(bool(stats['round30Clear'])),'enemies':st['enemyCount'],'enemyHp':st['enemyHp'],'deck':st['deckSize'],'damage':stats['damageDealt'],'aoeDamage':stats['aoeDamage'],'pierceDamage':stats['pierceDamage'],'overkillDamage':stats['overkillDamage'],'promotions':stats['promotions'],'comboTriggers':stats['comboTriggers'],'cardsBought':stats['cardsBought'],'error':' | '.join(result['errors'])}
+     row={'strategy':profile,'seed':seed,'round':st['round'],'phase':st['phase'],'score':st['score'],'cleared':int(bool(stats['round30Clear'])),'enemies':st['enemyCount'],'enemyHp':st['enemyHp'],'deck':st['deckSize'],'damage':stats['damageDealt'],'aoeDamage':stats['aoeDamage'],'pierceDamage':stats['pierceDamage'],'overkillDamage':stats['overkillDamage'],'promotions':stats['promotions'],'comboTriggers':stats['comboTriggers'],'cardsBought':stats['cardsBought'],'error':' | '.join(result['errors']),'finished':int(result['finished']),'steps':result['steps']}
      rows.append(row)
      for t in result['trace']:traces.append({'strategy':profile,'seed':seed,**t})
-     if row['error']:failures.append({'strategy':profile,'seed':seed,'errors':result['errors'],'logs':result['logs']})
+     if row['error'] or not result['finished']:failures.append({'strategy':profile,'seed':seed,'errors':result['errors'],'logs':result['logs']})
     except Exception as e:failures.append({'strategy':profile,'seed':seed,'errors':[str(e)]})
   browser.close()
  server.shutdown()
@@ -43,9 +43,16 @@ def main():
  (out/'errors.json').write_text(json.dumps(failures,ensure_ascii=False,indent=2),encoding='utf-8')
  summary=[]
  for profile in strategies:
-  group=[r for r in rows if r['strategy']==profile];valid=[r for r in group if not r['error']]
-  if valid:summary.append({'strategy':profile,'runs':len(valid),'clear_rate':sum(r['cleared'] for r in valid)/len(valid),'avg_score':round(statistics.mean(r['score'] for r in valid),1),'avg_round':round(statistics.mean(r['round'] for r in valid),1),'avg_aoe_share':round(statistics.mean(r['aoeDamage']/max(1,r['damage']) for r in valid),3)})
+  group=[r for r in rows if r['strategy']==profile];valid=[r for r in group if not r['error'] and r['finished']]
+  if valid:summary.append({'strategy':profile,'runs':len(valid),'clear_rate':sum(r['cleared'] for r in valid)/len(valid),'avg_score':round(statistics.mean(r['score'] for r in valid),1),'avg_round':round(statistics.mean(r['round'] for r in valid),1),'avg_aoe_share':round(statistics.mean(r['aoeDamage']/max(1,r['damage']) for r in valid),3),'avg_promotions':round(statistics.mean(r['promotions'] for r in valid),2)})
  (out/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
+ # Machine-readable analysis, including incomplete runs excluded from performance metrics.
+ analysis={'total_runs':len(rows),'finished_runs':sum(r['finished'] for r in rows),'incomplete_runs':sum(not r['finished'] for r in rows),'error_runs':sum(bool(r['error']) for r in rows),'phase_counts':dict(Counter(r['phase'] for r in rows)),'strategies':summary,'warning':'Bot performance is not equivalent to human difficulty; inspect incomplete runs before balancing.'}
+ (out/'analysis.json').write_text(json.dumps(analysis,ensure_ascii=False,indent=2),encoding='utf-8')
+ report=['# Luck Dungeon AutoLab 2.0 자동 분석','',f"- 총 실행: {analysis['total_runs']}회",f"- 정상 종료: {analysis['finished_runs']}회",f"- 비정상/미완료: {analysis['incomplete_runs']}회",f"- 오류 기록: {analysis['error_runs']}회",'','## 전략별 결과','', '| 전략 | 유효 횟수 | 평균 라운드 | 평균 점수 | 클리어율 | 평균 승급 |','|---|---:|---:|---:|---:|---:|']
+ for x in summary:report.append(f"| {x['strategy']} | {x['runs']} | {x['avg_round']} | {x['avg_score']} | {x['clear_rate']:.1%} | {x['avg_promotions']} |")
+ report+=['','## 주의','- AI 전략의 성능만으로 게임 난이도를 확정하지 않습니다.','- 미완료 기록은 성능 평균에서 제외합니다.','- 실제 게임 밸런스 변경은 별도 승인 후 진행합니다.']
+ (out/'analysis.md').write_text('\n'.join(report)+'\n',encoding='utf-8')
  # Standalone dashboard: no external libraries required.
  import html
  blocks=[]

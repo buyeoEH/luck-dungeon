@@ -6,6 +6,21 @@ const originalRandom=Math.random;
 const profiles={random:{},economy:{chain:100,hand:70,big:80,gem:75,rd:90,d8:110,aoe:20,meteor:20},attack:{sam:85,gold:100,combo:95,master:95,kill:75,meteor:30},aoe:{aoe:140,meteor:145,bomber:125,chainblast:130,d8:85,chain:70},link:{chain:95,hand:75,rd:90,d8:95,combo:105,gem:55},survival:{aoe:120,meteor:125,kill:100,lance:80,chainblast:105,ag:65}};
 function state(){return {round,phase,score:scoreValue(),resource,gems,enemyCount:enemies.length,enemyHp:total(),deckSize:deck.length,drawSize:draw.length,handSize:hand.length,stats:{...stats},deck:deck.map(c=>c.baseId||c.id),lastBattle:pendingBattleScene?{attackPre:pendingBattleScene.attackPre,attackFinal:pendingBattleScene.attackFinal,attackLoss:pendingBattleScene.attackLoss,aoe:pendingBattleScene.aoe,killed:pendingBattleScene.killed,enemyStart:pendingBattleScene.enemyStart,remaining:pendingBattleScene.remaining}:null};}
 function priceScore(c,profile){const w=profiles[profile]||{};let s=w[c.id]??(profile==='random'?Math.random()*100:20+(c.atk||0)*1.5+(c.draw||0)*5+(c.aoe||0)*2);if(profile==='random')s=Math.random()*100;return s/(1+Math.max(0,c.price||0)*.025);}
+function tryPromotion(profile){
+  // Promotion is optional; avoid consuming materials on the random baseline.
+  if(profile==='random')return false;
+  const options=PROMOS.filter(p=>canPromote(p));
+  if(!options.length)return false;
+  const weights={economy:['vein','furnace','lode'],attack:['lance','hero','frenzy'],aoe:['storm','blast'],link:['link','frenzy'],survival:['lance','storm','hero']};
+  const wants=weights[profile]||[];
+  options.sort((a,b)=>{
+    const value=p=>((p.tier||1)*15)+(p.card.atk||0)*.35+(p.card.aoe||0)*1.5+(p.card.draw||0)*8+(p.card.res||0)*.8+(wants.some(k=>p.id.includes(k)||p.card.id.includes(k))?40:0);
+    return value(b)-value(a);
+  });
+  const before=stats.promotions;
+  promote(options[0].id);
+  return stats.promotions>before;
+}
 function step(profile='economy'){
  if(!enabled)throw Error('Call AutoLab.begin(seed) first');
  if(phase==='gameover'||officialRecord)return {done:true,state:state()};
@@ -16,6 +31,8 @@ function step(profile='economy'){
    }
    next();
  }else if(phase==='shop'){
+   // Convert gems only when it can fund a useful promotion.
+   for(let n=0;n<3;n++){if(!tryPromotion(profile))break;}
    for(let n=0;n<5;n++){
      const opts=[...BASIC.map(c=>({...c,group:'basic'})),...randomShop.map(c=>({...c,group:'random'}))].filter(c=>resource>=c.price&&(buyCount[c.id]||0)<c.limit);
      if(!opts.length)break;
@@ -23,10 +40,16 @@ function step(profile='economy'){
      if(profile==='random'&&Math.random()<.35)break;
      const best=opts[0];if(best.group==='basic')buyBasic(best.id);else buyRandom(best.id);
    }
+   for(let n=0;n<3;n++){if(!tryPromotion(profile))break;}
    next();
  }else if(phase==='battle')next();
- else if(phase==='reward')reward(0);
+ else if(phase==='reward'){
+   reward(1);
+   // Some reward choices show a confirmation modal before advancing.
+   if(phase==='reward'&&rewardRevealPending)handleModalClose();
+   if(phase==='reward'&&rewardLocked&&!rewardRevealPending)throw Error('Reward selection did not advance');
+ }
  return {done:phase==='gameover'||!!officialRecord,state:state()};
 }
-window.AutoLab={begin(s=1){seed=(Number(s)>>>0)||1;enabled=true;window.__luckAutoLabBotActive=true;Math.random=seeded;const visual=$('visualModeToggle');if(visual)visual.checked=false;const skip=$('battleMotionSkipToggle');if(skip)skip.checked=true;const welcome=$('welcomeOverlay');if(welcome)welcome.classList.add('hide');start();return state();},step,state,run(profile='economy',limit=250){let trace=[],errors=[];for(let i=0;i<limit;i++){const before=state();try{const result=step(profile);const after=result.state;if(before.round!==after.round||result.done)trace.push({round:before.round,score:after.score,enemyHp:after.enemyHp,enemyCount:after.enemyCount,attack:after.stats.maxAttack,damage:after.stats.damageDealt,aoeDamage:after.stats.aoeDamage,deck:after.deckSize});if(result.done)break;}catch(e){errors.push(String(e.stack||e));break;}}return {profile,seed,finished:phase==='gameover'||!!officialRecord,trace,errors,final:state(),logs:fullLogs.slice(-20)};},restore(){Math.random=originalRandom;enabled=false;window.__luckAutoLabBotActive=false;}};
+window.AutoLab={begin(s=1){seed=(Number(s)>>>0)||1;enabled=true;window.__luckAutoLabBotActive=true;Math.random=seeded;const visual=$('visualModeToggle');if(visual)visual.checked=false;const skip=$('battleMotionSkipToggle');if(skip)skip.checked=true;const welcome=$('welcomeOverlay');if(welcome)welcome.classList.add('hide');start();return state();},step,state,run(profile='economy',limit=250){let trace=[],errors=[],steps=0;for(let i=0;i<limit;i++){steps++;const before=state();try{const result=step(profile);const after=result.state;if(before.round!==after.round||result.done)trace.push({round:before.round,score:after.score,enemyHp:after.enemyHp,enemyCount:after.enemyCount,attack:after.stats.maxAttack,damage:after.stats.damageDealt,aoeDamage:after.stats.aoeDamage,deck:after.deckSize});if(result.done)break;}catch(e){errors.push(String(e.stack||e));break;}}const finished=phase==='gameover'||!!officialRecord;if(!finished&&!errors.length)errors.push('Step limit reached before terminal state: '+limit);return {profile,seed,steps,finished,trace,errors,final:state(),logs:fullLogs.slice(-20)};},restore(){Math.random=originalRandom;enabled=false;window.__luckAutoLabBotActive=false;}};
 })();
