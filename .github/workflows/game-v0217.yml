@@ -1,0 +1,40 @@
+name: Game v0.2.17 validation
+on:
+  push:
+    branches: ['feature/game-v0.2.17-ui-balance']
+  pull_request:
+    branches: ['feature/autolab-v0.2-supabase-analysis']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install playwright==1.51.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Check JavaScript syntax
+        run: |
+          node --check game.js
+          node --check history.js
+          node --check rankings.js
+      - name: UI, game, local ranking and upload regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Smoke test six existing AutoLab strategies (18 runs)
+        run: python run_autolab.py --runs 3 --output results
+      - name: Validate logs and generate analysis offline
+        run: |
+          python tests/validate_results.py results
+          python cloud/analyze_results.py results
+          cat results/analysis.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: game-v0217-validation
+          path: |
+            results/
+            results-ui/
