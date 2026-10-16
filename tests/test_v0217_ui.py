@@ -111,7 +111,7 @@ class V0217BrowserTests(unittest.TestCase):
         self.page.locator('#debuffQuickBtn').click()
         self.assertEqual(self.page.evaluate('JSON.stringify({prot,debuffReport})'),before)
         self.page.locator('#close').click()
-        self.page.evaluate("battle()")
+        self.page.evaluate("document.getElementById('battleMotionSkipToggle').checked=true;battle()")
         self.assertEqual(self.page.evaluate('debuffReport.blocked.gem'),1)
         self.assertEqual(self.page.evaluate('debuffReport.lost.gem'),1)
         self.assertEqual(self.page.evaluate('gems'),9)
