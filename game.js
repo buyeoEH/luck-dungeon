@@ -1,6 +1,6 @@
 const BASIC = [
+  { id: 'hand', name: '손재주', price: 4, type: 'draw', res: 1, draw: 1, text: '자원 +1 / 드로우 +1', limit: 8 },
   { id: 'sam', name: '삼연격', price: 5, type: 'attack', atk: 5, text: '공격 +5 / 같은 카드 3장 콤보 +10', limit: 9, combo: { kind: 'same', need: 3, bonus: 10 } },
-  { id: 'hand', name: '손재주', price: 5, type: 'draw', res: 1, draw: 1, text: '자원 +1 / 드로우 +1', limit: 8 },
   { id: 'chain', name: '연속채굴', price: 9, type: 'draw', res: 2, draw: 2, text: '자원 +2 / 드로우 +2', limit: 6 },
   { id: 'big', name: '대형채굴', price: 6, type: 'resource', res: 4, text: '자원 +4', limit: 6 },
   { id: 'gem', name: '보석광산', price: 8, type: 'gem', gem: 2, text: '💎 +2', limit: 6 },
@@ -8,6 +8,7 @@ const BASIC = [
 ];
 
 const RANDOM_POOL = [
+  { id: 'spark', name: '행운의 조각', price: 4, type: 'random', text: '🪄 4원 운빨 카드 · 작은 행운/무변화/불운을 판정합니다. 확정 수익은 아닙니다.', limit: 3 },
   { id: 'aoe', name: '전체 폭격', price: 18, type: 'aoeAttack', atk: 12, text: '💥 쌓여 있는 모든 적에게 각각 12 피해', limit: 2 },
   { id: 'erase', name: '망각의 서', price: 13, type: 'remove', text: '덱에서 카드 1장 영구 제거', limit: 2 },
   { id: 'ag', name: '전사의 갑주', price: 10, type: 'protection', protect: { attack: 2 }, res: 2, text: '⚔️ 공격 보호 +2 / 자원 +2', limit: 3 },
@@ -140,6 +141,10 @@ const PROMOS = [
   { id: 'p_hero_link', tier: 2, branch:'연계', from: { hero:1, combo:1 }, cost:{res:10}, card:{ id:'linkhero', name:'연계 성검', type:'attack', atk:42, linkAmp:5, text:'2차 승급 · 공격 +42 / 행동 연계 공격 보너스 +5 · 연계 테크' } },
   { id: 'p_frenzy_link', tier: 2, branch:'연격', from:{ frenzy:1, d5:1 }, cost:{res:11}, card:{ id:'infinite', name:'무한연격', type:'attack', atk:44, linkAmp:6, text:'2차 승급 · 공격 +44 / 행동 연계 공격 보너스 +6 · 드로우 연격 테크' } },
 
+  // v0.2.17 · 운빨 승급도 랜덤 상점 재료가 필요합니다. 성공 확률은 높아져도 실패 위험은 남습니다.
+  { id:'p_luck_charm',tier:1,branch:'운빨',from:{coin:1,dice:1},cost:{res:5},card:{id:'luckcharm',name:'길운의 부적',type:'random',text:'🎲 승급 운빨 · 행운 58% / 무변화 26% / 불운 16%, 파괴 3% · 파괴 시 레전드 가능'} },
+  { id:'p_luck_fate',tier:2,branch:'운빨',from:{luckcharm:1,box:1},cost:{res:8,gem:1},card:{id:'luckfate',name:'운명 조율기',type:'random',text:'🌈 2차 운빨 승급 · 행운 66% / 무변화 23% / 불운 11%, 파괴 2% · 파괴 시 레전드 가능'} },
+
   // v0.2.13 · 3차 완성형. 2차 선택과 랜덤 상점 카드가 다시 요구됩니다.
   { id:'p_skyhero3', tier:3, branch:'관통', from:{skyhero:1,pike:1}, cost:{res:14,gem:2}, card:{id:'skyking',name:'천공 성검',type:'specialAttack',atk:58,pierce:3,passive:'pierce',text:'3차 승급 · 공격 +58 / 손패에 있으면 관통 +3'} },
   { id:'p_stormhero3', tier:3, branch:'광역', from:{stormhero:1,chainblast:1}, cost:{res:14,gem:2}, card:{id:'stormking',name:'폭풍 성검',type:'specialAttack',atk:52,aoe:20,passive:'aoe',text:'3차 승급 · 공격 +52 / 손패에 있으면 광역 +20'} },
@@ -165,10 +170,17 @@ let runStartedAt = 0, officialRecord = null, endlessMode = false, pendingOfficia
 let pendingChoiceCardId = null, pendingChoiceType = null, playTimerHandle = null;
 // v0.2.15 · 랜덤상점 발견 이력 / 전투 연출
 let randomShopSeen = new Set(), pendingBattleScene = null;
+let debuffReport = { blocked: {attack:0,combo:0,resource:0,gem:0}, lost: {attack:0,combo:0,resource:0,gem:0}, previous: null };
 
 function resetStats() { stats = { maxAttack: 0, maxPreDebuffAttack: 0, maxEffectiveAttack: 0, comboBonus: 0, comboTriggers: 0, gemsEarned: 0, enemiesKilled: 0, bossesKilled: 0, promotions: 0, cardsUsed: 0, round30Clear: false, damageDealt: 0, aoeDamage: 0, aoePotentialDamage: 0, overkillDamage: 0, pierceDamage: 0, pierceKills: 0, resourceGained: 0, resourceBlocked: 0, attackDebuffLoss: 0, protectionPointsUsed: 0, dangerEntries: 0, dangerEscapes: 0, maxDeckSize: 10, cardsDrawn: 0, extraCardsDrawn: 0, cardsBought: 0, cardsRemoved: 0, firstBossKillRound: null, linkComboTriggers: 0, baseCardsRecovered: 0, promotionStonesUsed: 0, firstPromotionTier1: null, firstPromotionTier2: null, firstPromotionTier3: null, randomShopUniqueSeen: 0, shopRerollCardsChanged: 0, officialScore: null, officialPlayMs: null, endlessMaxRound: 0 }; }
 function addGems(n) { if (n > 0) stats.gemsEarned += n; gems += n; }
-function scoreValue() { stats.maxDeckSize = Math.max(stats.maxDeckSize || 0, deck.length); return Math.round(stats.maxAttack * 10 + stats.comboBonus * 5 + stats.comboTriggers * 40 + stats.gemsEarned * 25 + stats.enemiesKilled * 30 + stats.bossesKilled * 150 + stats.promotions * 120 + Math.max(0, round - 1) * 50 + (stats.round30Clear ? 3000 : 0)); }
+const SCORE_RULE_VERSION='v1'; // v0.2.17: 기존 점수 가중치 유지, 내역을 공개해 버전별 비교 가능
+function scoreBreakdown(){
+  return [['⚔ 최고 공격력',stats.maxAttack*10],['🔗 콤보 보너스',stats.comboBonus*5],['✨ 콤보 발동',stats.comboTriggers*40],['💎 획득 보석',stats.gemsEarned*25],['👹 적 처치',stats.enemiesKilled*30],['👑 보스 처치',stats.bossesKilled*150],['⬆ 승급',stats.promotions*120],['🗺 진행 라운드',Math.max(0,round-1)*50],['🏁 R30 클리어',stats.round30Clear?3000:0]];
+}
+function scoreValue(){stats.maxDeckSize=Math.max(stats.maxDeckSize||0,deck.length);return scoreBreakdown().reduce((n,x)=>n+x[1],0);}
+function scoreBreakdownHtml(){return '<div class="score-breakdown"><h4>🏆 점수 산정 기준 · '+SCORE_RULE_VERSION+'</h4>'+scoreBreakdown().filter(([,n])=>n!==0).map(([label,n])=>'<div><span>'+label+'</span><b>+'+n.toLocaleString()+'</b></div>').join('')+'<strong>합계 '+scoreValue().toLocaleString()+'점</strong></div>';}
+
 function plainLogText(s) { const d = document.createElement('div'); d.innerHTML = s; return d.textContent || d.innerText || ''; }
 function formatPlayTime(ms) {
   ms = Math.max(0, ms || 0);
@@ -352,6 +364,7 @@ function start() {
   linkComboAttack = 0; roundActionHistory = []; roundLinkDone = {}; pendingPromotionStoneId = null;
   pendingChoiceCardId = null; pendingChoiceType = null; officialRecord = null; endlessMode = false; pendingOfficialContinuation = null;
   resetStats();
+  debuffReport={blocked:{attack:0,combo:0,resource:0,gem:0},lost:{attack:0,combo:0,resource:0,gem:0},previous:null};
   stats.randomShopUniqueSeen=randomShopSeen.size;
   startPlayTimer();
   
@@ -655,12 +668,14 @@ function gain(kind, amount) {
 
   const r = resolveDebuff(kind, true);
   stats.protectionPointsUsed += r.absorbed || 0;
+  if(debuffReport.blocked[kind]!==undefined) debuffReport.blocked[kind]+=(r.absorbed||0);
   updateEnemyStatus();
   const names = r.who.map(e => e.name).join(', ');
   const rawAfter = Math.round(amount * (1 - Math.min(10, r.pct) * PCT_PER_POINT / 100)) - r.flat;
   const after = kind === 'resource' ? Math.max(0, rawAfter) : rawAfter;
   if (kind === 'resource') { stats.resourceGained += Math.max(0, after); stats.resourceBlocked += Math.max(0, amount - after); }
   const label = kind === 'resource' ? '자원' : '보석';
+  if(debuffReport.lost[kind]!==undefined) debuffReport.lost[kind]+=Math.max(0,amount-after);
 
   if (after === amount) {
     log('🛡 ' + names + ' 디버프를 보호석으로 모두 방어했습니다! (보호 ' + r.absorbed + ' 소모)', 'good');
@@ -910,15 +925,15 @@ function random(c) {
     ()=>grantCurse(statusChanges),
     ()=>{const t=randomDeckCard(); if(t && (t.atk||0)>0){t.atk=Math.max(0,t.atk-3); statusChanges.push('💀 ['+t.name+'] 랜덤 약화: 공격 -3');}else grantCurse(statusChanges);}
   ];
-  const cfg={dice:[.34,.30,.08], box:[.38,.24,.14], coin:[.48,.32,.05], potion:[.40,.25,.10]}[c.baseId]||[.4,.3,.08];
+  const cfg={dice:[.34,.30,.08], box:[.38,.24,.14], coin:[.48,.32,.05], potion:[.40,.25,.10],spark:[.42,.35,.03],luckcharm:[.58,.26,.03],luckfate:[.66,.23,.02]}[c.baseId]||[.4,.3,.08];
   if(r<cfg[0]) { resultText='✨ 행운 사건!'; roll(good)(); isGood=true; }
   else if(r<cfg[0]+cfg[1]) { resultText='➖ 아무 일도 일어나지 않았습니다.'; statusChanges.push('변화 없음'); }
   else { resultText='💀 불운 사건!'; roll(bad)(); isBad=true; }
   // 별도 파괴 판정: 상자 > 약병/주사위 > 동전. 파괴될 때 레전드 잭팟 가능.
-  const destroyChance={dice:.10,box:.18,coin:.06,potion:.12}[c.baseId]||.08;
+  const destroyChance={dice:.10,box:.18,coin:.06,potion:.12,spark:.03,luckcharm:.03,luckfate:.02}[c.baseId]??.08;
   if(Math.random()<destroyChance){
     destroyed=true; destroyRandomCard(c); statusChanges.push('💥 ['+c.name+'] 카드가 운명을 다해 영구 파괴');
-    const legendChance=c.baseId==='box'?.28:.20;
+    const legendChance={box:.28,spark:.08,luckcharm:.25,luckfate:.30}[c.baseId]??.20;
     if(Math.random()<legendChance){grantLegend(statusChanges); isGood=true; isBad=false; resultText='🌈 LEGEND JACKPOT!';}
     else if(Math.random()<.45){grantRandomNormal(statusChanges);}
   }
@@ -1161,6 +1176,8 @@ function battle() {
 
     const rc = resolveDebuff('combo', true);   // 보호력 실제 소모 + 디버프 소진
     const ra = resolveDebuff('attack', true);
+    debuffReport.blocked.combo+=(rc.absorbed||0); debuffReport.blocked.attack+=(ra.absorbed||0);
+    debuffReport.lost.combo+=ap.comboLoss; debuffReport.lost.attack+=ap.atkLoss;
     if (rc.who.length > 0) {
       const names = rc.who.map(e => e.name).join(', ');
       if (ap.comboRaw === 0) log('ℹ️ ' + names + '의 콤보 디버프가 발동했지만 활성 콤보가 없어 영향이 없었습니다.');
@@ -1231,6 +1248,8 @@ function battle() {
     const res = consume('gem', amount);
     const stolen = Math.min(gems, res.remainingPenalty);
     gems -= stolen;
+    debuffReport.blocked.gem += res.blockedAmount;
+    debuffReport.lost.gem += stolen;
     stealLines.push({
       text: '💎 ' + e.name + ' 약탈 ' + (stolen > 0 ? '성공' : '무산') + '! (판정 ' + roll + ' ≤ ' + need + ') — 보석 -' + stolen +
         (res.blockedAmount ? ' (보석 보호 ' + res.blockedAmount + ' 방어)' : '') + ' · 남은 보석 ' + gems,
@@ -1383,7 +1402,7 @@ function freezeOfficialRecord(continuation){
 function showOfficialCompleteModal(){
   if(!officialRecord) return;
   if($('modalTitle')) $('modalTitle').textContent='🏆 ROUND 30 공식전 완료';
-  if($('modalContent')) $('modalContent').innerHTML='<div class="official-complete"><b>공식 기록이 확정되었습니다.</b><div class="official-record-grid"><span>🏆 공식 점수<strong>'+officialRecord.score.toLocaleString()+'</strong></span><span>⏱ 플레이타임<strong>'+formatPlayTime(officialRecord.playMs)+'</strong></span></div><p>R31부터는 ♾ 무한모드입니다. 이후 성장과 점수는 공식 기록을 변경하지 않습니다.</p><div class="official-actions"><button onclick="finishOfficialOnly()">여기서 종료</button><button class="endless" onclick="continueEndless()">♾ 무한모드 계속</button></div></div>';
+  if($('modalContent')) $('modalContent').innerHTML='<div class="official-complete"><b>공식 기록이 확정되었습니다.</b><div class="official-record-grid"><span>🏆 공식 점수<strong>'+officialRecord.score.toLocaleString()+'</strong></span><span>⏱ 플레이타임<strong>'+formatPlayTime(officialRecord.playMs)+'</strong></span></div><p>R31부터는 ♾ 무한모드입니다. 이후 성장과 점수는 공식 기록을 변경하지 않습니다.</p><div class="official-actions"><button onclick="LuckRanks.openRegistration()">🏆 이니셜 등록</button><button onclick="finishOfficialOnly()">여기서 종료</button><button class="endless" onclick="continueEndless()">♾ 무한모드 계속</button></div></div>';
   if($('close')) $('close').onclick=showOfficialCompleteModal;
   if($('modal')) $('modal').classList.remove('hide');
 }
@@ -1664,9 +1683,14 @@ function gameOver() {
     ? '적이 ' + enemies.length + '마리 누적되었습니다. (한계 ' + gameOverEnemyLimit(round) + '마리)'
     : '누적 적 HP가 ' + total() + '입니다. (한계 ' + gameOverHpLimit(round) + ')';
   log('💀 GAME OVER — ' + reason, true);
-  if (window.LuckHistory) window.LuckHistory.save('gameover', reason);
+  if (window.LuckHistory) {
+    if(endlessMode && officialRecord && window.LuckHistory.updateEndless) window.LuckHistory.updateEndless(round);
+    else window.LuckHistory.save('gameover', reason);
+  }
   if ($('modalTitle')) $('modalTitle').textContent = '💀 GAME OVER';
-  if ($('modalContent')) $('modalContent').innerHTML = '<p>' + reason + '</p><p>ROUND ' + round + ' · 덱 ' + deck.length + '장</p><button onclick="start()">다시 시작</button>';
+  const countFail=enemies.length>gameOverEnemyLimit(round);
+  const suggestion=countFail?'적 숫자가 한계를 넘어섰어. 광역·관통 카드, 단일 처치 화력, 누적 적 정리에 투자할 필요가 있어.':'적 총 HP가 한계를 넘어섰어. 자원/드로우 성장의 화력 전환 시점과 공격·콤보 손실을 점검해 보자.';
+  if ($('modalContent')) $('modalContent').innerHTML = '<p>' + reason + '</p><p>ROUND ' + round + ' · 덱 ' + deck.length + '장</p><div class="death-report"><b>💀 이번 게임 패배 진단</b><div>👹 적 수 '+enemies.length+' / 한계 '+gameOverEnemyLimit(round)+'</div><div>❤️ 적 HP '+total()+' / 한계 '+gameOverHpLimit(round)+'</div><div>🛡 보호 소모 '+stats.protectionPointsUsed+' · ⚔ 공격 디버프 손실 '+stats.attackDebuffLoss+'</div><p>'+suggestion+'</p></div>'+scoreBreakdownHtml()+'<button onclick="LuckRanks.openRegistration()">🏆 이니셜 등록</button><button onclick="start()">다시 시작</button>';
   if ($('modal')) $('modal').classList.remove('hide');
 }
 
@@ -1862,12 +1886,20 @@ function promoTechTreeHtml(){
     '<div class="tech-row"><b>관통</b>'+node('hero','용사의 검')+'<i>→</i>'+node('skyhero','천공 용사검')+'<i>→</i>'+node('skyking','천공 성검')+'</div>'+ 
     '<div class="tech-row"><b>광역</b>'+node('hero','용사의 검')+'<i>→</i>'+node('stormhero','폭풍 용사검')+'<i>→</i>'+node('stormking','폭풍 성검')+'</div>'+ 
     '<div class="tech-row"><b>연계</b>'+node('hero','용사의 검')+'<i>→</i>'+node('linkhero','연계 성검')+'<i>→</i>'+node('linkking','연계 왕검')+'</div>'+ 
-    '<div class="tech-row"><b>연격</b>'+node('frenzy','삼연 난무')+'<i>→</i>'+node('infinite','무한연격')+'<i>→</i>'+node('zenith','연격의 극의')+'</div></div>';
+    '<div class="tech-row"><b>연격</b>'+node('frenzy','삼연 난무')+'<i>→</i>'+node('infinite','무한연격')+'<i>→</i>'+node('zenith','연격의 극의')+'</div>'+
+    '<div class="tech-row"><b>🎲 운빨</b>'+node('coin','행운의 동전')+'<i>+</i>'+node('dice','운명의 주사위')+'<i>→</i>'+node('luckcharm','길운의 부적')+'<i>→</i>'+node('luckfate','운명 조율기')+'</div></div>';
 }
+function promoGroup(p){
+  if(p.branch==='운빨'||p.card.type==='random')return 'luck';
+  if(['resource','draw','drawFilter','gem','protection'].includes(p.card.type))return 'resource';
+  if(['attack','specialAttack','aoeAttack'].includes(p.card.type))return 'attack';
+  return 'action';
+}
+const PROMO_GROUPS=[['resource','🟢 승급(자원) · 생산과 드로우'],['attack','🔴 승급(공격) · 영구 공격과 광역'],['action','🔵 승급(행동) · 관통 및 전술'],['luck','🟣 승급(운빨) · 확률 조율']];
 function renderPromo() {
   const box = $('promoList');
   if (!box) return;
-  box.innerHTML = promoTechTreeHtml() + PROMOS.map(p => {
+  const items=PROMOS.map(p => {
     const materialInfo = Object.keys(p.from).map(k => {
       const need = p.from[k], have = countInDeck(k), shop = shopStockForKey(k);
       const missing = Math.max(0, need - have);
@@ -1883,11 +1915,12 @@ function renderPromo() {
     const stateClass = allOwned ? 'promo-ready' : (allReachable ? 'promo-shop-ready' : 'promo-locked');
     const ok = canPromote(p);
     const costOk = resource >= (p.cost.res || 0) && gems >= (p.cost.gem || 0);
-    return '<div class="shop-card promo-card ' + stateClass + '"><b>⬆️ ' + (p.tier ? p.tier+'차 · ' : '') + p.card.name + (p.branch ? ' <small>['+p.branch+']</small>' : '') + '</b><p>' + p.card.text + '</p>' +
+    return '<div class="shop-card promo-card promo-'+promoGroup(p)+' ' + stateClass + '" data-promo-group="'+promoGroup(p)+'"><b>⬆️ ' + (p.tier ? p.tier+'차 · ' : '') + p.card.name + (p.branch ? ' <small>['+p.branch+']</small>' : '') + '</b><p>' + p.card.text + '</p>' +
       '<div class="promo-mats">' + materialInfo.join('') + '</div>' +
       '<span class="price">비용 ' + costText(p.cost) + (allOwned && !costOk ? ' · 재료 완성 / 비용 부족' : '') + '</span>' +
       '<button ' + (ok ? '' : 'disabled') + ' onclick="promote(\'' + p.id + '\')">' + (ok ? '승급' : allOwned ? '비용 부족' : '조건 부족') + '</button></div>';
-  }).join('');
+  });
+  box.innerHTML=promoTechTreeHtml()+PROMO_GROUPS.map(([key,label])=>{const groupCards=PROMOS.map((p,j)=>promoGroup(p)===key?items[j]:'').filter(Boolean);return '<section class="promo-group promo-'+key+'"><h4>'+label+'</h4><div class="promo-group-grid">'+groupCards.join('')+'</div></section>';}).join('');
 }
 // v0.2.16 beta: onboarding and optional synthesized BGM. No external assets required.
 let tutorialActive = false;
@@ -2005,6 +2038,33 @@ function debuffForecastHtml(){
     '<span>🗡 관통 <b>'+pc+'회</b><small>처치 후 초과 피해 전달</small></span></div>'+
     '<p class="forecast-note">콤보 디버프는 카드 조합·행동 연계의 보너스를 줄이고, 공격 디버프는 그 결과에 다시 적용됩니다. 수치는 현재 손패 기준 예상값이며 전투 중 카드 사용으로 달라집니다.</p>';
 }
+
+function debuffStatusHtml(){
+  const ap=attackParts();
+  const items=[['attack','⚔ 공격'],['combo','🔗 콤보'],['resource','💰 자원'],['gem','💎 보석']];
+  const hasActive=enemies.some(e=>isEnemyDebuffActive(e)&&((e.d&&e.d.p>0)||e.steal));
+  const pending=items.map(([k,n])=>{
+    const x=k==='attack'?ap.pv.attack:k==='combo'?ap.pv.combo:null;
+    const raw=x?(x.flat||0)+'점'+(x.pct?(' / '+(x.pct*PCT_PER_POINT)+'%'):''):'전투 중 소비';
+    return '<div class="debuff-detail-row"><b>'+n+'</b><span>🛡 누적 방어 '+(debuffReport.blocked[k]||0)+' · 💢 누적 피해 '+(debuffReport.lost[k]||0)+(x?' · 잔여 위협 '+raw:'')+'</span></div>';
+  }).join('');
+  const combo=evalCombos(), activeCombos=combo.filter(c=>c.ok);
+  const forecast='<b>콤보 '+ap.comboRaw+' → '+ap.comboNet+'</b> (감소 '+ap.comboLoss+') · <b>공격 '+ap.pre+' → '+ap.final+'</b> (감소 '+ap.atkLoss+')';
+  return '<div class="debuff-panel-summary">'+(hasActive?'⚠️ 활성 디버프 존재':'🛡 현재 활성 디버프 없음')+'</div>'+debuffForecastHtml()+'<h4>🛡 실제 누적 보호/손실</h4>'+pending+'<h4>🔗 콤보·연계 현황</h4><p>'+forecast+'</p><p>완성 콤보 '+activeCombos.length+'개 · 이번 라운드 행동 연계 보너스 +'+linkComboAttack+'</p><p class="forecast-note">보호 점수는 종류별 보호부터 소비한 뒤 전체 보호를 사용합니다. 위 방어량은 게임 시작 이후 실제 소모된 방어 점수의 누계이며 공격력 손실과 단위가 다릅니다.</p>';
+}
+function showDebuffDetail(){
+  if(!$('modal'))return;
+  $('modalTitle').textContent='🛡 디버프·콤보·보호 상세';
+  $('modalContent').innerHTML=debuffStatusHtml();
+  $('modal').classList.remove('hide');
+}
+function updateDebuffButton(){
+  const btn=$('debuffQuickBtn');if(!btn)return;
+  const ap=attackParts(), n=enemies.filter(e=>isEnemyDebuffActive(e)&&((e.d&&e.d.p>0)||e.steal)).length;
+  btn.innerHTML='🛡 디버프 <strong>'+(n?'<span class="debuff-danger">'+n+' 활성</span>':'안전')+'</strong>'+(ap.atkLoss||ap.comboLoss?'<small> 예상 감소 '+(ap.atkLoss+ap.comboLoss)+'</small>':'');
+  btn.classList.toggle('debuff-alert',n>0);
+}
+
 function render() {
   renderBattleStage();
   updateEnemyStatus();
@@ -2021,6 +2081,7 @@ function render() {
   if ($('enemyTotal')) $('enemyTotal').textContent = total();
   renderNextPreview();
   if($('debuffForecast'))$('debuffForecast').innerHTML=debuffForecastHtml();
+  updateDebuffButton();
   if($('tutorialCoach'))$('tutorialCoach').classList.add('hide');
   requestAnimationFrame(updateSpotTutorial);
   if($('tutorialHint'))$('tutorialHint').classList.add('hide');
@@ -2122,7 +2183,7 @@ function renderShop(list, id, fn) {
   if (!$(id)) return;
   $(id).innerHTML = list.map(s => {
     let n = buyCount[s.id] || 0, d = phase !== 'shop' || n >= s.limit || resource < s.price;
-    return '<div class="shop-card ' + (list === randomShop ? 'random-card' : '') + promoMaterialShopState(s) + '"><b>' + s.name + '</b><p>' + s.text + '</p><span class="price">💰 ' + s.price + ' · 재고 ' + Math.max(0, s.limit - n) + '개 (최대 ' + s.limit + ')</span><button ' + (d ? 'disabled' : '') + ' onclick="' + fn + '(\'' + s.id + '\')">' + (n >= s.limit ? '재고 소진' : '구매') + '</button></div>';
+    return '<div class="shop-card ' + (list === randomShop ? 'random-card' : '') + promoMaterialShopState(s) + '"><span class="shop-origin">' + (list===randomShop?'🎲 랜덤':'🟡 기본') + '</span><b>' + s.name + '</b><p>' + s.text + '</p><span class="price">💰 ' + s.price + ' · 재고 ' + Math.max(0, s.limit - n) + '개 (최대 ' + s.limit + ')</span><button ' + (d ? 'disabled' : '') + ' onclick="' + fn + '(\'' + s.id + '\')">' + (n >= s.limit ? '재고 소진' : '구매') + '</button></div>';
   }).join('');
 }
 
@@ -2147,6 +2208,8 @@ function cardCategory(c) {
 function strategyText(c) {
   const k=c.baseId||c.id;
   if(k==='frenzy') return '삼연격 3장 손패 콤보(+10)를 노리는 대신, 재료 3장을 압축해 공격 +30을 안정적으로 확보합니다. 콤보 변동성을 버리고 영구 공격/덱 압축을 택하는 승급입니다.';
+  if(k==='spark') return '4원짜리 랜덤 카드로 첫 라운드의 자원 소진 선택지를 늘립니다. 랜덤 상점에 등장해야만 구매 가능하며 행운이 보장되지는 않습니다.';
+  if(k==='luckcharm'||k==='luckfate') return '운빨 카드 승급 결과물. 좋은 사건 확률을 높이지만 불운과 영구 파괴 위험이 남습니다.';
   if(k==='dice') return '행운 34% · 무변화 30% · 불운 36% + 별도 파괴 10%. 파괴 시 20% 확률로 운빨 전용 LEGEND 발견. 자원·공격·드로우·보호·광역/관통·랜덤 카드/강화 또는 손실·저주가 발생합니다.';
   if(k==='box') return '행운 38% · 무변화 24% · 불운 38% + 별도 파괴 18%. 파괴 시 28% 확률로 LEGEND 발견. 가장 위험하지만 랜덤 카드·광역/관통·보석 대박까지 노리는 고위험 운빨 카드입니다.';
   if(k==='coin') return '행운 48% · 무변화 32% · 불운 20% + 별도 파괴 6%. 파괴 시 20% 확률로 LEGEND 발견. 운빨 카드 중 비교적 안전한 선택입니다.';
@@ -2163,21 +2226,28 @@ function strategyText(c) {
   return '조합과 현재 적 압력에 맞춰 활용하세요.';
 }
 function showCardTable() {
-  const all=[]; const add=(arr,src)=>arr.forEach(c=>all.push({c,src}));
-  add(BASE,'시작 덱'); add(BASIC,'기본 상점'); add(RANDOM_POOL,'랜덤 상점'); add([PROMOTION_STONE],'보스 전용'); PROMOS.forEach(p=>add([p.card],'승급')); add(LEGEND_POOL,'운빨 전용'); add(CURSE_POOL,'불운 결과');
+  const all=new Map();
+  const add=(arr,src,group)=>arr.forEach(c=>{const k=c.baseId||c.id;if(!all.has(k))all.set(k,{c,src,group});});
+  add(BASE,'시작 덱','basic');add(BASIC,'기본 상점','basic');add(RANDOM_POOL,'랜덤 상점','random');
+  PROMOS.forEach(p=>add([p.card],'승급 조합',promoGroup(p)));
+  add([PROMOTION_STONE],'보스 보상','other');add(LEGEND_POOL,'운빨 레전드','other');add(CURSE_POOL,'불운 결과','other');
   const inShop=k=>[...BASIC,...randomShop].some(x=>(x.baseId||x.id)===k && (buyCount[x.id]||0)<(x.limit||999));
-  const esc=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-  const cards=all.map(({c,src},idx)=>{const k=c.baseId||c.id; const dh=hand.filter(x=>(x.baseId||x.id)===k).length, dd=deck.filter(x=>(x.baseId||x.id)===k).length, sh=inShop(k); const cls=dh?'catalog-hand':sh?'catalog-shop':dd?'catalog-deck':''; const spec=(c.atk?'⚔ '+c.atk+' ':'')+(c.res?'💰 '+c.res+' ':'')+(c.gem?'💎 '+c.gem+' ':'')+(c.draw?'🃏 '+c.draw+' ':'')+(c.aoe?'💥 '+c.aoe+' ':'')+(c.pierce?'🗡 '+c.pierce:''); return '<button type="button" class="catalog-card spread-card '+cls+' '+(c.rarity==='legend'?'legend':'')+'" data-card-idx="'+idx+'"><div class="catalog-head"><b>'+esc(c.name)+'</b><span>'+cardCategory(c)+'</span></div><div class="catalog-state">'+(dh?'🃏 손패 '+dh+' ':dd?'📚 덱 '+dd+' ':'')+(sh?'🛒 상점 ':'')+(c.rarity==='legend'?'🌈 LEGEND ':'')+'</div><div class="spread-spec">'+(spec||'특수 효과')+'</div><p>'+esc(c.text||(c.atk?'공격 +'+c.atk:'효과 없음'))+'</p><small>💡 '+esc(strategyText(c))+'</small><em>자세히 보기</em></button>';}).join('');
-  $('modalTitle').textContent='🃏 전체 카드 펼쳐보기';
-  $('modalContent').innerHTML='<div class="catalog-legend">🟦 손패 · 🟩 덱 · 🟨 현재 상점 · 🌈 LEGEND</div><p class="catalog-help">카드를 책상 위에 펼쳐 놓듯 여러 장을 동시에 비교합니다. 카드를 누르면 가격·출처·효과·전략을 크게 볼 수 있습니다.</p><div class="catalog-spread">'+cards+'</div><div id="catalogDetail" class="catalog-detail"><b>카드를 선택해 상세 전략을 확인하세요.</b></div>';
+  const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const entries=[...all.values()];
+  const names={basic:'🟡 기본 카드',random:'🎲 랜덤 카드',resource:'🟢 승급(자원)',attack:'🔴 승급(공격)',action:'🔵 승급(행동)',luck:'🟣 승급(운빨)',other:'✨ 보상·레전드·저주'};
+  const cardHtml=(v,idx)=>{const {c,src,group}=v,k=c.baseId||c.id,dh=hand.filter(x=>(x.baseId||x.id)===k).length,dd=deck.filter(x=>(x.baseId||x.id)===k).length,sh=inShop(k);
+    const spec=[c.atk?'⚔ '+c.atk:'',c.res?'💰 '+c.res:'',c.gem?'💎 '+c.gem:'',c.draw?'🃏 '+c.draw:'',c.aoe?'💥 '+c.aoe:'',c.pierce?'🗡 '+c.pierce:''].filter(Boolean).join(' ');
+    return '<button type="button" class="catalog-card spread-card cat-'+group+' '+(dh?'catalog-hand':sh?'catalog-shop':dd?'catalog-deck':'')+'" data-card-idx="'+idx+'"><div class="catalog-head"><b>'+esc(c.name)+'</b><span>'+esc(cardCategory(c))+'</span></div><div class="catalog-state">'+(dh?'🃏 손패 '+dh+' ':'')+(dd?'📚 덱 '+dd+' ':'')+(sh?'🛒 상점 ':'')+'</div><div class="spread-spec">'+(spec||'특수 효과')+'</div><p>'+esc(c.text||'고유 효과')+'</p><em>자세히 보기</em></button>';
+  };
+  $('modalTitle').textContent='📚 전체 카드 도감 · 종류별 1장';
+  $('modalContent').innerHTML='<div class="catalog-legend">중복 없는 카드 설명 · 손패/덱 숫자는 보유 수량</div>'+Object.entries(names).map(([key,label])=>{const items=entries.map((v,idx)=>v.group===key?cardHtml(v,idx):'').filter(Boolean);return items.length?'<section class="catalog-group cat-'+key+'"><h4>'+label+' <small>'+items.length+'종</small></h4><div class="catalog-spread">'+items.join('')+'</div></section>':'';}).join('')+'<div id="catalogDetail" class="catalog-detail"><b>카드를 선택하면 전략 설명이 나타납니다.</b></div>';
   $('modal').classList.remove('hide');
-  const detail=$('catalogDetail');
-  $('modalContent').querySelectorAll('[data-card-idx]').forEach(btn=>btn.addEventListener('click',()=>{const {c,src}=all[Number(btn.dataset.cardIdx)]; detail.innerHTML='<div><b>'+esc(c.name)+'</b><span>'+cardCategory(c)+' · '+src+' · '+(c.price==null?'획득 전용':'가격 💰'+c.price)+'</span></div><p>'+esc(c.text||(c.atk?'공격 +'+c.atk:'효과 없음'))+'</p><strong>💡 전략</strong><p>'+esc(strategyText(c))+'</p>'; detail.scrollIntoView({behavior:'smooth',block:'nearest'}); }));
+  const detail=$('catalogDetail');$('modalContent').querySelectorAll('[data-card-idx]').forEach(btn=>btn.addEventListener('click',()=>{const {c,src}=entries[Number(btn.dataset.cardIdx)];detail.innerHTML='<div><b>'+esc(c.name)+'</b><span>'+esc(cardCategory(c))+' · '+esc(src)+' · '+(c.price==null?'획득/승급 전용':'가격 💰'+c.price)+'</span></div><p>'+esc(c.text||'고유 효과')+'</p><strong>💡 전략</strong><p>'+esc(strategyText(c))+'</p>';detail.scrollIntoView({behavior:'smooth',block:'nearest'});}));
 }
 
 async function copyDevLog() {
   const snapshot = [
-    'Luck Dungeon v0.2.15 DEV LOG',
+    'Luck Dungeon v0.2.17 DEV LOG',
     'ROUND=' + round + ' PHASE=' + phase + ' SCORE=' + scoreValue(),
     'DECK=' + deck.length + ' RES=' + resource + ' GEMS=' + gems + ' ENEMIES=' + enemies.length + ' ENEMY_HP=' + total(),
     'STATS=' + JSON.stringify(stats),
@@ -2233,6 +2303,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (closeBtn) closeBtn.onclick = handleModalClose;
   if (copyLogBtn) copyLogBtn.onclick = copyDevLog;
   if (cardTableBtn) cardTableBtn.onclick = showCardTable;
+  if($('debuffQuickBtn'))$('debuffQuickBtn').onclick=showDebuffDetail;
   if($('tutorialBtn'))$('tutorialBtn').onclick=toggleTutorial;
   if($('welcomeTutorial'))$('welcomeTutorial').onclick=()=>{start();startTutorial();};
   if($('welcomeNormal'))$('welcomeNormal').onclick=()=>{if($('welcomeOverlay'))$('welcomeOverlay').classList.add('hide');tutorialActive=false;start();};
