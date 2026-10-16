@@ -1,5 +1,7 @@
 name: AutoLab Cloud Runner
 on:
+  push:
+    branches: ['feature/autolab-v0.2-supabase-analysis']
   workflow_dispatch:
     inputs:
       runs:
@@ -10,8 +12,6 @@ on:
         description: 'Comma-separated strategies'
         required: true
         default: 'random,economy,attack,aoe,link,survival'
-  schedule:
-    - cron: '0 3 * * 1'
 permissions:
   contents: read
 jobs:
@@ -23,11 +23,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install playwright
-      - run: sudo apt-get update && sudo apt-get install -y chromium
+      - run: pip install playwright==1.51.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Test diagnostics pipeline
+        run: python -m unittest discover -s tests -v
       - name: Run AutoLab
         env:
-          RUNS: ${{ github.event.inputs.runs || '10' }}
+          RUNS: ${{ github.event.inputs.runs || '17' }}
           STRATEGIES: ${{ github.event.inputs.strategies || 'random,economy,attack,aoe,link,survival' }}
         run: |
           python - <<'PY'
@@ -36,11 +38,20 @@ jobs:
           if not 1<=runs<=1000:raise SystemExit('runs must be 1..1000')
           subprocess.run(['python','run_autolab.py','--runs',str(runs),'--strategies',os.environ['STRATEGIES']],check=True)
           PY
-      - name: Upload bot runs to Supabase
+      - name: Validate real-engine logs
+        run: python tests/validate_results.py results
+      - name: Analyze bot runs and promotion blockers
+        run: python cloud/analyze_results.py results
+      - name: Upload all AutoLab logs and analysis to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python cloud/upload_results.py results/runs.csv
+      - name: Publish analysis summary
+        if: always()
+        run: |
+          if [ -f results/analysis.md ]; then cat results/analysis.md >> "$GITHUB_STEP_SUMMARY"; fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
