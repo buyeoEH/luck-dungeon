@@ -1,0 +1,62 @@
+name: v0.2.17 paired balance test
+on:
+  push:
+    branches: ['feature/game-v0.2.17-ui-balance']
+    paths: ['.github/workflows/balance-v0217.yml']
+permissions:
+  contents: read
+jobs:
+  simulate:
+    name: ${{ matrix.label }} - 600 seeded runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: baseline
+            revision: 7ef14bb5562b853c65ef685a16f3cc79f2ea73e4
+          - label: v0217
+            revision: 62b4098a232fda87be06a180f9cddf87147d5097
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.revision }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install playwright==1.51.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Run shipped regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Run six unchanged strategy bots, seeds 1000-1099
+        run: python run_autolab.py --runs 100 --seed 1000 --strategies random,economy,attack,aoe,link,survival --output results
+      - name: Validate all logs and write offline analysis
+        run: |
+          python tests/validate_results.py results
+          python cloud/analyze_results.py results
+          cat results/analysis.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Record exact engine and runner provenance
+        env:
+          ENGINE_LABEL: ${{ matrix.label }}
+          EXPECTED_REVISION: ${{ matrix.revision }}
+        run: |
+          python - <<'PY'
+          import collections,csv,hashlib,json,os,pathlib,subprocess
+          root=pathlib.Path('.')
+          revision=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          assert revision==os.environ['EXPECTED_REVISION']
+          rows=list(csv.DictReader((root/'results/runs.csv').open(encoding='utf-8-sig')))
+          strategies=['random','economy','attack','aoe','link','survival']
+          assert len(rows)==600
+          assert {(r['strategy'],int(r['seed'])) for r in rows}=={(s,n) for s in strategies for n in range(1000,1100)}
+          evidence={'engine_label':os.environ['ENGINE_LABEL'],'engine_sha':revision,'workflow_sha':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'strategies':strategies,'seed_start':1000,'seed_end':1099,'runs':len(rows),'playwright':'1.51.0','cloud_upload':False,'file_sha256':{name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in ['game.js','autolab.js','run_autolab.py','index.html']}}
+          (root/'results/provenance.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: balance-v0217-${{ matrix.label }}
+          path: results/
+          if-no-files-found: error
