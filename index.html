@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Luck Dungeon v0.2.16 Tutorial - 카드 덱빌딩 ROGUELIKE</title>
+  <title>Luck Dungeon v0.2.17 - 카드 덱빌딩 ROGUELIKE</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
-    <div class="welcome-card"><div class="welcome-kicker">LUCK DUNGEON · v0.2.16</div>
+    <div class="welcome-card"><div class="welcome-kicker">LUCK DUNGEON · v0.2.17</div>
       <h1 id="welcomeTitle">네르 오르 뒤나미스</h1>
       <p>덱을 성장시키고, 적의 디버프를 읽고, 30라운드를 돌파하세요.</p>
       <label class="welcome-sound"><input id="welcomeBgmToggle" type="checkbox"> 🎵 시작 화면부터 BGM 재생</label>
+      <div id="welcomeRanks" class="welcome-rankings" aria-label="기록 순위"></div>
       <div class="welcome-options">
         <button id="welcomeTutorial" class="welcome-option"><strong>📖 튜토리얼 플레이</strong><span>카드 사용 → 상점 → 전투 → 콤보·디버프 → 승급까지 실제 게임에서 배웁니다.</span></button>
         <button id="welcomeNormal" class="welcome-option"><strong>⚔ 일반 게임</strong><span>안내 없이 기존 규칙 그대로 플레이합니다.</span></button>
@@ -43,6 +44,7 @@
       </header>
 
       <div class="mini-status">
+        <button id="debuffQuickBtn" type="button" class="debuff-quick">🛡 디버프 확인</button>
         <div id="enemyChips" class="enemy-chips"></div>
         <div id="protections" class="protection-grid"></div>
       </div>
@@ -77,12 +79,12 @@
       <div class="section-title">🛒 카드 상점</div>
       <div id="shopPreview" class="next-preview"></div>
       <div class="shop-container">
-        <div class="shop-group">
-          <h4>기본 상점</h4>
+        <div class="shop-group basic-section">
+          <h4>🟡 기본 상점 <small>고정 카드</small></h4>
           <div id="basicShop" class="shop-grid"></div>
         </div>
-        <div class="shop-group">
-          <h4>랜덤 상점</h4>
+        <div class="shop-group random-section">
+          <h4>🎲 랜덤 상점 <small>8종 랜덤 출현 · 4원 카드 등장 보장 없음</small></h4>
           <div id="randomShop" class="shop-grid"></div>
         </div>
       </div>
@@ -140,6 +142,7 @@
 <script src="cloud/config.js"></script>
 <script src="cloud/cloud.js"></script>
 <script src="history.js"></script>
+<script src="rankings.js"></script>
 <script src="autolab.js"></script>
 </body>
 </html>
