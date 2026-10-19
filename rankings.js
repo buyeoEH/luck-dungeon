@@ -1,26 +1,19 @@
-/* v0.2.17 preview: device-only records; no client-generated score is advertised as a verified global score. */
+/* Public player-submitted rankings. Initials are labels, not unique accounts. */
 (function(){'use strict';
-const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const tabs=[['daily','일간'],['weekly','주간'],['monthly','월간'],['all','누적'],['endless','♾ 최대 R']];
-let tab='daily';
-function dayStart(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
-function periodStart(type){const now=new Date();if(type==='daily')return dayStart(now);if(type==='weekly'){const start=dayStart(now);start.setDate(start.getDate()-(start.getDay()+6)%7);return start;}if(type==='monthly')return new Date(now.getFullYear(),now.getMonth(),1);return new Date(0);}
-function rows(type){const source=window.LuckHistory?.read()||[],threshold=periodStart(type);return source.filter(r=>r.initials && (type==='endless'?r.endlessMaxRound>0: new Date(r.date)>=threshold)).sort((a,b)=>type==='endless'? (b.endlessMaxRound||0)-(a.endlessMaxRound||0)||b.score-a.score:b.score-a.score||new Date(a.date)-new Date(b.date)).slice(0,10);}
-function render(){const el=$('welcomeRanks');if(!el)return;
- el.innerHTML='<div class="rank-top"><b>🏆 최고기록 순위</b><small>이 기기 기록 · 서버 검증 순위는 추후 제공</small></div><div class="rank-tabs">'+tabs.map(([k,v])=>'<button type="button" data-rank="'+k+'" class="'+(tab===k?'active':'')+'">'+v+'</button>').join('')+'</div><div class="rank-entries">'+(rows(tab).map((r,i)=>'<div class="rank-entry"><b>'+(i+1)+'위 · '+esc(r.initials)+'</b><span>'+(tab==='endless'?'R'+Number(r.endlessMaxRound||0):Number(r.score||0).toLocaleString()+'점')+'</span></div>').join('')||'<p class="rank-empty">아직 등록된 기록이 없어요. 첫 기록의 주인공이 되어보세요!</p>')+'</div>';
- el.querySelectorAll('[data-rank]').forEach(b=>b.onclick=()=>{tab=b.dataset.rank;render();});
-}
-function openRegistration(){
- const entry=(window.LuckHistory?.read()||[]).find(r=>r.id===String(window.__luckManualRunId||''));
- if(!entry){alert('먼저 게임 기록이 저장되어야 합니다.');return;}
- const modal=$('modal'),body=$('modalContent');if(!modal||!body)return;
- $('modalTitle').textContent='🏆 기록 이니셜 등록';
- body.innerHTML='<div class="rank-register"><p>현재 기록 <b>'+Number(entry.score||0).toLocaleString()+'점</b> · R'+entry.round+(entry.endlessMaxRound?' · ♾ 최고 R'+entry.endlessMaxRound:'')+'</p><label for="rankInitials">이니셜(한글·영문·숫자 2~6자)</label><input id="rankInitials" maxlength="6" autocomplete="off" placeholder="예: NER" value="'+esc(entry.initials||'')+'"><p id="rankError" role="status"></p><button id="rankSubmit" type="button">기록 등록</button></div><small>현재 순위는 이 기기에만 저장됩니다. 서버 전체 공개 랭킹은 검증된 기록만 허용할 예정입니다.</small>';
- modal.classList.remove('hide');$('rankSubmit').onclick=()=>{const initials=$('rankInitials').value.trim().toUpperCase();if(!/^[가-힣A-Z0-9]{2,6}$/.test(initials)){$('rankError').textContent='2~6자의 한글·영문·숫자만 사용할 수 있어요.';return;}
- if(!window.LuckHistory?.setInitials(initials)){$('rankError').textContent='저장에 실패했습니다.';return;}
- render();const welcome=$('welcomeOverlay');if(welcome&&welcome.classList.contains('hide')){const msg=$('cloudStatus');if(msg)msg.textContent='🏆 '+initials+' 기록 저장 완료 (기기 내)';}
- if(typeof phase!=='undefined' && phase!=='gameover' && typeof officialRecord!=='undefined' && officialRecord && typeof showOfficialCompleteModal==='function'){showOfficialCompleteModal();}else{$('modalTitle').textContent='🏆 기록 등록 완료';body.innerHTML='<p><b>'+esc(initials)+'</b> 기록이 기기에 저장됐습니다.</p><button type="button" id="rankRestart">다시 시작</button>'; $('rankRestart').onclick=()=>{modal.classList.add('hide');if(typeof start==='function')start();};}
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tabs=[['daily','일간'],['weekly','주간'],['monthly','월간'],['all','누적'],['endless','♾ 최대 R']];let tab='daily',serial=0;
+function markup(rows,note){return '<div class="rank-top"><b>🏆 온라인 최고기록 순위</b><small>'+esc(note)+'</small></div><div class="rank-tabs">'+tabs.map(([k,v])=>'<button type="button" data-rank="'+k+'" class="'+(tab===k?'active':'')+'">'+v+'</button>').join('')+'<button type="button" data-refresh>↻ 새로고침</button></div><div class="rank-entries">'+(rows.map((r,i)=>'<div class="rank-entry"><b>'+(i+1)+'위 · '+esc(r.initials)+'</b><span>'+(tab==='endless'?'R'+Number(r.endless_max_round||0):Number(r.score||0).toLocaleString()+'점')+'</span></div>').join('')||'<p class="rank-empty">등록된 기록이 없습니다. 게임 종료 후 이니셜을 등록해 보세요.</p>')+'</div><small>v0.2.18 · 플레이어 제출 기록 · KST 기준 · 같은 이니셜 사용 가능</small>';}
+function bind(el){el.querySelectorAll('[data-rank]').forEach(b=>b.onclick=()=>{tab=b.dataset.rank;render(el);});el.querySelector('[data-refresh]').onclick=()=>render(el);}
+async function render(target){const el=target||$('welcomeRanks');if(!el)return;const id=++serial;el.innerHTML=markup([],'온라인 조회 중');bind(el);try{const rows=await window.LuckCloud.ranks(tab);if(id!==serial)return;el.innerHTML=markup(rows,'서버 전체 기록');bind(el);}catch(e){if(id!==serial)return;el.innerHTML=markup([],'온라인 조회 실패 · '+e.message+' · 새로고침으로 재시도');bind(el);}}
+function show(){const modal=$('modal');$('modalTitle').textContent='🏆 온라인 랭킹';$('modalContent').innerHTML='<div id="onlineRanksContent"></div>';modal.classList.remove('hide');render($('onlineRanksContent'));}
+function openRegistration(){const entry=(window.LuckHistory?.read()||[]).find(r=>r.id===String(window.__luckManualRunId||''));if(!entry){alert('먼저 게임 기록이 저장되어야 합니다.');return;}
+ const body=$('modalContent');$('modalTitle').textContent='🏆 기록 이니셜 등록';body.innerHTML='<div class="rank-register"><p>현재 기록 <b>'+Number(entry.score||0).toLocaleString()+'점</b> · R'+entry.round+'</p><label for="rankInitials">이니셜(한글·영문·숫자 2~6자)</label><input id="rankInitials" maxlength="6" autocomplete="off" placeholder="예: NER" value="'+esc(entry.initials||'')+'"><p id="rankError" role="status"></p><button id="rankSubmit" type="button">온라인 기록 등록</button></div><small>등록하면 이니셜·점수·라운드·플레이 시간이 공개됩니다. 동일 이니셜 사용 가능. 고유번호 구분은 지원하지 않습니다.</small>';$('modal').classList.remove('hide');
+ $('rankSubmit').onclick=async()=>{const button=$('rankSubmit'),error=$('rankError'),initials=$('rankInitials').value.trim().toUpperCase();if(!/^[가-힣A-Z0-9]{2,6}$/.test(initials)){error.textContent='2~6자의 한글·영문·숫자만 사용할 수 있어요.';return;}
+ if(!window.LuckHistory.setInitials(initials)){error.textContent='기기 저장에 실패했습니다.';return;}button.disabled=true;error.textContent='온라인 등록 중…';
+ try{await window.LuckCloud.register(window.LuckHistory.read().find(r=>r.id===entry.id));render();if($('cloudStatus'))$('cloudStatus').textContent='🏆 '+initials+' 온라인 등록 완료';
+ if(typeof phase!=='undefined'&&phase!=='gameover'&&typeof officialRecord!=='undefined'&&officialRecord&&typeof showOfficialCompleteModal==='function'){showOfficialCompleteModal();}else{$('modalTitle').textContent='🏆 온라인 등록 완료';body.innerHTML='<p><b>'+esc(initials)+'</b> 기록을 온라인 랭킹에 등록했습니다.</p><button id="rankView">온라인 랭킹 보기</button> <button id="rankRestart">다시 시작</button>';$('rankView').onclick=show;$('rankRestart').onclick=()=>{$('modal').classList.add('hide');start();};}
+ }catch(e){error.textContent='기기에 저장됨 · 온라인 등록 실패: '+e.message+' · 다시 눌러 재시도하세요.';button.disabled=false;}
  };
 }
-window.LuckRanks={render,openRegistration};document.addEventListener('DOMContentLoaded',render);
+window.LuckRanks={render,show,openRegistration};document.addEventListener('DOMContentLoaded',()=>{render();if($('onlineRanksBtn'))$('onlineRanksBtn').onclick=show;});
 })();

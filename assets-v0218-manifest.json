@@ -1,0 +1,71 @@
+{
+  "bundles": [
+    {
+      "file": "assets-v0218-art.zip",
+      "sha256": "a1c5759d17ac126a627a6f08d0cbfb7b49cd1b852f2623ed12fdc00651b8eabb",
+      "bytes": 11236880
+    },
+    {
+      "file": "assets-v0218-enemies.zip",
+      "sha256": "a91d7dffc97c21ce029340c4a3c381e5569d1fbcb3f75a7f943c1319f050f3d6",
+      "bytes": 17185225
+    },
+    {
+      "file": "assets-v0218-audio.zip",
+      "sha256": "ce1ce7941d918f77662d22ce3f1743e47805d37c96938f07737ee55527e8bc49",
+      "bytes": 12166638
+    }
+  ],
+  "files": {
+    "assets/cards/ag2.png": "8a291b1470c1000fcb600f0dbca5b777e7345ce114236212d53e888ec8ec4b5f",
+    "assets/cards/annihilation.png": "712284a8b6f35fb41ace280c42b07b8ca739df22af56252869a7e5e8facec0e8",
+    "assets/cards/aoe.png": "0da8b7a5365340c71e688869900b5647ed3c1721d772329d2f633514ab3d0646",
+    "assets/cards/bountygold.png": "d7dfa10e487ebc441474d358e84d2b07abf8dd227312a5a1dfe6ba04daa557b1",
+    "assets/cards/combo.png": "b315f0b4495166f86f11dd8d1835eec96a19cc935ef97bc5e1eca4ab9a13d8e7",
+    "assets/cards/dagger.png": "6cc1d514ad29f3d3d1362c9d1f6c714f2dae0429d42fd529eab7802662bf96b0",
+    "assets/cards/fateblade.png": "ac7087fb1a62925cb572cba991587d973b5383af36bf3439ec7519787d058bdb",
+    "assets/cards/gem.png": "39352d12da7eba903fde5cdf629afb8b6aacd5965aab9cd8de87c3eaee916482",
+    "assets/cards/luckminer.png": "c01872ee33d0ef9a17d210e5f2acebf26f5f86f98a95f17e17464a2551b120cf",
+    "assets/cards/promo_stone.png": "924d585db88f71c1b6728aeb52f15994c3461983bebd1104a65ab24808a2139b",
+    "assets/cards/royalgold.png": "fd65cfa73de0dc7bc315febf27b4fd74b3310946c532ffd7656d94a2cd9d4a2d",
+    "assets/cards/skylance.png": "ffcbbce6e0ae4f99d0253b28f3d70d400844014e6429d0ccd30266d86c1900f0",
+    "assets/cards/smash.png": "70ea56d4efd62547cb3fb3e0499dc6d8c221bd4f61f4b6badebf55009ab4f60e",
+    "assets/cards/sword.png": "f49bed92dde3b667583540c24e4bdb22730b343caff31f33bbf985b94c228391",
+    "assets/player/hero.png": "9b501318dee9f578d3782e1fae33fa901f0d74457fe245902419c5a71d3f407b",
+    "assets/enemies/bandit.png": "52bb14485f8b616a27840ed8eabf8d2b39425041f2d1d0cb9dc63cbdd3265b71",
+    "assets/enemies/fate_guardian.png": "5e4ffccdb87ebdfbde4299fd74fdad3ed257323e92403a999ed3d7a8b1276ca4",
+    "assets/enemies/gem_hunter.png": "1dbfd13276f54f0f8f00ce7b40b814d95008ed33074f303faa4fd90d28447eb3",
+    "assets/enemies/goblin.png": "f0155fe9da39692136e62bd2b2fe808180a4743db19dd9af02c415e8a89904b3",
+    "assets/enemies/greed_dragon.png": "d7e1a2992e349111c1ef74bd036b9410ea71c32ccb9c1a0ae6da9082171f14b7",
+    "assets/enemies/iron_giant.png": "5a8b4902aff02c576a5b14473b9f8534822b3c534059a0d461a8a92f143b6683",
+    "assets/enemies/resource_thief.png": "4dbbe1b4d279209d4afbfebd867c34432d53d702a8de195b12ef26b59c2568d7",
+    "assets/enemies/sealer.png": "451b7625cdd59d10dd815b96bcb583bc69d8358a67bf4b5aa812fb3f4c36aecc",
+    "assets/enemies/slime.png": "490dfebf2a2c79b3885b1936de869ea89eb57619d7e248054f644a1e49c8a46c",
+    "assets/enemies/twisted_knight.png": "ace576674dd23bdc62aa3460a43ccd41a1a181a3e7e5afe66bd855eb54b9e703",
+    "assets/enemies/wolf.png": "22e1c88669472845b518e22bc345e84379950bf8b0b7ea21acb5f17111eb1058",
+    "assets/audio/README-source.md": "62ee25262f8c9f3f4ede1bbe70854afc5f6e029ebdc30300181e763daac909b2",
+    "assets/audio/bgm_battle.mp3": "8132e88d12c38884fe41862c7079a3edc6c5f5f44b23d7e8ad5c1d0ad2aee45f",
+    "assets/audio/bgm_battle.ogg": "25b5fd9c0d6d76db387984b19a7c72b3461d35d675d05225196176d7ef56d969",
+    "assets/audio/bgm_danger.mp3": "8230c076cb5316267307db2a323e7020ed186774d7165f8c618ce2d9e94007f9",
+    "assets/audio/bgm_danger.ogg": "66ff926af1e970a4a1ba7c4fc38759774c4333aadc3a6e7ebe0e5d5ca43b4330",
+    "assets/audio/bgm_infinite.mp3": "2b23a5c5e12fac9e6dc6096ddf86824b68f160c7b55bfa10014316cd9d1bf025",
+    "assets/audio/bgm_infinite.ogg": "7ff1d13388f29dfa06ae6876e5acc8b40f84a7f48e4861daa4f6b06d9a015722",
+    "assets/audio/bgm_round.mp3": "676b570d047a659db3d806f65d4434d28d7bd914ddbc4ba06c344e52c21c4949",
+    "assets/audio/bgm_round.ogg": "a90d96c718703135a57967d88b9b30b0f6f496132ade2532bc3fa6c7e87e9030",
+    "assets/audio/bgm_title.mp3": "3269cba823bea0e17d2446b440519f22d84446d13cb6577012c9f9ad2e27cee5",
+    "assets/audio/bgm_title.ogg": "8b49cbb87e7627070057741387e8147a26e7fcaec9a02b97f53e54018614059c",
+    "assets/audio/cue_danger_enter.wav": "b0bda89e47e550d0110460b0420043012336d08cea0cf1be825e29dfae82e31d",
+    "assets/audio/cue_infinite_enter.wav": "7750ab0b450d1f425d79584f7daf1444ac5748a571f5b790aa2cf239d1872dea",
+    "assets/audio/cue_round30_clear.wav": "defdc1d5a6c94aa61520b6419f410f06ad64561d18fd8234230b2c1bab00b4cd",
+    "assets/audio/cue_round_clear.wav": "a30c1b82ec58449e3f64d1d59642f06a281a96fd16d73faddad191b27cc72e9a",
+    "assets/audio/cue_run_end.wav": "70807cd0c7cd8ec5608954e6cda002e633b77974c752faa17c7b199030f01c2f",
+    "assets/audio/manifest.json": "b98168a4c7dd5d31c32b3d8fe407f4975982fc05e92519177feda1e6d1f19810",
+    "assets/audio/sfx_aoe.wav": "aa1acac4cc7854e01483c682e91020b40f773298e9a399a58b88c77b214f53ec",
+    "assets/audio/sfx_attack_01.wav": "df18703470950d21cb71382b0e5991066c085565dc226fadc78e6c2ea4136af3",
+    "assets/audio/sfx_attack_02.wav": "4d80835e181e9f69072a47ca67121a883efcd19f06f95a10c8f65df896c7aa5f",
+    "assets/audio/sfx_attack_03.wav": "2b6dd2019a264c73ca501c0f8d5456529243736d283daec2e9f9ff6ab88dc96d",
+    "assets/audio/sfx_max_hit.wav": "68f65270157a1aff6f15a0ee276da9dcb1d63f4ae46568cbde6ab347e97acf2f",
+    "assets/audio/sfx_max_intro.wav": "73c92fe2fcc381cb829216cb2a4ed9a76a2af516416ee9423f41afe7d4ea5062",
+    "assets/audio/sfx_pierce.wav": "6523cc6529c3a113e78f5979c4d5406eb15fe16ffe0ffdd121e20fdd140ce5d2"
+  }
+}

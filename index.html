@@ -3,20 +3,466 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Luck Dungeon v0.2.17 - 카드 덱빌딩 ROGUELIKE</title>
-  <link rel="stylesheet" href="style.css">
+  <title>LUCK Dungeon v0.2.18 · Original UI Playtest</title>
+  <style>
+/* style.css */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
+body { background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; padding: 12px; }
+#app { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 12px; }
+
+/* 최상단 스티키 고정 영역 (기본 정보 + 적 목록 + 보호석) */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background-color: #0f172a;
+  padding-top: 4px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dashboard { background: #1e293b; border: 1px solid #334155; padding: 6px 10px; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12px; }
+.dashboard .action-btn { margin-left: auto; padding: 6px 12px; font-size: 12px; white-space: nowrap; }
+.dash-item { display: flex; align-items: center; gap: 4px; position: relative; }
+.highlight { color: #38bdf8; }
+#deckBtn { background: #3b82f6; border: none; color: white; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+
+/* 공격력 산출 상세 분석 툴팁 Layer */
+#atkContainer {
+  cursor: pointer;
+  background: rgba(239, 68, 68, 0.15);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #ef4444;
+  user-select: none;
+}
+#atkContainer:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.atk-tooltip {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 270px;
+  background: #0f172a;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  color: #f8fafc;
+}
+
+.section-title { font-size: 13px; font-weight: bold; color: #94a3b8; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.sub-info { font-size: 11px; color: #cbd5e1; font-weight: normal; }
+.enemy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.enemy { background: #1e1b2e; border: 1px solid #a855f7; padding: 8px; border-radius: 6px; font-size: 12px; }
+.enemy.debuff-active { border-color: #ef4444; background: #2d1215; }
+.enemy .hp { color: #f43f5e; font-weight: bold; display: block; margin-top: 2px; }
+.enemy .debuff-badge { font-size: 10px; margin-top: 4px; padding: 2px 4px; border-radius: 3px; display: inline-block; }
+.enemy .debuff-badge.active { background: #7f1d1d; color: #fca5a5; }
+.enemy .debuff-badge.done { background: #14532d; color: #86efac; }
+/* 상단 고정 영역: 적/보호력은 한 줄 가로 스크롤 칩으로 표시 (적이 쌓여도 높이 고정) */
+.mini-status { display: flex; flex-direction: column; gap: 4px; }
+.enemy-chips, .protection-grid { display: flex; flex-wrap: nowrap; gap: 4px; align-items: center; overflow-x: auto; scrollbar-width: none; }
+.enemy-chips::-webkit-scrollbar, .protection-grid::-webkit-scrollbar { display: none; }
+.chip-label { flex: 0 0 auto; font-size: 11px; font-weight: bold; color: #94a3b8; white-space: nowrap; }
+.chip { flex: 0 0 auto; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #1e1b2e; border: 1px solid #a855f7; white-space: nowrap; }
+.chip b { color: #f43f5e; }
+.chip.target { border-color: #f59e0b; background: #3a2a10; }
+.chip.warn { border-color: #ef4444; background: #2d1215; }
+.protect { flex: 0 0 auto; background: #0f2942; border: 1px solid #0284c7; padding: 2px 8px; border-radius: 999px; font-size: 11px; white-space: nowrap; opacity: 0.45; }
+.protect.on { opacity: 1; background: #0c4a6e; border-color: #38bdf8; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.card { background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; }
+.card.attack { border-color: #ef4444; background: #2d1b1e; }
+.card.protection { border-color: #3b82f6; background: #132338; }
+.card.oneuse { border-color: #eab308; background: #2a2415; }
+.card.random { border-color: #a855f7; background: #22152a; }
+.card .tag { font-size: 9px; font-weight: bold; color: #94a3b8; }
+.card h3 { font-size: 13px; margin: 2px 0; }
+.card .val { font-size: 14px; font-weight: bold; color: #38bdf8; }
+.card .desc { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+.card button { margin-top: 6px; padding: 4px; background: #2563eb; color: white; border: none; border-radius: 4px; font-size: 11px; cursor: pointer; }
+.card button:disabled { background: #475569; cursor: not-allowed; }
+.shop-container { display: flex; flex-direction: column; gap: 10px; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.shop-card { background: #1e293b; border: 1px solid #334155; padding: 8px; border-radius: 6px; font-size: 11px; }
+.shop-card.random-card { border-color: #8b5cf6; }
+.shop-card .price { color: #fde047; display: block; margin: 4px 0; }
+.shop-card button { width: 100%; padding: 4px; background: #16a34a; color: white; border: none; border-radius: 4px; cursor: pointer; }
+.shop-card button:disabled { background: #475569; }
+.reward-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.footer-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.footer-section { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.action-btn, .primary-btn { padding: 6px 12px; background: #2563eb; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.log-box { background: #090d16; border: 1px solid #1e293b; border-radius: 6px; padding: 8px; }
+.log-title { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+.log-content { height: 90px; overflow-y: auto; font-size: 11px; display: flex; flex-direction: column; gap: 2px; }
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); display: flex; justify-content: center; align-items: center; z-index: 999; }
+.modal-window { background: #1e293b; border: 1px solid #475569; border-radius: 8px; width: 90%; max-width: 420px; padding: 14px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.close-btn { background: none; border: none; color: #94a3b8; font-size: 16px; cursor: pointer; }
+.hide { display: none !important; }
+
+
+/* v0.2.6: 다음 라운드 예고 / 최근 로그 / 승급 카드 */
+.next-preview { background: #1f1730; border: 1px solid #7c3aed; padding: 6px 10px; border-radius: 6px; font-size: 11px; line-height: 1.5; margin-bottom: 6px; }
+.next-preview:empty { display: none; }
+.recent-log { background: #111827; border: 2px solid #f59e0b; border-radius: 8px; padding: 8px 10px; font-size: 12px; line-height: 1.5; margin-bottom: 8px; }
+.recent-log-title { font-size: 11px; font-weight: bold; color: #fbbf24; margin-bottom: 4px; }
+.promo-card { border-color: #22c55e; }
+.promo-mats { font-size: 11px; color: #94a3b8; }
+
+/* v0.2.8: 드로우 더미/묘지 표시 */
+.pile-info { font-size: 10px; color: #94a3b8; white-space: nowrap; }
+
+/* v0.2.9: 개발 점수/로그/카드 분류표 */
+.score-dash { color:#fbbf24; }
+.mini-btn { margin-left:6px; padding:2px 7px; border:1px solid #475569; border-radius:4px; background:#1e293b; color:#cbd5e1; cursor:pointer; font-size:10px; }
+.card-table-wrap { max-height:65vh; overflow:auto; text-align:left; }
+.card-table-wrap h4 { color:#38bdf8; margin:12px 0 4px; }
+.card-table { width:100%; border-collapse:collapse; font-size:10px; }
+.card-table th,.card-table td { border-bottom:1px solid #334155; padding:5px; vertical-align:top; }
+.card-table th { position:sticky; top:0; background:#0f172a; color:#94a3b8; }
+
+
+/* v0.2.11 promotion visibility */
+.promo-card { transition: opacity .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.promo-card.promo-ready { border-color: #22c55e; box-shadow: 0 0 0 1px rgba(34,197,94,.35), 0 0 14px rgba(34,197,94,.16); }
+.promo-card.promo-shop-ready { border-color: #eab308; box-shadow: 0 0 0 1px rgba(234,179,8,.22); }
+.promo-card.promo-locked { border-color: #475569; opacity: .62; filter: saturate(.55); }
+.promo-mats { display:flex; flex-wrap:wrap; gap:4px; margin:6px 0; }
+.promo-mat { display:inline-flex; align-items:center; gap:3px; padding:3px 5px; border-radius:4px; border:1px solid #475569; background:#111827; }
+.promo-mat small { font-size:9px; opacity:.9; }
+.promo-mat.owned { color:#dcfce7; border-color:#22c55e; background:#14532d; font-weight:700; box-shadow:0 0 8px rgba(34,197,94,.22); }
+.promo-mat.shop { color:#fef9c3; border-color:#eab308; background:#422006; font-weight:600; }
+.promo-mat.missing { color:#94a3b8; border-color:#475569; background:#1f2937; }
+/* v0.2.11 hotfix: 승급 재료 상점 가시화 */
+.shop-card.promo-material-shop { border-color:#eab308; box-shadow:0 0 0 2px rgba(234,179,8,.28), 0 0 12px rgba(234,179,8,.12); }
+.shop-card.promo-material-shop > b::after { content:'  ·  ⬆️ 승급 재료'; color:#fde047; font-size:10px; font-weight:800; }
+.promo-mat.shop { color:#fff7ae; border-color:#facc15; background:#713f12; box-shadow:0 0 8px rgba(250,204,21,.22); }
+
+/* v0.2.12 visibility / catalog / luck legends */
+.action-flash{position:fixed;left:50%;top:18%;transform:translate(-50%,-10px) scale(.96);z-index:1200;opacity:0;pointer-events:none;background:#0f172a;border:2px solid #38bdf8;border-radius:12px;padding:12px 20px;box-shadow:0 14px 45px rgba(0,0,0,.55);transition:.18s ease;display:flex;flex-direction:column;gap:3px;text-align:center}.action-flash.show{opacity:1;transform:translate(-50%,0) scale(1.03)}.action-flash.buy{border-color:#facc15}.action-flash b{font-size:18px}.action-flash span{font-size:11px;color:#cbd5e1}
+.card.legend,.catalog-card.legend{border:2px solid #facc15!important;box-shadow:0 0 18px rgba(250,204,21,.28);background:linear-gradient(145deg,#3b2f0b,#25113e)!important}.card.curse{border-color:#7f1d1d;background:#260d13;filter:saturate(.75)}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;max-height:64vh;overflow:auto;padding:2px}.catalog-card{border:1px solid #334155;background:#111827;border-radius:8px;padding:9px;text-align:left}.catalog-card.catalog-deck{border-color:#22c55e;box-shadow:0 0 0 1px rgba(34,197,94,.2)}.catalog-card.catalog-shop{border-color:#facc15;box-shadow:0 0 0 1px rgba(250,204,21,.22)}.catalog-card.catalog-hand{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.28)}.catalog-head{display:flex;justify-content:space-between;gap:5px}.catalog-head span{font-size:9px;color:#94a3b8}.catalog-state{font-size:10px;color:#fde68a;margin:4px 0}.catalog-spec{font-size:9px;color:#94a3b8}.catalog-card p{font-size:10px;color:#e2e8f0;margin:5px 0}.catalog-card small{display:block;color:#93c5fd;line-height:1.35}.catalog-legend,.catalog-help{font-size:10px;color:#cbd5e1;margin-bottom:6px}.luck-result{padding:14px;border-radius:8px;background:#1e293b}.luck-result.good{border:2px solid #22c55e;background:#12351f}.luck-result.bad{border:2px solid #ef4444;background:#3b1115}.luck-result.neutral{border:1px solid #64748b}
+@media(min-width:900px){.modal-window{max-width:900px}.enemy-section,.hand-section,.shop-section{scroll-margin-top:105px}}
+
+/* v0.2.12.1 danger visualization + spread catalog */
+.danger-mission{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:2px solid #ef4444;background:#321317;border-radius:8px;padding:8px 10px;font-size:11px}.danger-mission b{color:#fecaca;margin-right:auto}.danger-mission span{background:#111827;border:1px solid #7f1d1d;border-radius:999px;padding:3px 7px}.danger-mission strong{color:#fca5a5}.enemy.danger-enemy{position:relative}.enemy.kill-priority{border-width:2px;border-color:#fb7185;box-shadow:0 0 0 2px rgba(251,113,133,.14)}.danger-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}.danger-tag{font-size:9px;border-radius:999px;padding:2px 5px;font-weight:700}.danger-tag.kill{background:#7f1d1d;color:#fecaca}.danger-tag.hp{background:#4c1d1d;color:#fed7aa}.danger-tag.debuff{background:#3f1d56;color:#e9d5ff}
+.catalog-spread{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px;max-height:58vh;overflow:auto;padding:5px}.spread-card{appearance:none;color:inherit;font:inherit;cursor:pointer;min-height:190px;transform-origin:center bottom;transition:transform .12s ease,border-color .12s ease;text-align:left}.spread-card:nth-child(4n+1){transform:rotate(-.7deg)}.spread-card:nth-child(4n+2){transform:rotate(.5deg)}.spread-card:nth-child(4n+3){transform:rotate(-.3deg)}.spread-card:focus,.spread-card:hover{transform:translateY(-3px) rotate(0);z-index:2;outline:2px solid #60a5fa}.spread-card em{display:block;margin-top:7px;font-size:9px;color:#94a3b8;font-style:normal}.spread-spec{font-size:11px;font-weight:800;color:#fde68a;margin:5px 0}.catalog-detail{margin-top:9px;border:1px solid #475569;background:#0f172a;border-radius:8px;padding:10px;text-align:left}.catalog-detail>div{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.catalog-detail>div>b{font-size:16px;color:#f8fafc}.catalog-detail>div>span{font-size:10px;color:#94a3b8}.catalog-detail p{font-size:11px;line-height:1.5;color:#cbd5e1;margin:5px 0}.catalog-detail strong{font-size:11px;color:#93c5fd}
+@media(max-width:520px){.catalog-spread{grid-template-columns:repeat(2,minmax(0,1fr));}.spread-card{min-height:175px}.danger-mission b{width:100%}}
+.reward-reveal-head{font-size:11px;color:#cbd5e1;margin-bottom:8px}.reward-reveal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.reward-reveal-card{background:#22152a;border:2px solid #a855f7;padding:10px;border-radius:8px;min-width:0}.reward-reveal-card>span{font-size:9px;font-weight:800;color:#c084fc}.reward-reveal-card h3{color:#e9d5ff;font-size:15px;margin:5px 0}.reward-effect{color:#fde047;font-size:11px;line-height:1.4}.reward-reveal-card p{color:#93c5fd;font-size:10px;line-height:1.4;margin-top:7px}.reward-reveal-card.legend{border-color:#facc15;background:linear-gradient(145deg,#3b2f0b,#25113e)}
+@media(max-width:620px){.reward-reveal-grid{grid-template-columns:1fr}}
+
+
+/* v0.2.12.2 hand-linked danger/luck visualization */
+.danger-hand-badge{margin-top:7px;padding:4px 6px;border-radius:6px;font-size:9px;font-weight:800;line-height:1.25;border:1px solid #ef4444;background:#3b1117;color:#fecaca;animation:dangerPulse 1.25s ease-in-out infinite alternate}.danger-hand-badge.safe{border-color:#22c55e;background:#0e3522;color:#bbf7d0}.danger-hand-badge.search{border-color:#38bdf8;background:#0c2d3d;color:#bae6fd}.danger-hand-badge.gamble{border-color:#c084fc;background:#321445;color:#e9d5ff}.danger-hand-badge.fight{border-color:#fb7185;background:#40141c;color:#ffe4e6}
+@keyframes dangerPulse{from{box-shadow:0 0 0 rgba(239,68,68,0)}to{box-shadow:0 0 12px rgba(239,68,68,.32)}}
+.action-flash.danger-use,.action-flash.danger-safe,.action-flash.luck-good,.action-flash.luck-bad,.action-flash.luck-neutral{max-width:min(680px,92vw);padding:14px 18px;border-width:2px;transform:translate(-50%,-50%) scale(1.04)}.action-flash.danger-use{background:#3b1117;border-color:#fb7185}.action-flash.danger-safe{background:#0b3521;border-color:#4ade80}.action-flash.luck-good{background:#18351d;border-color:#facc15}.action-flash.luck-bad{background:#40121b;border-color:#ef4444}.action-flash.luck-neutral{background:#27213c;border-color:#a78bfa}.action-flash.luck-good b,.action-flash.luck-bad b,.action-flash.luck-neutral b,.action-flash.danger-use b,.action-flash.danger-safe b{font-size:15px}.action-flash.luck-good span,.action-flash.luck-bad span,.action-flash.luck-neutral span,.action-flash.danger-use span,.action-flash.danger-safe span{font-size:11px;line-height:1.45;margin-top:5px}
+/* v0.2.12.2 hotfix: boss reward cards should feel like cards landing on the table */
+.reward-reveal-card{animation:rewardCardDeal .34s ease-out both;transform-origin:50% 100%}
+.reward-reveal-card:nth-child(2){animation-delay:.09s}.reward-reveal-card:nth-child(3){animation-delay:.18s}
+@keyframes rewardCardDeal{from{opacity:0;transform:translateY(18px) scale(.92) rotate(-1.5deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+@media(prefers-reduced-motion:reduce){.reward-reveal-card{animation:none!important}}
+/* v0.2.13 · 승급 테크트리 / 만능승급석 */
+.stone-choice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stone-choice button{padding:14px 8px;border:1px solid #8b5cf6;border-radius:8px;background:#1e1b4b;color:#fff;cursor:pointer}.stone-choice button:hover{transform:translateY(-2px);border-color:#c4b5fd}.stone-choice small{display:block;margin-top:5px;color:#cbd5e1}.promo-card small{color:#fbbf24}
+@media(max-width:640px){.stone-choice{grid-template-columns:1fr}}
+/* v0.2.13 HOTFIX — always-visible combo/link HUD + strong battle action */
+.link-hud{margin-top:8px;padding:9px 10px;border:1px solid #475569;border-radius:8px;background:linear-gradient(90deg,#111827,#172033);display:flex;gap:8px;align-items:center;flex-wrap:wrap}.link-hud>strong{color:#86efac;white-space:nowrap}.link-chips{display:flex;gap:5px;flex-wrap:wrap;flex:1}.link-chip{padding:4px 7px;border-radius:999px;border:1px solid #475569;background:#1f2937;font-size:11px}.link-chip.ready{border-color:#4ade80;background:#12351f;color:#bbf7d0;box-shadow:0 0 12px rgba(74,222,128,.18)}.link-chip.near{border-color:#facc15;background:#382f12;color:#fef08a}.link-empty{font-size:11px;color:#94a3b8}.link-hud small{width:100%;color:#cbd5e1}.action-flash.combo-hit{top:26%;background:#102a1b;border-color:#4ade80;max-width:min(720px,92vw);padding:16px 22px;box-shadow:0 0 34px rgba(74,222,128,.28),0 18px 55px rgba(0,0,0,.65)}.action-flash.combo-hit b{font-size:21px;color:#bbf7d0}.action-flash.battle-burst{top:42%;background:linear-gradient(135deg,#32124a,#3b1515);border-color:#facc15;max-width:min(760px,94vw);padding:20px 28px;box-shadow:0 0 46px rgba(250,204,21,.32),0 20px 70px rgba(0,0,0,.72)}.action-flash.battle-burst b{font-size:25px;color:#fde68a}.action-flash.battle-burst span{font-size:13px;color:#f8fafc;margin-top:6px}
+
+
+/* ===== v0.2.14 · 공식전 / 무한모드 / 승급 테크트리 ===== */
+.time-dash b{font-variant-numeric:tabular-nums;color:#7dd3fc}.mode-dash{display:flex;flex-direction:column;gap:1px;min-width:138px}.mode-dash b{font-size:10px;color:#facc15}.mode-dash small{font-size:8px;color:#94a3b8;white-space:nowrap}
+.promo-tech-tree{grid-column:1/-1;background:#111827;border:1px solid #475569;border-radius:8px;padding:10px;margin-bottom:8px}.tech-title{font-weight:800;color:#facc15;margin-bottom:7px}.tech-title small{font-weight:400;color:#94a3b8;margin-left:6px}.tech-row{display:grid;grid-template-columns:48px minmax(92px,1fr) 18px minmax(108px,1fr) 18px minmax(100px,1fr);align-items:center;gap:5px;margin-top:5px;font-size:10px}.tech-row>b{color:#c4b5fd}.tech-row>i{text-align:center;color:#64748b;font-style:normal}.tech-node{padding:5px 6px;border:1px solid #334155;border-radius:5px;background:#0f172a;color:#94a3b8;text-align:center}.tech-node.owned{border-color:#22c55e;color:#86efac;background:#052e16}
+.official-complete{text-align:center}.official-complete>b{font-size:17px;color:#fde047}.official-record-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.official-record-grid span{display:flex;flex-direction:column;gap:5px;padding:12px;background:#0f172a;border:1px solid #475569;border-radius:8px;color:#94a3b8}.official-record-grid strong{font-size:20px;color:#f8fafc}.official-complete p{font-size:12px;color:#cbd5e1;line-height:1.5}.official-actions{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:12px}.official-actions button{padding:10px;border:0;border-radius:7px;background:#475569;color:white;font-weight:800;cursor:pointer}.official-actions .endless{background:#7c3aed}
+@media(max-width:720px){.tech-row{grid-template-columns:42px 1fr 14px 1fr 14px 1fr}.mode-dash{min-width:110px}.official-record-grid{grid-template-columns:1fr}}
+
+/* v0.2.15 battle stage / reroll reveal */
+.battle-stage{margin:10px 0;padding:12px;border:1px solid #475569;border-radius:12px;background:linear-gradient(180deg,#172033,#111827)}
+.battle-stage-title{font-weight:900;color:#fbbf24;margin-bottom:9px}.battle-field{display:grid;grid-template-columns:150px 42px 1fr;gap:10px;align-items:center}.battle-hero{text-align:center;padding:12px;border-radius:10px;background:#1e293b}.battle-hero span{display:block;font-size:42px}.battle-hero b,.battle-army>b{display:block;color:#f8fafc}.battle-hero small{color:#94a3b8}.battle-vs{text-align:center;font-weight:1000;color:#fb7185;font-size:20px}.battle-army{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.battle-foe{min-width:58px;text-align:center;padding:5px;border-radius:8px;background:#301c27}.battle-foe.boss{outline:1px solid #fbbf24}.battle-foe span{font-size:25px}.battle-foe small{display:block;font-size:9px;color:#cbd5e1}.battle-ready-note{margin-top:8px;color:#94a3b8;font-size:11px}.combat-duel{display:flex;justify-content:center;gap:18px;align-items:center;font-size:35px;margin:6px 0 12px}.combat-duel i{font-style:normal;font-size:22px}.combat-steps{display:grid;gap:7px}.combat-step{display:grid;grid-template-columns:110px 1fr auto;gap:8px;align-items:center;padding:9px;border-radius:8px;background:#1f2937;animation:combatPop .35s ease both}.combat-step:nth-child(2){animation-delay:.12s}.combat-step:nth-child(3){animation-delay:.24s}.combat-step:nth-child(4){animation-delay:.36s}.combat-step:nth-child(5){animation-delay:.48s}.combat-step b{color:#94a3b8}.combat-step strong{color:#f8fafc}.combat-step em{font-style:normal;color:#fbbf24}.combat-mvp{margin:12px 0;padding:13px;text-align:center;border:1px solid #f59e0b;border-radius:10px;background:#2a2112}.combat-mvp small,.combat-mvp b,.combat-mvp strong{display:block}.combat-mvp b{font-size:18px;color:#fde68a}.combat-mvp strong{font-size:22px;color:#fff}.combat-mvp p{margin:4px 0;color:#cbd5e1;font-size:11px}.reroll-row{display:grid;grid-template-columns:1fr 35px 1.4fr;gap:8px;align-items:center;margin:7px 0;padding:9px;border-radius:8px;background:#1f2937}.reroll-old{color:#fca5a5;text-decoration:line-through}.reroll-arrow{text-align:center;color:#fbbf24;font-size:20px}.reroll-new b{display:block;color:#86efac}.reroll-new small{display:block;color:#cbd5e1;margin-top:3px}.reroll-kept,.reroll-note{font-size:11px;color:#94a3b8;margin:9px 0}.reroll-empty{padding:14px;text-align:center;color:#fbbf24}@keyframes combatPop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@media(max-width:700px){.battle-field{grid-template-columns:1fr}.battle-vs{font-size:14px}.combat-step{grid-template-columns:1fr}.combat-step em{text-align:left}}
+
+/* v0.2.15.1 hotfix · sequential battle cinematic */
+.combat-cinematic.live{min-height:420px}.cin-head{display:grid;grid-template-columns:120px 45px 1fr;gap:10px;align-items:center;margin-bottom:10px}.cin-hero{text-align:center;padding:9px;border-radius:12px;background:#172033;border:1px solid #334155}.cin-hero span{display:block;font-size:40px}.cin-hero b{display:block;color:#fff}.cin-hero small{color:#94a3b8}.cin-clash{text-align:center;font-size:26px;animation:cinClash .8s ease infinite alternate}.cin-summary{font-weight:900;color:#fca5a5}.cin-banner{min-height:24px;text-align:center;padding:9px 10px;margin:8px 0 11px;border-radius:9px;background:#1f2937;border:1px solid #475569;font-weight:900;color:#f8fafc}.cin-banner.link{border-color:#4ade80;color:#bbf7d0}.cin-banner.debuff{border-color:#fb7185;color:#fecdd3}.cin-banner.aoe{border-color:#f43f5e;color:#fecaca;box-shadow:0 0 22px rgba(244,63,94,.16)}.cin-banner.pierce{border-color:#38bdf8;color:#bae6fd}.cin-banner.strike{border-color:#fbbf24;color:#fde68a}.cin-banner.result{border-color:#a78bfa;color:#ddd6fe}.cin-banner.pulse{animation:cinBanner .35s ease}.cin-army{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;min-height:126px}.cin-foe{position:relative;width:86px;padding:7px 5px 9px;text-align:center;border-radius:10px;background:#301c27;border:1px solid #4b2737;transition:transform .25s,opacity .45s,filter .45s}.cin-foe.boss{border-color:#fbbf24;box-shadow:0 0 12px rgba(251,191,36,.16)}.cin-icon{display:block;font-size:30px}.cin-foe b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#f8fafc}.cin-foe small{display:block;font-size:9px;color:#cbd5e1;margin-top:3px}.cin-hp{height:5px;margin-top:5px;background:#111827;border-radius:999px;overflow:hidden}.cin-hp i{display:block;height:100%;background:#22c55e;transition:width .35s ease}.cin-dmg{position:absolute;left:50%;top:20px;transform:translate(-50%,0);opacity:0;font-style:normal;font-size:20px;font-weight:1000;pointer-events:none;text-shadow:0 2px 4px #000}.cin-dmg.show{animation:cinDamage .55s ease}.cin-dmg.aoe{color:#fb7185}.cin-dmg.pierce{color:#38bdf8}.cin-dmg.strike{color:#fde047}.cin-foe.hit{animation:cinHit .38s ease}.cin-foe.aoe-hit{animation:cinAoeHit .45s ease}.cin-foe.pierce-hit{animation:cinPierceHit .48s ease}.cin-foe.dead{opacity:.28;filter:grayscale(1);transform:translateY(12px) scale(.88)}.cin-foe.dead .cin-icon{transform:rotate(80deg);display:block}.cin-feed{min-height:62px;margin:10px 0;padding:8px;border-radius:8px;background:#0f172a;color:#cbd5e1;font-size:11px}.cin-feed div:first-child{color:#fff;font-weight:800}.cin-mvp{animation:combatPop .35s ease}.combat-cinematic.live .primary-btn{width:100%;margin-top:8px}.combat-cinematic.live .hide{display:none!important}@keyframes cinDamage{0%{opacity:0;transform:translate(-50%,10px) scale(.7)}25%{opacity:1;transform:translate(-50%,-7px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-25px)}}@keyframes cinHit{0%,100%{transform:translateX(0)}35%{transform:translateX(9px)}65%{transform:translateX(-5px)}}@keyframes cinAoeHit{0%,100%{transform:scale(1)}40%{transform:scale(.88);background:#5b1d2e;box-shadow:0 0 18px rgba(244,63,94,.55)}}@keyframes cinPierceHit{0%,100%{transform:translateX(0)}40%{transform:translateX(13px);box-shadow:-12px 0 20px rgba(56,189,248,.55)}}@keyframes cinBanner{0%{transform:scale(.96);opacity:.4}100%{transform:scale(1);opacity:1}}@keyframes cinClash{from{transform:scale(.9)}to{transform:scale(1.12)}}@media(max-width:700px){.cin-head{grid-template-columns:90px 30px 1fr}.cin-army{gap:5px}.cin-foe{width:72px}.cin-foe b{font-size:9px}}
+/* v0.2.15.3 mobile combat modal overflow fix */
+.modal-overlay{box-sizing:border-box;padding:12px;overflow-y:auto;align-items:safe center}
+.modal-window{box-sizing:border-box;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);display:flex;flex-direction:column;min-height:0}
+.modal-header{flex:0 0 auto}
+.modal-body{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.combat-cinematic.live{min-height:0}
+@media(max-width:700px){.modal-overlay{padding:8px}.modal-window{width:100%;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);padding:10px}.combat-cinematic.live .cin-army{max-height:34vh;overflow-y:auto;align-content:start}.combat-cinematic.live .cin-foe{flex:0 0 72px}}
+
+/* v0.2.16 beta: information hierarchy and asset-ready slots (no illustrations yet) */
+.debuff-forecast{border:1px solid #475569;background:#111b2b;border-radius:9px;padding:10px;margin:8px 0;color:#e2e8f0}
+.forecast-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px}.forecast-head span{font-size:10px;color:#94a3b8}
+.forecast-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}.forecast-stats>span{background:#202d40;padding:8px;border-radius:6px;font-size:11px}.forecast-stats b{display:block;color:#f8fafc;font-size:14px;margin:3px 0}.forecast-stats small{display:block;color:#fca5a5;font-size:10px}.forecast-note{font-size:11px;color:#cbd5e1;line-height:1.5;margin:8px 0 0}
+.enemy-identity{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}.enemy-tier,.enemy-risk{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700}.enemy-tier.normal{background:#334155;color:#e2e8f0}.enemy-tier.elite{background:#43301b;color:#fde68a}.enemy-tier.boss{background:#55203e;color:#fbcfe8}.enemy-risk.none,.enemy-risk.inactive{background:#253345;color:#94a3b8}.enemy-risk.medium{background:#594019;color:#fde68a}.enemy-risk.high{background:#742a18;color:#fed7aa}.enemy-risk.critical{background:#7f1d1d;color:#fecaca;box-shadow:0 0 0 1px #ef4444}
+.enemy{position:relative}.enemy:has(.enemy-risk.critical){border:2px solid #ef4444}.enemy:has(.enemy-risk.high){border-color:#f97316}.enemy:has(.enemy-tier.boss){border-left:4px solid #e879f9}.enemy:has(.enemy-tier.elite){border-left:4px solid #fbbf24}
+.tutorial-hint{background:#172d3a;border:1px solid #38bdf8;color:#e0f2fe;border-radius:9px;padding:12px;margin-bottom:9px;font-size:13px;line-height:1.6}.tutorial-foot{font-size:10px;color:#7dd3fc;margin-top:6px}.sound-control{font-size:11px;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+/* future artwork: insert an image into .card-art / .enemy-art without changing card data */
+.card-art,.enemy-art{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:5px;overflow:hidden}
+@media(max-width:700px){.forecast-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.forecast-head{font-size:11px}}
+
+/* v0.2.16 tutorial onboarding */
+.welcome-overlay{position:fixed;inset:0;z-index:9999;background:rgba(6,11,24,.96);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.welcome-overlay.hide{display:none!important}
+.welcome-card{width:min(520px,100%);background:linear-gradient(145deg,#19283c,#0d1525);border:1px solid #456182;border-radius:18px;padding:clamp(20px,5vw,34px);box-shadow:0 22px 70px #0008;color:#edf5ff;text-align:center}
+.welcome-kicker{font-size:11px;letter-spacing:2px;color:#86caff}.welcome-card h1{font-size:clamp(24px,6vw,36px);margin:10px 0}.welcome-card p{font-size:13px;color:#c5d4e6;line-height:1.7}.welcome-options{display:grid;gap:12px;margin:24px 0}.welcome-option{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;border:1px solid #506986;background:#1b314d;color:#fff;border-radius:12px;padding:18px;cursor:pointer;width:100%}.welcome-option:first-child{border-color:#56b5ff;background:#183e62}.welcome-option:hover,.welcome-option:focus-visible{outline:2px solid #7dd3fc}.welcome-option strong{font-size:18px}.welcome-option span{font-size:12px;color:#d1deed;line-height:1.6}.welcome-card small{font-size:11px;color:#9ab1c8}
+.tutorial-coach{position:relative;z-index:2;background:#132c43;border:2px solid #38bdf8;border-radius:12px;padding:14px;margin:0 0 12px;color:#e5f4ff;box-shadow:0 3px 16px #0004}.tutorial-coach.hide{display:none!important}.tutorial-coach h3{margin:7px 0;font-size:17px}.tutorial-coach p{font-size:12px;line-height:1.65;margin:8px 0}.coach-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.coach-step{font-size:11px;color:#7dd3fc;font-weight:700}.coach-exit{border:0;background:transparent;color:#a9cce5;cursor:pointer;font-size:11px}.coach-action{padding:9px;background:#0a2035;border-radius:7px;color:#fef3c7;font-size:12px;font-weight:700;line-height:1.5}.coach-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.coach-actions button{padding:7px 10px;border-radius:7px;border:1px solid #527c9e;background:#244967;color:#fff;cursor:pointer;font-size:12px}.tutorial-reference{font-size:13px;line-height:1.65}.tutorial-reference h4{color:#7dd3fc;margin:12px 0 4px}.tutorial-reference p{margin:0 0 6px}
+
+/* v0.2.16 guided event spotlight */
+.welcome-sound{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;margin:12px 0;background:#142b3d;border:1px solid #3b82f6;border-radius:9px;font-size:13px;cursor:pointer}
+.welcome-sound input{width:18px;height:18px;accent-color:#38bdf8}
+.tutorial-shade{position:fixed;inset:0;z-index:1200;background:rgba(2,6,23,.77);pointer-events:auto}
+.tutorial-shade.hide,.tutorial-spot-coach.hide{display:none!important}
+.tutorial-focus{position:relative!important;z-index:1202!important;outline:3px solid #facc15;outline-offset:5px;box-shadow:0 0 0 8px rgba(250,204,21,.15),0 0 25px #facc1570!important;border-radius:8px;pointer-events:auto}
+.tutorial-spot-coach{position:fixed;z-index:1203;bottom:18px;left:50%;transform:translateX(-50%);width:min(460px,calc(100vw - 24px));padding:15px;background:#123047;border:2px solid #38bdf8;border-radius:12px;box-shadow:0 8px 40px #0009;color:#f8fafc;font-size:13px;line-height:1.6}
+.tutorial-spot-coach strong{font-size:16px;color:#fef08a}.tutorial-spot-coach p{margin:7px 0 12px}.spot-actions{display:flex;gap:8px;flex-wrap:wrap}.spot-actions button{border:1px solid #60a5fa;border-radius:7px;background:#1d4ed8;color:white;padding:8px 12px;cursor:pointer}.spot-actions button+button{background:#334155;border-color:#64748b}
+
+
+/* ===== v0.2.17 visual separation / debuff feedback / local leaderboard ===== */
+.mini-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.debuff-quick{border:1px solid #3b82f6;border-radius:9px;background:#142642;color:#dbeafe;padding:7px 12px;font-weight:700;white-space:nowrap;cursor:pointer}
+.debuff-quick.debuff-alert{background:#581a28;border-color:#fb7185;color:#fff;animation:debuffPulse 1.7s ease-in-out infinite}
+.debuff-quick small{font-weight:600;margin-left:4px}.debuff-danger{color:#fecdd3}
+@keyframes debuffPulse{50%{box-shadow:0 0 0 4px rgba(244,63,94,.12)}}
+.debuff-panel-summary{font-weight:800;color:#fda4af;margin:7px 0 12px}
+.debuff-detail-row{display:flex;justify-content:space-between;gap:10px;padding:9px 3px;border-bottom:1px solid #475569;flex-wrap:wrap;font-size:12px}
+.debuff-detail-row span{color:#bfdbfe}
+.basic-section{border:1px solid #d4a729;border-radius:14px;padding:12px;background:rgba(245,158,11,.06)}
+.random-section{border:1px solid #8b5cf6;border-radius:14px;padding:12px;background:rgba(139,92,246,.06)}
+.shop-group h4 small{font-size:10px;opacity:.75}
+.shop-origin{font-size:10px;font-weight:800;display:block;margin-bottom:5px;color:#facc15}
+.random-card .shop-origin{color:#c4b5fd}
+.promo-group{padding:12px;margin:14px 0;border:1px solid #334155;border-left-width:5px;border-radius:12px}
+.promo-group h4{margin:0 0 11px;font-size:15px}
+.promo-group-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px}
+.promo-group.promo-resource{border-left-color:#22c55e;background:rgba(22,163,74,.06)}
+.promo-group.promo-attack{border-left-color:#ef4444;background:rgba(239,68,68,.06)}
+.promo-group.promo-action{border-left-color:#38bdf8;background:rgba(56,189,248,.06)}
+.promo-group.promo-luck{border-left-color:#a855f7;background:rgba(168,85,247,.06)}
+.catalog-group{margin:12px 0 20px;border:1px solid #334155;border-radius:11px;padding:10px}
+.catalog-group h4{margin:0 0 9px}.catalog-group small{opacity:.7}
+.catalog-group.cat-basic{border-left:5px solid #eab308}
+.catalog-group.cat-random{border-left:5px solid #8b5cf6}
+.catalog-group.cat-resource{border-left:5px solid #22c55e}
+.catalog-group.cat-attack{border-left:5px solid #ef4444}
+.catalog-group.cat-action{border-left:5px solid #38bdf8}
+.catalog-group.cat-luck{border-left:5px solid #a855f7}
+.catalog-group.cat-other{border-left:5px solid #94a3b8}
+.welcome-card{max-height:94vh;overflow-y:auto}
+.welcome-rankings{border:1px solid #475569;background:rgba(15,23,42,.72);border-radius:12px;padding:10px;margin:14px auto;color:#e2e8f0;text-align:left}
+.rank-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.rank-top small{font-size:10px;color:#94a3b8}
+.rank-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0}.rank-tabs button{padding:5px 7px;border:1px solid #475569;border-radius:8px;background:#1e293b;color:#cbd5e1;font-size:11px}
+.rank-tabs button.active{background:#14568f;color:#fff;border-color:#93c5fd}
+.rank-entries{max-height:120px;overflow:auto}.rank-entry{display:flex;justify-content:space-between;padding:5px 2px;border-bottom:1px solid #334155;font-size:12px}
+.rank-empty{font-size:12px;color:#cbd5e1;margin:5px 0}
+.rank-register{display:flex;flex-direction:column;gap:9px}.rank-register input{font-size:18px;padding:12px;border:1px solid #64748b;border-radius:8px;background:#0f172a;color:white}
+#rankError{color:#fecaca;margin:0}
+@media(max-width:640px){.promo-group-grid{grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}.debuff-quick{padding:5px 8px;font-size:11px}.welcome-rankings{padding:7px}.rank-tabs button{font-size:10px}}
+
+#promoList{display:block}#promoList .promo-tech-tree{width:100%}#promoList .promo-group{width:100%;box-sizing:border-box}
+
+.death-report{border:1px solid #f87171;background:#3b1720;border-radius:9px;padding:10px;margin:10px 0;font-size:13px}
+.death-report b{color:#fecaca}.death-report div{margin-top:7px}.death-report p{color:#fda4af;font-size:12px}
+.score-breakdown{border:1px solid #475569;border-radius:9px;padding:10px;margin:9px 0;background:#0f172a;color:#e2e8f0}
+.score-breakdown h4{margin:0 0 7px;font-size:12px}.score-breakdown div{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #334155}.score-breakdown strong{display:block;text-align:right;margin-top:5px}
+
+
+
+/* LUCK 64 original custom-card emojis: only view-layer changes */
+.luck-card-icon{display:block;object-fit:contain;aspect-ratio:1/1;flex-shrink:0;max-width:100%;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,.45));}
+.luck-icon-hand{width:53px;height:53px;margin:4px auto 3px;}
+.luck-icon-shop{width:49px;height:49px;margin:5px auto 2px;}
+.luck-icon-promo{width:50px;height:50px;margin:3px auto 4px;}
+.luck-icon-catalog{width:66px;height:66px;margin:0 auto 6px;}
+.luck-icon-detail{width:88px;height:88px;margin:3px auto 9px;}
+.luck-icon-reward{width:75px;height:75px;margin:5px auto;}
+.luck-icon-drawn{width:85px;height:85px;margin:4px auto 8px;}
+.luck-icon-preview{width:72px;height:72px;margin:5px auto 9px;}
+.luck-icon-mini{width:22px;height:22px;display:inline-block;vertical-align:middle;margin-right:5px;}
+#hand .card, #basicShop .shop-card, #randomShop .shop-card, #promoList .promo-card{min-width:0;}
+#hand .card h3,.shop-card b,.catalog-card b{overflow-wrap:anywhere;}
+.catalog-card .luck-card-icon{margin-inline:auto;}
+.reward-reveal-card .luck-card-icon{margin-inline:auto;}
+@media(max-width:440px){
+  .luck-icon-hand{width:45px;height:45px;}
+  .luck-icon-shop,.luck-icon-promo{width:44px;height:44px;}
+  .luck-icon-catalog{width:54px;height:54px;}
+  .luck-icon-reward{width:65px;height:65px;}
+}
+
+/* Card names in event logs and dialogs (64 custom icons; UI semantics unchanged). */
+.luck-card-mention {display:inline;white-space:nowrap;}
+.luck-card-small {display:inline-block;width:18px;height:18px;vertical-align:-4px;
+  background-position:center;background-repeat:no-repeat;background-size:contain;
+  flex-shrink:0;margin:0 3px 0 2px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.55));}
+#log .luck-card-small,#recentLog .luck-card-small{width:17px;height:17px;vertical-align:-4px;}
+#modalContent .luck-card-small{width:21px;height:21px;vertical-align:-5px;}
+#modalTitle .luck-card-small{width:22px;height:22px;vertical-align:-5px;}
+@media(max-width:440px){.luck-card-small{width:17px;height:17px;} #modalContent .luck-card-small{width:19px;height:19px;}}
+
+/* Flash and card-use title: same custom artwork as hand, store and log. */
+.action-flash b .luck-card-mention {font-size:inherit;color:inherit;white-space:nowrap;}
+.action-flash b .luck-card-small {width:26px;height:26px;vertical-align:-7px;margin:0 6px 0 0;}
+.action-flash > span .luck-card-small {width:14px;height:14px;vertical-align:-3px;}
+.action-flash {max-width:min(92vw,420px);min-width:0;box-sizing:border-box;overflow-wrap:anywhere;}
+
+
+/* v0.2.17.3 · compact card art: quiet watermark on hand/shop, vivid on actions */
+#hand .card,
+#basicShop .shop-card,
+#randomShop .shop-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-width: 0;
+}
+/* Art does not take up any grid height: existing compact card dimensions return. */
+#hand .card > img.luck-icon-hand,
+#basicShop .shop-card > img.luck-icon-shop,
+#randomShop .shop-card > img.luck-icon-shop {
+  position: absolute;
+  top: 16%;
+  right: -4px;
+  width: min(70%, 100px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  margin: 0;
+  opacity: .14;
+  z-index: 0;
+  filter: saturate(.8);
+  pointer-events: none;
+}
+/* Labels, card effect, price, and tap targets always sit in front of the watermark. */
+#hand .card > :not(img),
+#basicShop .shop-card > :not(img),
+#randomShop .shop-card > :not(img) {
+  position: relative;
+  z-index: 1;
+}
+#hand .card > div {min-width: 0;}
+#hand .card .tag, #hand .card h3, #hand .card .val,
+#basicShop .shop-card b, #randomShop .shop-card b,
+#basicShop .shop-card .price, #randomShop .shop-card .price {
+  text-shadow: 0 1px 3px rgba(10,15,25,.9);
+}
+/* Popups, discovery screens, recent logs and tiny event flashes retain crisp art. */
+#modal .luck-card-icon,
+#actionFlash .luck-card-icon,
+.reward-reveal-card .luck-card-icon,
+.catalog-card .luck-card-icon {opacity:1;}
+
+.luck-enemy-emoji{display:inline-block;vertical-align:middle;object-fit:contain;width:24px;height:24px;flex:0 0 auto}
+.luck-enemy-chip{width:20px;height:20px}
+.luck-enemy-detail{width:48px;height:48px;float:left;margin-right:8px}
+.battle-foe .luck-enemy-emoji,.cin-foe .luck-enemy-emoji{width:58px;height:58px;max-width:100%}
+.luck-hero-emoji{display:inline-block;object-fit:contain;width:88px;height:88px;vertical-align:middle;max-width:100%}
+.luck-avatar-settings{margin:10px 0;padding:10px;border:1px solid #475569;border-radius:10px;background:#111827;color:#e2e8f0;font-size:12px}
+.luck-avatar-settings summary{cursor:pointer;font-weight:700}
+.luck-avatar-settings .luck-hero-emoji{width:56px;height:56px}
+.luck-avatar-settings input{display:block;max-width:100%;margin:8px 0}
+.luck-avatar-settings p{margin:6px 0;line-height:1.5}
+.luck-avatar-settings button{min-height:32px}
+@media(max-width:480px){.battle-hero .luck-hero-emoji,.cin-hero .luck-hero-emoji{width:66px;height:66px}.battle-foe .luck-enemy-emoji,.cin-foe .luck-enemy-emoji{width:42px;height:42px}}
+
+</style>
+  <style>
+/* mobile-viewport.css */
+/* v0.2.17.1 — mobile viewport containment / pinch-zoom sticky correction.
+   Flex intrinsic min-size caused .enemy-chips to grow to 2,000px+ as enemies spawn,
+   which expanded the layout viewport and made the entire game appear tiny. */
+html,body { width:100%; min-width:0; max-width:100%; overflow-x:clip; }
+#app,#app > *, .sticky-header,.mini-status { min-width:0; max-width:100%; }
+.sticky-header { top:var(--luck-visual-top,0px); }
+.mini-status { width:100%; min-width:0; max-width:100%; align-items:stretch; }
+.enemy-chips,.protection-grid {
+  min-width:0; width:100%; max-width:100%;
+  overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.enemy-grid,.enemy,.dashboard,.shop-grid,.card-grid,.section-title { min-width:0; }
+.enemy { overflow-wrap:anywhere; }
+@media(max-width:600px) {
+  /* Enemy details stay accessible without stretching the whole play screen. */
+  .enemy-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    max-height:min(44dvh,460px);
+    overflow-y:auto;
+    overscroll-behavior-y:contain;
+    align-content:start;
+  }
+  .enemy-chips { touch-action:pan-x; }
+}
+
+ /* v0.2.18 start-only setup: no gameplay layout or sizing changes. */
+ .welcome-setup,.welcome-avatar{margin:12px 0;padding:12px;border-radius:11px;background:#101f33;border:1px solid #3e5876;text-align:left}
+ .welcome-setup h2,.welcome-avatar h2{font-size:14px;margin:0 0 6px;color:#eaf5ff}
+ .welcome-setup .welcome-setup-subtitle{font-size:11px;margin-bottom:10px}
+ .welcome-setup-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .welcome-setup-options label{display:flex;align-items:flex-start;gap:8px;padding:9px;border-radius:8px;border:1px solid #344862;background:#172b42;cursor:pointer;min-width:0}
+ .welcome-setup-options input{flex:0 0 auto;width:17px;height:17px;margin-top:2px;accent-color:#38bdf8}
+ .welcome-setup-options span{display:flex;flex-direction:column;gap:3px;min-width:0}
+ .welcome-setup-options b{font-size:12px;color:#ebf5ff}
+ .welcome-setup-options small{font-size:10px;line-height:1.45;color:#aabfd4}
+ .welcome-avatar-content{display:flex;align-items:center;gap:12px}
+ .welcome-avatar-preview{display:flex;justify-content:center;align-items:center;width:88px;height:88px;border:1px solid #47678d;background:#1e344b;border-radius:11px;flex:0 0 auto}
+ .welcome-avatar-preview .luck-hero-emoji{width:78px;height:78px}
+ .welcome-avatar-controls{min-width:0;flex:1}
+ .welcome-avatar-controls p{font-size:11px;line-height:1.5;margin:0 0 5px}
+ .welcome-avatar-controls input{display:block;width:100%;max-width:100%;font-size:11px;cursor:pointer}
+ .welcome-avatar-controls button{color:#f1f5f9;background:#273a54;border:1px solid #64748b;border-radius:5px;padding:5px 8px;cursor:pointer;font-size:11px;margin-top:5px}
+ .welcome-avatar-controls button:disabled,.welcome-option:disabled{opacity:.5;cursor:not-allowed}
+ .welcome-avatar-controls .welcome-avatar-upload{font-size:10px;color:#d9e8fb;display:block;margin:0 0 4px}
+ .welcome-avatar-note{color:#a4b9d3;font-size:10px!important;margin-top:5px}
+ .welcome-card .welcome-options{margin:13px 0;gap:9px}
+ .welcome-card .welcome-option{padding:12px}
+ @media(max-width:440px){.welcome-setup-options{grid-template-columns:1fr}.welcome-avatar-content{align-items:flex-start}.welcome-avatar-preview{width:70px;height:70px}.welcome-avatar-preview .luck-hero-emoji{width:62px;height:62px}}
+.luck-promo-net{display:block;color:#b3d9e6;font-size:10px;line-height:1.4;padding:4px;margin:3px 0;background:rgba(12,20,36,.55);border:1px dashed #475569;border-radius:4px}
+</style>
 </head>
 <body>
   <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
-    <div class="welcome-card"><div class="welcome-kicker">LUCK DUNGEON · v0.2.17</div>
+    <div class="welcome-card"><div class="welcome-kicker">LUCK DUNGEON · v0.2.18</div>
       <h1 id="welcomeTitle">네르 오르 뒤나미스</h1>
-      <p>덱을 성장시키고, 적의 디버프를 읽고, 30라운드를 돌파하세요.</p>
-      <label class="welcome-sound"><input id="welcomeBgmToggle" type="checkbox"> 🎵 시작 화면부터 BGM 재생</label>
-      <div id="welcomeRanks" class="welcome-rankings" aria-label="기록 순위"></div>
-      <div class="welcome-options">
+      <p>덱을 성장시키고, 적의 디버프를 읽고, 30라운드를 돌파하세요.</p><p style="font-size:12px;color:#fbbf24;margin:8px auto;line-height:1.55">🧪 기기 내 플레이 테스트 · GitHub 미반영 · 온라인 기록 전송 없음</p>
+       <section class="welcome-setup" aria-labelledby="welcomeSetupTitle">
+         <h2 id="welcomeSetupTitle">⚙️ 게임 시작 설정</h2>
+         <p class="welcome-setup-subtitle">시작 전에 원하는 옵션을 선택하세요. 기존 기본 설정이 미리 선택되어 있습니다.</p>
+         <div class="welcome-setup-options">
+           <label><input id="welcomeVisualModeToggle" type="checkbox" checked><span><b>🎬 비주얼 모드</b><small>라운드 시작과 카드 효과를 팝업으로 표시</small></span></label>
+           <label><input id="welcomeBattleMotionSkipToggle" type="checkbox"><span><b>⏩ 전투 모션 스킵</b><small>전투 연출을 생략하고 바로 결과 진행</small></span></label>
+           <label><input id="welcomePersistToggle" type="checkbox" checked><span><b>♻️ 이어가기 드로우</b><small>남은 드로우 더미를 다음 라운드에 유지</small></span></label>
+           <label><input id="welcomeBgmToggle" type="checkbox"><span><b>🎵 BGM 재생</b><small>선택 즉시 재생하며 게임 중에도 변경 가능</small></span></label>
+            <label><input id="welcomeSfxToggle" type="checkbox" checked><span><b>🔊 효과음</b><small>공격·광역·관통·위험·라운드 전환음</small></span></label>
+         </div>
+       </section>
+       <section class="welcome-avatar" aria-labelledby="welcomeAvatarTitle">
+         <h2 id="welcomeAvatarTitle">🧙 내 캐릭터</h2>
+         <div class="welcome-avatar-content">
+           <div class="welcome-avatar-preview" id="luckAvatarPreview" aria-label="내 캐릭터 미리보기"></div>
+           <div class="welcome-avatar-controls">
+             <p><b>기본 모험가</b>로 시작합니다. 원한다면 <b>게임 시작 전</b>에만 사진을 바꿀 수 있습니다.</p>
+             <label for="luckAvatarFile" class="welcome-avatar-upload">이미지 선택 (PNG·JPG·WebP·GIF, 1.5 MB 이하)</label>
+             <input id="luckAvatarFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="캐릭터 이미지 선택">
+             <button type="button" id="luckAvatarReset">기본 모험가로 복원</button>
+             <p id="luckAvatarStatus" role="status" aria-live="polite"></p>
+           </div>
+         </div>
+         <p class="welcome-avatar-note">게임이 시작되면 캐릭터가 고정됩니다. 다음에 화면을 새로 열면 기본 모험가로 돌아옵니다.</p>
+       </section>
+       <div class="welcome-options">
         <button id="welcomeTutorial" class="welcome-option"><strong>📖 튜토리얼 플레이</strong><span>카드 사용 → 상점 → 전투 → 콤보·디버프 → 승급까지 실제 게임에서 배웁니다.</span></button>
         <button id="welcomeNormal" class="welcome-option"><strong>⚔ 일반 게임</strong><span>안내 없이 기존 규칙 그대로 플레이합니다.</span></button>
       </div><small>튜토리얼은 실제 게임과 동일한 난이도·점수 규칙을 사용합니다.</small>
+      <div id="welcomeRanks" class="welcome-rankings" aria-label="기록 순위"></div>
     </div></div>
   <div id="tutorialShade" class="tutorial-shade hide"></div><div id="tutorialSpotCoach" class="tutorial-spot-coach hide" aria-live="polite"></div>
   <div id="app">
@@ -106,6 +552,7 @@
         <button id="battleBtn" class="primary-btn">전투 진행</button>
         <button id="tutorialBtn" type="button" class="mini-btn">📖 튜토리얼 안내</button>
         <label class="sound-control"><input id="bgmToggle" type="checkbox"> 🎵 BGM ON</label>
+<label><input id="sfxToggle" type="checkbox" checked> 🔊 효과음</label><small id="luckSoundStatus" role="status"></small>
         <label style="font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
           <input type="checkbox" id="visualModeToggle" checked> 🎬 비주얼 모드
         </label>
@@ -117,7 +564,7 @@
         </label>
       </div>
       <div class="log-box">
-        <div class="log-title">📜 전투 및 액션 로그 <button id="copyLogBtn" class="mini-btn">로그 복사</button> <button id="historyBtn" class="mini-btn" type="button">📊 내 플레이 기록</button> <button id="cloudRecordsBtn" class="mini-btn" type="button">☁️ 온라인 기록</button> <span id="cloudStatus" style="font-size:11px">☁️ 준비 중</span> <button id="cardTableBtn" class="mini-btn">전체 카드 전략 도감</button></div>
+        <div class="log-title">📜 전투 및 액션 로그 <button id="copyLogBtn" class="mini-btn">로그 복사</button> <button id="historyBtn" class="mini-btn" type="button">📊 내 플레이 기록</button> <button id="cloudRecordsBtn" type="button">☁️ 온라인 기록·AI 활동</button> <button id="onlineRanksBtn" type="button">🏆 온라인 랭킹</button><span id="cloudStatus" role="status"></span> <span id="cloudStatus" style="font-size:11px">🧪 로컬 테스트</span> <button id="cardTableBtn" class="mini-btn">전체 카드 전략 도감</button> <button id="playtestFeedbackBtn" class="mini-btn" type="button">📝 불편사항 기록</button></div>
         <div id="log" class="log-content"></div>
       </div>
     </footer>
@@ -138,11 +585,66 @@
     <span id="nextSpec"></span>
   </div>
 
-  <script src="game.js"></script>
+  <script src="luck-audio.js"></script>
 <script src="cloud/config.js"></script>
 <script src="cloud/cloud.js"></script>
+<script src="game.js"></script>
+
+
 <script src="history.js"></script>
 <script src="rankings.js"></script>
-<script src="autolab.js"></script>
-</body>
+<script>
+/* mobile-viewport.js */
+/* LUCK v0.2.17.1: Keep the sticky HUD in the visual viewport on mobile pinch zoom.
+ * Unlike disabling zoom, this preserves accessibility and user zoom controls.
+ */
+(function(){
+  'use strict';
+  const visual = window.visualViewport;
+  function syncTop(){
+    const top = visual ? Math.max(0, Math.round(visual.offsetTop)) : 0;
+    document.documentElement.style.setProperty('--luck-visual-top',top+'px');
+  }
+  if(visual){
+    visual.addEventListener('resize',syncTop,{passive:true});
+    visual.addEventListener('scroll',syncTop,{passive:true});
+  }
+  window.addEventListener('resize',syncTop,{passive:true});
+  syncTop();
+})();
+
+</script>
+
+<style>
+#playtestFeedbackBtn { border:1px solid #fbbf24; color:#fde68a; }
+#playtestText {display:block; width:100%; min-height:118px; color:#f3f4f6; background:#141820; border:1px solid #6b7280; border-radius:7px; padding:10px; box-sizing:border-box; font-size:14px; }
+.playtest-help {font-size:12px;line-height:1.6;color:#d1d5db}
+#playtestCopy {margin-top:8px;padding:10px;border:1px solid #6b7280;background:#374151;color:#fff;border-radius:8px}
+</style>
+<script>
+(function () {
+  'use strict';
+  const b=document.getElementById('playtestFeedbackBtn');
+  if(!b)return;
+  b.addEventListener('click', () => {
+    const win=document.getElementById('modal');
+    const body=document.getElementById('modalContent');
+    const title=document.getElementById('modalTitle');
+    if(!win||!body||!title)return;
+    let enemyCount='unknown',roundLabel='unknown',stage='unknown',deckCount='unknown';
+    try{enemyCount=enemies.length;roundLabel=round;stage=phase;deckCount=deck.length;}catch(_){}
+    const info=`버전: v0.2.18 (기존 화면 유지)\n라운드: ${roundLabel}\n단계: ${stage}\n적 수: ${enemyCount}\n덱: ${deckCount}장\n화면: ${window.innerWidth}px (페이지 너비 ${document.documentElement.scrollWidth}px)\n\n불편했던 점:\n`;
+    title.textContent='📝 플레이 불편사항 보내기';
+    body.innerHTML='<p class="playtest-help">문제 발생 순간에 이 버튼을 누르고 불편한 점을 적어줘. 내용을 복사해 ChatGPT에 붙여넣거나 화면 캡처와 함께 보내면 돼. 게임 데이터를 자동 전송하지는 않아.</p><textarea id="playtestText" aria-label="불편사항 입력"></textarea><button id="playtestCopy" type="button">기록 복사</button><p id="playtestCopyStatus" class="playtest-help" role="status"></p>';
+    const field=document.getElementById('playtestText');field.value=info;
+    document.getElementById('playtestCopy').addEventListener('click',async()=>{
+      const value=field.value;
+      try{if(!navigator.clipboard?.writeText)throw new Error('clipboard API not available');await navigator.clipboard.writeText(value);document.getElementById('playtestCopyStatus').textContent='복사했어! 채팅에 붙여넣어 줘.';}
+      catch(_){field.focus();field.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){};document.getElementById('playtestCopyStatus').textContent=ok?'복사했어! 채팅에 붙여넣어 줘.':'자동 복사가 차단되었어. 텍스트를 길게 눌러 직접 복사해 줘.';}
+    });
+    win.classList.remove('hide');
+  });
+})();
+</script>
+<script>document.addEventListener('DOMContentLoaded',()=>{document.getElementById('luckAvatarPreview').innerHTML=luckHeroIcon();});</script><script src="autolab.js"></script></body>
 </html>
