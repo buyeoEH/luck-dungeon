@@ -13,6 +13,7 @@ class V0218BrowserTests(unittest.TestCase):
  def setUp(self):
   self.page=self.browser.new_page(viewport={'width':390,'height':844});self.errors=[];self.manual={};self.ranks={};self.fail=False
   self.page.on('pageerror',lambda e:self.errors.append(str(e)))
+  self.page.add_init_script("window.__qaAudio=[];const NativeAudio=window.Audio;window.Audio=function(...args){const a=new NativeAudio(...args);window.__qaAudio.push(a);return a;};")
   def serve(route):
    u=urlsplit(route.request.url);r=route.request
    if u.hostname=='xkmfjutncwblfebgdmar.supabase.co':
@@ -35,6 +36,13 @@ class V0218BrowserTests(unittest.TestCase):
   self.page.locator('#welcomeVisualModeToggle').uncheck();self.page.locator('#welcomeBattleMotionSkipToggle').check();self.page.locator('#welcomeNormal').click()
  def end(self):
   self.page.evaluate("phase='battle';round=11;enemies=[{name:'test',hp:999,boss:false,debuffZone:1}];gameOver()")
+ def test_actual_bgm_and_effect_decode_and_play(self):
+  self.page.locator('#welcomeBgmToggle').check()
+  self.page.wait_for_function("window.__qaAudio.some(a=>a.dataset.id==='bgm_title'&&!a.paused&&a.readyState>=2&&a.currentTime>0)")
+  self.page.locator('#welcomeBgmToggle').uncheck();self.assertFalse(self.page.evaluate('LuckGameAudio.snapshot().bgmOn'))
+  self.begin();self.page.evaluate("LuckGameAudio.cinematicHit({type:'aoe'})")
+  self.page.wait_for_function("window.__qaAudio.some(a=>a.dataset.id==='sfx_aoe'&&a.readyState>=2&&a.currentTime>0)")
+  self.page.locator('#sfxToggle').uncheck();self.assertEqual(self.page.evaluate('LuckGameAudio.snapshot().voices'),0)
  def test_start_and_mobile_assets(self):
   self.assertEqual(self.page.locator('[data-rank]').count(),5)
   self.assertFalse(self.page.locator('#welcomeBgmToggle').is_checked());self.assertTrue(self.page.locator('#welcomeSfxToggle').is_checked())
