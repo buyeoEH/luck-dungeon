@@ -29,9 +29,10 @@ class V0218BrowserTests(unittest.TestCase):
    route.abort()
   self.page.route('**/*',serve);self.page.goto('https://luck.test/');self.page.wait_for_function('!!window.LuckRanks && !!window.AutoLab')
  def tearDown(self):
+  out=ROOT/'results-ui';out.mkdir(exist_ok=True);self.page.screenshot(path=str(out/(self._testMethodName+'.png')),full_page=True)
   self.assertEqual(self.errors,[]);self.page.close()
  def begin(self):
-  self.page.locator('#welcomeNormal').click();self.page.locator('#battleMotionSkipToggle').check();self.page.locator('#visualModeToggle').uncheck()
+  self.page.locator('#welcomeVisualModeToggle').uncheck();self.page.locator('#welcomeBattleMotionSkipToggle').check();self.page.locator('#welcomeNormal').click()
  def end(self):
   self.page.evaluate("phase='battle';round=11;enemies=[{name:'test',hp:999,boss:false,debuffZone:1}];gameOver()")
  def test_start_and_mobile_assets(self):
@@ -39,14 +40,14 @@ class V0218BrowserTests(unittest.TestCase):
   self.assertFalse(self.page.locator('#welcomeBgmToggle').is_checked());self.assertTrue(self.page.locator('#welcomeSfxToggle').is_checked())
   self.begin();self.assertEqual(self.page.evaluate('phase'),'hand');self.assertTrue(self.page.evaluate('luckAvatarLocked'))
   self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth'),400)
-  self.assertTrue(self.page.evaluate("Array.from(document.images).filter(i=>i.src && !i.src.startsWith('data:')).every(i=>i.complete&&i.naturalWidth>0)"))
+  self.page.wait_for_function("Array.from(document.images).filter(i=>i.src && !i.src.startsWith('data:')).every(i=>i.complete&&i.naturalWidth>0)")
   out=ROOT/'results-ui';out.mkdir(exist_ok=True);self.page.screenshot(path=str(out/'v0218-mobile.png'),full_page=True)
  def test_initials_public_registration_and_online_records(self):
   self.begin();self.end();self.page.get_by_text('🏆 이니셜 등록',exact=True).click()
   self.page.locator('#rankInitials').fill('N');self.page.locator('#rankSubmit').click();self.assertIn('2~6',self.page.locator('#rankError').inner_text())
   self.page.locator('#rankInitials').fill('ner');self.page.locator('#rankSubmit').click();self.page.get_by_text('🏆 온라인 등록 완료',exact=True).wait_for()
   self.assertEqual(len(self.manual),1);self.assertEqual(len(self.ranks),1);r=list(self.ranks.values())[0];self.assertEqual(r['initials'],'NER');self.assertEqual(r['version'],'0.2.18');self.assertNotIn('user_id',r)
-  self.page.locator('#rankView').click();self.assertIn('NER',self.page.locator('#onlineRanksContent').inner_text());self.page.locator('#close').click()
+  self.page.locator('#rankView').click();self.page.get_by_text('1위 · NER',exact=True).wait_for();self.assertIn('NER',self.page.locator('#onlineRanksContent').inner_text());self.page.locator('#close').click()
   self.page.locator('#cloudRecordsBtn').click();self.page.get_by_text('내 온라인 플레이 기록 1건',exact=True).wait_for()
  def test_failed_upload_retry(self):
   self.begin();self.fail=True;self.end();self.page.get_by_text('🏆 이니셜 등록',exact=True).click();self.page.locator('#rankInitials').fill('재시도');self.page.locator('#rankSubmit').click()
