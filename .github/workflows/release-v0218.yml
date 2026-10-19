@@ -2,8 +2,10 @@ name: v0.2.18 online validation and AutoLab
 on:
   push:
     branches: ['feature/game-v0.2.18-online-audio']
-    paths: ['.github/workflows/release-v0218.yml']
   workflow_dispatch:
+concurrency:
+  group: v0218-validated-pages
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
