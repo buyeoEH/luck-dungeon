@@ -55,7 +55,7 @@ class V0218BrowserTests(unittest.TestCase):
   self.page.locator('#rankInitials').fill('N');self.page.locator('#rankSubmit').click();self.assertIn('2~6',self.page.locator('#rankError').inner_text())
   self.page.locator('#rankInitials').fill('ner');self.page.locator('#rankSubmit').click();self.page.get_by_text('🏆 온라인 등록 완료',exact=True).wait_for()
   self.assertEqual(len(self.manual),1);self.assertEqual(len(self.ranks),1);r=list(self.ranks.values())[0];self.assertEqual(r['initials'],'NER');self.assertEqual(r['version'],'0.2.18');self.assertNotIn('user_id',r)
-  self.page.locator('#rankView').click();self.page.get_by_text('1위 · NER',exact=True).wait_for();self.assertIn('NER',self.page.locator('#onlineRanksContent').inner_text());self.page.locator('#close').click()
+  self.page.locator('#rankView').click();self.page.locator('#onlineRanksContent').get_by_text('1위 · NER',exact=True).wait_for();self.assertIn('NER',self.page.locator('#onlineRanksContent').inner_text());self.page.locator('#close').click()
   self.page.locator('#cloudRecordsBtn').click();self.page.get_by_text('내 온라인 플레이 기록 1건',exact=True).wait_for()
  def test_failed_upload_retry(self):
   self.begin();self.fail=True;self.end();self.page.get_by_text('🏆 이니셜 등록',exact=True).click();self.page.locator('#rankInitials').fill('재시도');self.page.locator('#rankSubmit').click()
