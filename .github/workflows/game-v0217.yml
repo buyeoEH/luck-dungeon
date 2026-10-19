@@ -8,6 +8,8 @@ permissions:
   contents: read
 jobs:
   validate:
+    # The v0.2.18 release workflow owns the newer online UI contract.
+    if: github.event_name != 'pull_request' || github.head_ref == 'feature/game-v0.2.17-ui-balance'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
