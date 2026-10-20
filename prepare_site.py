@@ -14,7 +14,7 @@ for bundle in manifest['bundles']:
 for name,expected in manifest['files'].items():
  if hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=expected:raise SystemExit('Asset file checksum mismatch: '+name)
 site=ROOT/'_site';site.mkdir(exist_ok=True)
-for name in ['index.html','game.js','history.js','rankings.js','luck-audio.js','autolab.js']:
+for name in ['index.html','game.js','history.js','rankings.js','avatars.js','luck-audio.js','autolab.js']:
  shutil.copyfile(ROOT/name,site/name)
 (site/'cloud').mkdir(exist_ok=True)
 for name in ['config.js','cloud.js']:shutil.copyfile(ROOT/'cloud'/name,site/'cloud'/name)

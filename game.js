@@ -82,6 +82,7 @@ function luckLockAvatar(){
   const reset=document.getElementById('luckAvatarReset');
   if(input)input.disabled=true;
   if(reset)reset.disabled=true;
+  window.LuckAvatars?.sync();
 }
 function luckEnemyIcon(enemy,kind='inline') {
   const name=typeof enemy==='string'?enemy:enemy.name;
@@ -92,6 +93,7 @@ function luckEnemyIcon(enemy,kind='inline') {
 function luckHeroIcon(){return '<img class="luck-hero-emoji" src="'+luckAvatar+'" alt="플레이어" decoding="async">';}
 function luckRefreshAvatar(){
   document.querySelectorAll('.luck-hero-emoji').forEach(img=>img.src=luckAvatar);
+  window.LuckAvatars?.sync();
 }
 document.addEventListener('DOMContentLoaded',()=>{
   const input=document.getElementById('luckAvatarFile'), reset=document.getElementById('luckAvatarReset'), status=document.getElementById('luckAvatarStatus');
@@ -102,6 +104,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type)){status.textContent='PNG·JPG·WebP·GIF 이미지를 선택해 주세요.';return;}
     if(file.size>1500000){status.textContent='1.5 MB 이하의 이미지를 선택해 주세요.';return;}
     luckAvatarLoading=true;
+    window.LuckAvatars?.sync();
     const tutorial=document.getElementById('welcomeTutorial'),normal=document.getElementById('welcomeNormal');
     if(tutorial)tutorial.disabled=true;
     if(normal)normal.disabled=true;
@@ -116,11 +119,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     }catch(_){status.textContent='이미지를 읽을 수 없습니다. 다른 파일을 선택해 주세요.';}
     finally{
       luckAvatarLoading=false;
+      window.LuckAvatars?.sync();
       if(!luckAvatarLocked){if(tutorial)tutorial.disabled=false;if(normal)normal.disabled=false;}
     }
   });
   reset.addEventListener('click',()=>{
     if(luckAvatarLocked||luckAvatarLoading)return;
+    if(window.LuckAvatars){window.LuckAvatars.reset();return;}
     luckAvatar=LUCK_DEFAULT_HERO;luckRefreshAvatar();status.textContent='기본 모험가로 복원했습니다.';
   });
   luckRefreshAvatar();

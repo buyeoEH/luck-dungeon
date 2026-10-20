@@ -427,6 +427,19 @@ html,body { width:100%; min-width:0; max-width:100%; overflow-x:clip; }
  @media(max-width:440px){.welcome-setup-options{grid-template-columns:1fr}.welcome-avatar-content{align-items:flex-start}.welcome-avatar-preview{width:70px;height:70px}.welcome-avatar-preview .luck-hero-emoji{width:62px;height:62px}}
 .luck-promo-net{display:block;color:#b3d9e6;font-size:10px;line-height:1.4;padding:4px;margin:3px 0;background:rgba(12,20,36,.55);border:1px dashed #475569;border-radius:4px}
 </style>
+<style>
+/* Appearance-only adventurer picker. */
+.adventurer-help{font-size:11px!important;margin:0 0 8px!important}
+.adventurer-choices{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:8px 0}
+.adventurer-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;padding:6px 3px;border:1px solid #47678d;border-radius:9px;background:#182c44;color:#dceaff;cursor:pointer;font:inherit}
+.adventurer-choice img{width:100%;height:65px;object-fit:contain}
+.adventurer-choice span{font-size:10px;line-height:1.35;text-align:center;word-break:keep-all}
+.adventurer-choice[aria-pressed="true"]{border:2px solid #7dd3fc;background:#20476a;box-shadow:0 0 0 1px #7dd3fc}
+.adventurer-choice:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
+.adventurer-choice:disabled{cursor:default;opacity:.65}
+.adventurer-selected{color:#a5e2ff!important;font-size:11px!important;margin:5px 0 9px!important}
+@media(max-width:440px){.adventurer-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.adventurer-choice img{height:68px}}
+</style>
 </head>
 <body>
   <div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
@@ -446,17 +459,18 @@ html,body { width:100%; min-width:0; max-width:100%; overflow-x:clip; }
        </section>
        <section class="welcome-avatar" aria-labelledby="welcomeAvatarTitle">
          <h2 id="welcomeAvatarTitle">🧙 내 캐릭터</h2>
+         <p class="adventurer-help">모험가 5종 중 외형을 선택하세요. 능력치와 게임 규칙은 모두 같습니다.</p><div id="adventurerChoices" class="adventurer-choices" role="group" aria-label="기본 모험가 5종"></div><p id="adventurerSelected" class="adventurer-selected" role="status"></p>
          <div class="welcome-avatar-content">
            <div class="welcome-avatar-preview" id="luckAvatarPreview" aria-label="내 캐릭터 미리보기"></div>
            <div class="welcome-avatar-controls">
-             <p><b>기본 모험가</b>로 시작합니다. 원한다면 <b>게임 시작 전</b>에만 사진을 바꿀 수 있습니다.</p>
+             <p>원한다면 <b>게임 시작 전</b>에 내 이미지를 넣을 수 있습니다. 내 이미지는 현재 플레이에서만 사용합니다.</p>
              <label for="luckAvatarFile" class="welcome-avatar-upload">이미지 선택 (PNG·JPG·WebP·GIF, 1.5 MB 이하)</label>
              <input id="luckAvatarFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="캐릭터 이미지 선택">
-             <button type="button" id="luckAvatarReset">기본 모험가로 복원</button>
+             <button type="button" id="luckAvatarReset">별빛 기사로 복원</button>
              <p id="luckAvatarStatus" role="status" aria-live="polite"></p>
            </div>
          </div>
-         <p class="welcome-avatar-note">게임이 시작되면 캐릭터가 고정됩니다. 다음에 화면을 새로 열면 기본 모험가로 돌아옵니다.</p>
+         <p class="welcome-avatar-note">모험가 선택과 내 이미지는 이번 플레이에만 적용됩니다. 시작 후에는 바꿀 수 없으며 새로고침하면 별빛 기사로 돌아옵니다.</p>
        </section>
        <div class="welcome-options">
         <button id="welcomeTutorial" class="welcome-option"><strong>📖 튜토리얼 플레이</strong><span>카드 사용 → 상점 → 전투 → 콤보·디버프 → 승급까지 실제 게임에서 배웁니다.</span></button>
@@ -591,6 +605,7 @@ html,body { width:100%; min-width:0; max-width:100%; overflow-x:clip; }
 <script src="game.js"></script>
 
 
+<script src="avatars.js"></script>
 <script src="history.js"></script>
 <script src="rankings.js"></script>
 <script>

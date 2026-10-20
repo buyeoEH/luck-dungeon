@@ -2,8 +2,8 @@
   "bundles": [
     {
       "file": "assets-v0218-art.zip",
-      "sha256": "a1c5759d17ac126a627a6f08d0cbfb7b49cd1b852f2623ed12fdc00651b8eabb",
-      "bytes": 11236880
+      "sha256": "7b1b57cdc086d7e20547886554933dadbbdd7831e99635a9ee7c8b7b974117cc",
+      "bytes": 18862001
     },
     {
       "file": "assets-v0218-enemies.zip",
@@ -66,6 +66,11 @@
     "assets/audio/sfx_attack_03.wav": "2b6dd2019a264c73ca501c0f8d5456529243736d283daec2e9f9ff6ab88dc96d",
     "assets/audio/sfx_max_hit.wav": "68f65270157a1aff6f15a0ee276da9dcb1d63f4ae46568cbde6ab347e97acf2f",
     "assets/audio/sfx_max_intro.wav": "73c92fe2fcc381cb829216cb2a4ed9a76a2af516416ee9423f41afe7d4ea5062",
-    "assets/audio/sfx_pierce.wav": "6523cc6529c3a113e78f5979c4d5406eb15fe16ffe0ffdd121e20fdd140ce5d2"
+    "assets/audio/sfx_pierce.wav": "6523cc6529c3a113e78f5979c4d5406eb15fe16ffe0ffdd121e20fdd140ce5d2",
+    "assets/player/adventurer-rogue.png": "4952a465ffd0fb7645f6c78ed537d42acebcd368192f8aedd4bc1c118d8b2d9c",
+    "assets/player/adventurer-mage.png": "9477953c022dfaeffcf006dcd45cdffb24583577a0cac91aaa1655ef59b8b7e9",
+    "assets/player/adventurer-archer.png": "20d017a01f9724e3ef5267ab54c98c10c2dbf6320dcf8f59701760b8c17df3fe",
+    "assets/player/adventurer-priest.png": "350aa56cd8f9e89d8472ca5ec3965be2a15b81b88f80f9f587fa60590609053b",
+    "assets/player/adventurer-knight.png": "468dd7b387ba2c2791cb0441c7e42c063b7a82dd6a7b61ee16001e34c4df8fb8"
   }
 }
