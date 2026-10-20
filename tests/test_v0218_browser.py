@@ -43,6 +43,38 @@ class V0218BrowserTests(unittest.TestCase):
   self.begin();self.page.evaluate("LuckGameAudio.cinematicHit({type:'aoe'})")
   self.page.wait_for_function("window.__qaAudio.some(a=>a.dataset.id==='sfx_aoe'&&a.readyState>=2&&a.currentTime>0)")
   self.page.locator('#sfxToggle').uncheck();self.assertEqual(self.page.evaluate('LuckGameAudio.snapshot().voices'),0)
+ def test_five_adventurer_choices_and_start_lock(self):
+  choices=self.page.locator('[data-adventurer-id]');self.assertEqual(choices.count(),5)
+  self.page.wait_for_function("Array.from(document.querySelectorAll('[data-adventurer-id] img')).every(i=>i.complete&&i.naturalWidth===1254)")
+  before=self.page.evaluate('JSON.stringify(BASE)')
+  for ident in ['knight','rogue','priest','mage','archer']:
+   button=self.page.locator('[data-adventurer-id="'+ident+'"]');button.click()
+   self.assertEqual(button.get_attribute('aria-pressed'),'true')
+   self.assertEqual(self.page.locator('[data-adventurer-id][aria-pressed="true"]').count(),1)
+   self.assertTrue(self.page.locator('#luckAvatarPreview img').get_attribute('src').endswith('adventurer-'+ident+'.png'))
+  self.assertEqual(self.page.evaluate('JSON.stringify(BASE)'),before)
+  self.begin();self.assertTrue(self.page.evaluate('luckAvatarLocked'))
+  self.assertTrue(all(choices.nth(i).is_disabled() for i in range(5)))
+  self.assertFalse(self.page.evaluate("LuckAvatars.select('mage')"))
+  self.assertTrue(self.page.evaluate("Array.from(document.querySelectorAll('.luck-hero-emoji')).every(i=>i.src.endsWith('adventurer-archer.png'))"))
+  self.page.evaluate("phase='shop';render();phase='battle';render()")
+  self.assertTrue(self.page.evaluate("Array.from(document.querySelectorAll('.luck-hero-emoji')).every(i=>i.src.endsWith('adventurer-archer.png'))"))
+ def test_custom_avatar_private_reset_and_reload(self):
+  import struct,zlib
+  def chunk(kind,data):return struct.pack('>I',len(data))+kind+data+struct.pack('>I',zlib.crc32(kind+data)&0xffffffff)
+  png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',1,1,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(b'\x00\xff\x00\x00\xff'))+chunk(b'IEND',b'')
+  def upload():
+   self.page.locator('#luckAvatarFile').set_input_files({'name':'private-avatar.png','mimeType':'image/png','buffer':png})
+   self.page.wait_for_function("!luckAvatarLoading&&luckAvatar.startsWith('data:image/png')")
+  upload();self.assertIn('내 이미지',self.page.locator('#adventurerSelected').inner_text())
+  self.assertEqual(self.page.locator('[data-adventurer-id][aria-pressed="true"]').count(),0)
+  self.page.locator('#luckAvatarReset').click();self.assertTrue(self.page.evaluate("luckAvatar.endsWith('adventurer-knight.png')"))
+  upload();self.begin();self.assertTrue(self.page.evaluate("luckAvatar.startsWith('data:image/png')"));self.assertTrue(self.page.locator('#luckAvatarFile').is_disabled())
+  self.end();self.page.wait_for_function("JSON.parse(localStorage.getItem('luck_cloud_queue_v1')||'[]').length===0")
+  self.assertNotIn('data:image',json.dumps(self.manual))
+  self.assertFalse(self.page.evaluate("Object.keys(localStorage).some(k=>(localStorage.getItem(k)||'').includes('data:image'))"))
+  self.page.reload();self.page.wait_for_function("!!window.LuckAvatars&&luckAvatar.endsWith('adventurer-knight.png')")
+  self.assertEqual(self.page.locator('[data-adventurer-id="knight"]').get_attribute('aria-pressed'),'true')
  def test_start_and_mobile_assets(self):
   self.assertEqual(self.page.locator('[data-rank]').count(),5)
   self.assertFalse(self.page.locator('#welcomeBgmToggle').is_checked());self.assertTrue(self.page.locator('#welcomeSfxToggle').is_checked())
