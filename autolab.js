@@ -36,8 +36,12 @@ function step(profile='economy'){
  if(phase==='gameover'||officialRecord)return {done:true,state:state()};
  if(phase==='hand'){
    for(let n=0;n<60;n++){let i=hand.findIndex(c=>!['attack','specialAttack','curse','remove'].includes(c.type));if(i<0)break;
-    if(hand[i].type==='promotionStone'){use(i);resolvePromotionStone('dagger');continue;}
-    use(i);
+    if(hand[i].type==='promotionStone'){
+      const choice=stoneRecipes()[0];if(!choice){emit('stone_unavailable',{});break;}
+      const c=hand[i],before=resource;use(i);emit('card_use',{id:c.baseId||c.id,name:c.name,resourceBefore:before,resourceAfter:resource});showPromotionStoneOptions(choice.promo.id);resolvePromotionStone(choice.missing[0]);
+      emit('stone_choice',{recipe:choice.promo.id,material:choice.missing[0]});continue;
+    }
+    const c=hand[i],before=resource;use(i);emit('card_use',{id:c.baseId||c.id,name:c.name,resourceBefore:before,resourceAfter:resource});
    }
    next();
  }else if(phase==='shop'){

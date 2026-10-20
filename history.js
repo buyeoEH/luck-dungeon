@@ -1,11 +1,13 @@
-/* Luck Dungeon v0.2.16 — on-device manual run archive. */
+
+/* history.js */
+/* Luck Dungeon v0.2.18 — on-device manual run archive. */
 (function(){
 'use strict';
 const KEY='luck_dungeon_manual_runs_v0216', LIMIT=200;
 let lastSavedId=null;
 function read(){try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(v)?v:[];}catch(_){return [];}}
 function textLog(){return [
- 'Luck Dungeon v0.2.16 DEV LOG',
+ 'Luck Dungeon v0.2.18 DEV LOG',
  'ROUND='+round+' PHASE='+phase+' SCORE='+scoreValue(),
  'DECK='+deck.length+' RES='+resource+' GEMS='+gems+' ENEMIES='+enemies.length+' ENEMY_HP='+total(),
  'STATS='+JSON.stringify(stats),
@@ -18,10 +20,20 @@ function save(outcome,reason=''){
  const id=String(window.__luckManualRunId||'');
  if(!id||lastSavedId===id)return false;
  const list=read();if(list.some(x=>x.id===id)){lastSavedId=id;return false;}
- const entry={id,date:new Date().toISOString(),source:'manual',version:'0.2.16',outcome,reason,round:round,score:officialRecord?officialRecord.score:scoreValue(),playMs:officialRecord?officialRecord.playMs:currentPlayMs(),enemyCount:enemies.length,enemyHp:total(),enemyLimit:gameOverEnemyLimit(round),hpLimit:gameOverHpLimit(round),deckSize:deck.length,stats:JSON.parse(JSON.stringify(stats)),deck:deck.map(c=>c.name),log:textLog()};
+ const entry={id,date:new Date().toISOString(),source:'manual',version:'0.2.18',outcome,reason,round:round,score:officialRecord?officialRecord.score:scoreValue(),playMs:officialRecord?officialRecord.playMs:currentPlayMs(),enemyCount:enemies.length,enemyHp:total(),enemyLimit:gameOverEnemyLimit(round),hpLimit:gameOverHpLimit(round),deckSize:deck.length,stats:JSON.parse(JSON.stringify(stats)),deck:deck.map(c=>c.name),log:textLog()};
  list.unshift(entry);
  try{localStorage.setItem(KEY,JSON.stringify(list.slice(0,LIMIT)));lastSavedId=id;if(window.LuckCloud)window.LuckCloud.record(entry);return true;}
  catch(e){console.warn('LuckHistory: localStorage save failed',e);return false;}
+}
+function updateRun(patch){
+ const id=String(window.__luckManualRunId||'');if(!id)return false;
+ const records=read();const found=records.find(r=>r.id===id);if(!found)return false;
+ Object.assign(found,patch);try{localStorage.setItem(KEY,JSON.stringify(records));if(window.LuckCloud)window.LuckCloud.record(found);return true;}catch{return false;}
+}
+function setInitials(initials){return updateRun({initials});}
+function updateEndless(maxRound){
+ const id=String(window.__luckManualRunId||'');const row=read().find(r=>r.id===id);
+ return updateRun({endlessMaxRound:Math.max(row?.endlessMaxRound||0,maxRound)});
 }
 function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
 function csv(){const rows=read(),fields=['date','source','version','outcome','reason','round','score','playMs','enemyCount','enemyHp','enemyLimit','hpLimit','deckSize','damageDealt','aoeDamage','pierceDamage','overkillDamage','enemiesKilled','bossesKilled','promotions'];const esc=x=>'"'+String(x??'').replace(/"/g,'""')+'"';return [fields.join(','),...rows.map(r=>fields.map(f=>esc(f in r?r[f]:r.stats?.[f])).join(','))].join('\r\n');}
@@ -35,6 +47,7 @@ function view(){const rows=read();const esc=x=>String(x??'').replace(/&/g,'&amp;
  body.querySelector('#historyClear').onclick=()=>{if(confirm('저장된 플레이 기록을 모두 삭제할까요?')){localStorage.removeItem(KEY);lastSavedId=null;view();}};
  body.querySelectorAll('[data-export]').forEach(b=>b.onclick=()=>{const r=rows[Number(b.dataset.export)];if(r)download('luck-R'+r.round+'-'+r.id+'.txt',r.log,'text/plain;charset=utf-8');});
 }
-window.LuckHistory={save,read,view,csv};
+window.LuckHistory={save,read,view,csv,setInitials,updateEndless};
 document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('historyBtn');if(b)b.addEventListener('click',view);});
 })();
+
