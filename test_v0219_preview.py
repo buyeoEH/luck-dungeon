@@ -23,7 +23,13 @@ class PreviewTests(unittest.TestCase):
    if file.is_dir():file=file/'index.html'
    if file.is_relative_to(SITE) and file.is_file():return route.fulfill(path=str(file),content_type=mimetypes.guess_type(str(file))[0] or 'text/plain')
    route.abort()
-  self.page.route('**/*',serve);self.page.goto('https://luck.test/preview/v0.2.19/');self.page.wait_for_function('!!window.AutoLab&&!!window.LuckRanks&&!!window.LuckAvatars')
+  self.page.route('**/*',serve);self.page.goto('https://luck.test/preview/v0.2.19/');self.page.locator('[data-adventurer-id="knight"][aria-pressed="true"]').wait_for()
+ def wait(self,expression):
+  # Keep the shipped CSP active: Playwright's polling uses eval, ordinary evaluate does not.
+  for _ in range(100):
+   if self.page.evaluate(expression):return
+   self.page.wait_for_timeout(50)
+  self.fail('Condition did not become true: '+expression)
  def tearDown(self):
   out=ROOT/'results-v0219';out.mkdir(exist_ok=True)
   self.page.screenshot(path=str(out/(self._testMethodName+'.png')),full_page=True)
@@ -38,12 +44,12 @@ class PreviewTests(unittest.TestCase):
   self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'shop')
   self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'battle')
   self.page.locator('#nextBtn').click();self.assertNotEqual(self.page.evaluate('phase'),'battle')
-  self.page.wait_for_function("Array.from(document.images).filter(i=>i.src).every(i=>i.complete&&i.naturalWidth>0)")
+  self.wait("Array.from(document.images).filter(i=>i.src).every(i=>i.complete&&i.naturalWidth>0)")
  def test_records_and_rankings_are_separate(self):
   self.begin();self.page.evaluate("round=30;freezeOfficialRecord('nextRound')")
   self.page.get_by_text('🏆 이니셜 등록',exact=True).click();self.assertIn('최종 클리어',self.page.locator('#modalContent').inner_text())
   self.page.locator('#rankInitials').fill('TEST');self.page.locator('#rankSubmit').click()
-  self.page.wait_for_function("JSON.parse(localStorage.getItem('luck_local_0219_rankings')||'[]').length===1")
+  self.wait("JSON.parse(localStorage.getItem('luck_local_0219_rankings')||'[]').length===1")
   row=self.page.evaluate('LuckHistory.read()[0]');self.assertEqual(row['version'],'0.2.19');self.assertEqual(row['outcome'],'clear')
   self.assertEqual(self.page.evaluate("JSON.parse(localStorage.getItem('luck_dungeon_manual_runs_v0216'))[0].id"),'stable-sentinel')
   self.assertEqual(self.page.evaluate("localStorage.getItem('luck_cloud_queue_v1')"),'stable-queue-sentinel')

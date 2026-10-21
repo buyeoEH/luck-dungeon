@@ -22,6 +22,7 @@ def build():
  history=patch.patch_history((ROOT/'history.js').read_text()).replace('luck_dungeon_manual_runs_v0216','luck_dungeon_manual_runs_v0219_preview')
  (PREVIEW/'history.js').write_text(history)
  ranking=patch.patch_rankings((ROOT/'rankings.js').read_text())
+ ranking=patch.once(ranking,"+'</b><span>'+(tab", "+'</b><em class=\"luck-clear-tag\">'+(r.outcome==='clear'?'🏆 최종 클리어':'💀 게임 종료')+'</em><span>'+(tab",'랭킹 최종 클리어 표시')
  for old,new in [('온라인 최고기록 순위','테스트 기록 순위'),('온라인 랭킹','테스트 랭킹'),('온라인 조회 중','기기 기록 조회 중'),('서버 전체 기록','이 기기 테스트 기록'),('온라인 조회 실패','기기 기록 조회 실패'),('온라인 기록 등록','테스트 기록 등록'),('온라인 등록 중','기기 저장 중'),('온라인 등록 완료','테스트 등록 완료'),('온라인 랭킹에 등록했습니다','기기 테스트 랭킹에 등록했습니다'),('등록하면 이니셜·점수·라운드·플레이 시간이 공개됩니다.','등록하면 이 기기의 테스트 랭킹에만 표시됩니다.')]:
   ranking=ranking.replace(old,new)
  (PREVIEW/'rankings.js').write_text(ranking)
