@@ -1,0 +1,55 @@
+name: v0.2.19 isolated web playtest
+on:
+  push:
+    branches: ['feature/game-v0.2.19-preview']
+  workflow_dispatch:
+concurrency:
+  group: v0219-preview-pages
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/feature/game-v0.2.19-preview'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install playwright==1.51.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Verify original assets and preserve stable v0.2.18
+        run: python prepare_site.py
+      - name: Build isolated v0.2.19 under a separate URL path
+        run: python build_v0219_preview.py
+      - name: Mobile gameplay, promotions, pure attacks and isolated records
+        run: python -m unittest test_v0219_preview -v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v0219-web-preview-tests
+          path: |
+            results-v0219/
+            preview-build-report.json
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}preview/v0.2.19/
+    steps:
+      - name: Publish unchanged stable game plus isolated preview
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 1200000
