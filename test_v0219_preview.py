@@ -29,7 +29,7 @@ class PreviewTests(unittest.TestCase):
   for _ in range(100):
    if self.page.evaluate(expression):return
    self.page.wait_for_timeout(50)
-  self.fail('Condition did not become true: '+expression)
+  self.fail('Condition did not become true: '+expression+'; broken images='+json.dumps(self.page.evaluate("Array.from(document.images).filter(i=>i.src&&(!i.complete||!i.naturalWidth)).map(i=>({src:i.getAttribute('src').slice(0,180),alt:i.alt,complete:i.complete}))"),ensure_ascii=False))
  def tearDown(self):
   out=ROOT/'results-v0219';out.mkdir(exist_ok=True)
   self.page.screenshot(path=str(out/(self._testMethodName+'.png')),full_page=True)
@@ -44,6 +44,8 @@ class PreviewTests(unittest.TestCase):
   self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'shop')
   self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'battle')
   self.page.locator('#nextBtn').click();self.assertNotEqual(self.page.evaluate('phase'),'battle')
+  # Decode offscreen/hidden lazy card icons too, without changing the shipped UI.
+  self.page.locator('img[loading="lazy"]').evaluate_all("imgs=>imgs.forEach(i=>i.loading='eager')")
   self.wait("Array.from(document.images).filter(i=>i.src).every(i=>i.complete&&i.naturalWidth>0)")
  def test_records_and_rankings_are_separate(self):
   self.begin();self.page.evaluate("round=30;freezeOfficialRecord('nextRound')")
