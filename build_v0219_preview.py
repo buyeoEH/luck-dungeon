@@ -1,12 +1,13 @@
 """Build a separate web playtest while preserving every v0.2.18 runtime byte."""
-import hashlib,json,re,shutil
+import hashlib,json,re,shutil,zipfile
 from pathlib import Path
 import v0219_patch as patch
 
 ROOT=Path(__file__).resolve().parent
 SITE=ROOT/'_site'
 PREVIEW=SITE/'preview'/'v0.2.19'
-BUILD='0219-preview-1'
+BUILD='0219-preview-2'
+ICON_IDS={'raiderking','wisdomsword','stararmor','masterlink','lucklink','luckdraw','luckguard','luckforge'}
 
 def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def build():
@@ -18,6 +19,20 @@ def build():
  shutil.copytree(SITE/'assets',PREVIEW/'assets',dirs_exist_ok=True)
  (PREVIEW/'cloud').mkdir(exist_ok=True)
  game=patch.patch_game((ROOT/'game.js').read_text())
+ # Read only reviewed card artwork from the bundle; never extract arbitrary paths.
+ assert digest(ROOT/'assets-v0219-icons.zip')=='85e47ca66b9bdf2410c86e942323e4434e7751fd737ad4117ba7431e0045291c','Icon archive checksum mismatch'
+ with zipfile.ZipFile(ROOT/'assets-v0219-icons.zip') as icons:
+  entries=json.loads(icons.read('manifest.json'))
+  assert len(entries)==8 and {e['id'] for e in entries}==ICON_IDS,'Unexpected icon mapping'
+  icon_map={}
+  for entry in entries:
+   name='assets/icons/cards/'+entry['id']+'.png'
+   assert entry['file']==name,'Unexpected icon path'
+   data=icons.read(name)
+   assert hashlib.sha256(data).hexdigest()==entry['sha256'],'Icon checksum mismatch: '+name
+   target=PREVIEW/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
+   icon_map[entry['id']]=name
+ game=patch.once(game,'function luckIcon(card, kind) {','Object.assign(LUCK_CARD_ICONS,'+json.dumps(icon_map)+');\nfunction luckIcon(card, kind) {','v0.2.19 dedicated card icons')
  (PREVIEW/'game.js').write_text(game)
  history=patch.patch_history((ROOT/'history.js').read_text()).replace('luck_dungeon_manual_runs_v0216','luck_dungeon_manual_runs_v0219_preview')
  (PREVIEW/'history.js').write_text(history)

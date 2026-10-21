@@ -58,6 +58,17 @@ class PreviewTests(unittest.TestCase):
   self.page.evaluate('LuckRanks.show()')
   self.page.locator('#onlineRanksContent').get_by_text('1위 · TEST',exact=True).wait_for()
   self.assertIn('클리어',self.page.locator('#onlineRanksContent').inner_text())
+ def test_new_card_artwork_in_catalog_and_logs(self):
+  self.begin();self.page.evaluate('showCardTable()')
+  for ident in ['raiderking','wisdomsword','stararmor','masterlink','lucklink','luckdraw','luckguard','luckforge']:
+   expected='assets/icons/cards/'+ident+'.png'
+   self.assertEqual(self.page.evaluate('id=>LUCK_CARD_ICONS[id]',ident),expected)
+   images=self.page.locator('#modalContent img[src="'+expected+'"]')
+   self.assertGreater(images.count(),0,ident)
+   images.evaluate_all("imgs=>imgs.forEach(i=>i.loading='eager')")
+   self.wait("Array.from(document.querySelectorAll('#modalContent img[src=\""+expected+"\"]')).every(i=>i.complete&&i.naturalWidth===1254)")
+   self.assertEqual(self.page.evaluate("id=>LUCK_NAMED_ICON_IDS[CARD_NAME[id]]",ident),ident)
+   self.assertIn(expected,self.page.locator('#luck-inline-icon-styles').text_content())
  def test_new_promotions_and_reduced_prices(self):
   self.begin()
   self.assertEqual(self.page.evaluate("Object.fromEntries([...BASIC,...RANDOM_POOL].filter(c=>['thief','mage','pike'].includes(c.id)).map(c=>[c.id,c.price]))"),{'thief':14,'mage':14,'pike':13})
