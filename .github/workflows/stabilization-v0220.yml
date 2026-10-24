@@ -1,0 +1,70 @@
+name: v0.2.20 stabilization verification
+on:
+  push:
+    branches: [feature/game-v0.2.20-stabilization]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v0220-stabilization-pages
+  cancel-in-progress: true
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/feature/game-v0.2.20-stabilization'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install playwright==1.51.0 pillow==11.1.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Rebuild preserved versions and the stabilization candidate
+        run: |
+          python prepare_site.py
+          python build_v0219_preview.py
+          python build_v0220.py
+          python build_v0220_standalone.py
+      - name: Mobile, one-use, stock, score, identity and offline HTML regressions
+        run: |
+          mkdir -p results-v0220
+          python -m unittest test_v0220 -v 2>&1 | tee results-v0220/regression.log
+      - name: Real engine comparison on common seeds
+        run: python run_v0220_comparison.py 2>&1 | tee results-v0220/comparison-execution.log
+      - name: All promotion and link effect probes
+        run: python evaluate_v0220_effects.py 2>&1 | tee results-v0220/effects-execution.log
+      - name: Combine reviewed live SQL evidence and reproducible tests
+        run: |
+          python -m zipfile -e v0220-live-sql-evidence.zip results-v0220
+          python write_v0220_report.py
+          mkdir -p _site/reports/v0.2.20
+          cp V0220-STABILIZATION-REPORT.md V0220-SCORE-RULES.md v0220-validation-results.zip _site/reports/v0.2.20/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v0220-validation-evidence
+          path: |
+            results-v0220/
+            v0220-build-report.json
+            v0220-standalone-report.json
+            V0220-STABILIZATION-REPORT.md
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}preview/v0.2.20/
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
+        with:
+          timeout: '1200000'
