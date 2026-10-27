@@ -68,7 +68,7 @@ class StabilityTests(unittest.TestCase):
  def test_05_mobile_widths_and_progress(self):
   for width in [360,390,430]:
    self.page.set_viewport_size({'width':width,'height':844});self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth'),width+1)
-  self.begin();self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'shop');self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'battle');self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'hand')
+  self.begin();self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'shop');self.page.locator('#nextBtn').click();self.assertEqual(self.page.evaluate('phase'),'battle');self.page.locator('#nextBtn').click();self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click();self.assertEqual(self.page.evaluate('phase'),'hand')
   self.page.locator('#deckBtn').click();self.assertTrue(self.page.locator('#modal').is_visible())
  def test_06_local_event_persistence_and_version(self):
   self.begin();self.page.evaluate('Luck220.emit("qa_persist",{value:1})');self.page.evaluate('Luck220.persist()')
@@ -96,6 +96,7 @@ class StabilityTests(unittest.TestCase):
     self.assertGreater(self.page.evaluate('stats.cardsUsed'),0)
     self.page.locator('#nextBtn').click();self.page.locator('#nextBtn').click();self.page.locator('#nextBtn').click()
     if not skip:self.page.locator('#close').click()
+    self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click()
     self.assertEqual(self.page.evaluate('phase'),'hand')
     self.page.evaluate("LuckCloud.register=async()=>{};round=30;freezeOfficialRecord('nextRound');LuckRanks.openRegistration()")
     self.page.locator('#rankInitials').fill('TEST');self.page.locator('#rankSubmit').click()
@@ -107,7 +108,7 @@ class StabilityTests(unittest.TestCase):
   if not path.exists():self.skipTest('Run build_v0220_standalone.py for standalone validation')
   context=self.browser.new_context(offline=True,viewport={'width':360,'height':844});page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   try:
-   page.goto(path.as_uri());page.locator('#welcomeVisualModeToggle').uncheck();page.locator('#welcomeBattleMotionSkipToggle').check();page.locator('#welcomeNormal').click();self.assertEqual(page.evaluate('phase'),'hand');page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.locator('#nextBtn').click();self.assertEqual(page.evaluate('phase'),'hand');page.evaluate('Luck220.persist()');self.assertEqual(page.evaluate('Luck220.all().then(x=>x.length)'),1);self.assertEqual(errors,[])
+   page.goto(path.as_uri());page.locator('#welcomeVisualModeToggle').uncheck();page.locator('#welcomeBattleMotionSkipToggle').check();page.locator('#welcomeNormal').click();self.assertEqual(page.evaluate('phase'),'hand');page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click();self.assertEqual(page.evaluate('phase'),'hand');page.evaluate('Luck220.persist()');self.assertEqual(page.evaluate('Luck220.all().then(x=>x.length)'),1);self.assertEqual(errors,[])
   finally:context.close()
  def test_11_mixed_luck_link_results_are_readable(self):
   self.begin()
@@ -138,4 +139,35 @@ class StabilityTests(unittest.TestCase):
   self.assertTrue(r['officialUnchanged']);self.assertTrue(r['scoreUnchanged']);self.assertEqual(r['live']['official']['battles'],1);self.assertEqual(r['live']['endless']['battles'],1);self.assertEqual(r['terminal']['endless']['battles'],0)
   line=next(x for x in r['txt'].splitlines() if x.startswith('LINK_SCORE='));self.assertEqual(json.loads(line.split('=',1)[1])['endless']['battles'],1)
   (OUT/'hotfix-official-freeze.json').write_text(json.dumps(r,ensure_ascii=False,indent=2))
+ def test_14_round_briefing_independent_of_visual_mode(self):
+  rows=[]
+  for width in [360,390,430]:
+   for visual in [False,True]:
+    for skip in [False,True]:
+     self.page.goto('https://luck.test/preview/v0.2.20/');self.page.set_viewport_size({'width':width,'height':844})
+     self.page.locator('#welcomeVisualModeToggle').set_checked(visual);self.page.locator('#welcomeBattleMotionSkipToggle').set_checked(skip);self.page.locator('#welcomeNormal').click()
+     if visual:self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click()
+     before=self.page.evaluate('stats.cardsDrawn')
+     self.page.locator('#nextBtn').click();self.page.locator('#nextBtn').click();self.page.locator('#nextBtn').click()
+     if not skip:self.page.locator('#close').click()
+     self.assertTrue(self.page.locator('#modal').is_visible());title=self.page.locator('#modalTitle').inner_text();body=self.page.locator('#modalContent').inner_text()
+     self.assertIn('현재 누적 적 0마리 · HP 0',body);self.assertLess(body.index('현재 누적 적'),body.index('이번 라운드 신규 적'))
+     self.assertIn('ROUND 2 시작',title);self.assertIn('야생 고블린',body);self.assertIn('디버프 없음',body);self.assertEqual(self.page.evaluate('stats.cardsDrawn'),before)
+     # Alternate the explicit preparation button and X; either advances once.
+     if width==390:self.page.locator('#close').click()
+     else:self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click()
+     self.assertEqual(self.page.evaluate('phase'),'hand');self.assertEqual(self.page.evaluate('stats.cardsDrawn'),before+5);self.page.evaluate('confirmRoundStart()');self.assertEqual(self.page.evaluate('stats.cardsDrawn'),before+5)
+     if not visual:
+      self.page.get_by_role('button',name='사용',exact=True).first.click();self.assertFalse(self.page.locator('#modal').is_visible())
+     self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth'),width+1)
+     rows.append({'width':width,'visual':visual,'skip_motion':skip,'briefing':title,'draw_exactly_once':True,'card_popups_follow_visual':True})
+  (OUT/'round-briefing-matrix.json').write_text(json.dumps(rows,ensure_ascii=False,indent=2))
+ def test_15_accumulated_enemies_before_new_spawns(self):
+  self.begin()
+  self.page.evaluate("phase='battle';enemies=[{name:'누적 시험 적A',hp:40,debuffZone:1},{name:'누적 시험 적B',hp:50,debuffZone:1}];battle()")
+  body=self.page.locator('#modalContent').inner_text()
+  self.assertIn('현재 누적 적 (2마리 · HP 77)',body);self.assertIn('누적 시험 적A: 27 HP',body);self.assertIn('누적 시험 적B: 50 HP',body)
+  self.assertLess(body.index('누적 시험 적A'),body.index('이번 라운드 신규 적'));self.assertLess(body.index('이번 라운드 신규 적'),body.index('야생 고블린'))
+  self.assertFalse(self.page.locator('#visualModeToggle').is_checked());self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click();self.assertEqual(self.page.evaluate('phase'),'hand')
+  (OUT/'accumulated-enemy-briefing.json').write_text(json.dumps({'body':body,'visual_mode':False,'accumulated_count':2,'accumulated_hp':77},ensure_ascii=False,indent=2))
 if __name__=='__main__':unittest.main()

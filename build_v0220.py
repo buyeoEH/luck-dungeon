@@ -14,6 +14,15 @@ def build():
  build_id='0220-'+hashlib.sha256(''.join(sha(R/f) for f in inputs).encode()).hexdigest()[:16]
  meta={'version':'0.2.20','build_id':build_id,'base_commit':'567a22bb3d2da107e7553232a2096afd96ecd6f5','score_ruleset_version':'v2-actual-strike-0220'}
  game=(source/'game.js').read_text()
+ # Round preparation is required information, independent of card-effect popups.
+ game=once(game,"  window.LuckGameAudio?.sync();\n  if (isVisualMode()) {\n    showRoundStartModal();", "  window.LuckGameAudio?.sync();\n  if (isVisualMode() || !window.__luckAutoLabBotActive) {\n    showRoundStartModal();",'always show next round briefing for players')
+ game=once(game,'function showRoundStartModal() {','let pendingRoundBriefing=false;\nfunction showRoundStartModal() {\n  pendingRoundBriefing=true;','round briefing guard')
+ game=once(game,"  if ($('close')) $('close').onclick = handleModalClose;\n  if ($('modal')) $('modal').classList.remove('hide');\n}\n\nfunction handleModalClose()", "  if ($('close')) $('close').onclick = confirmRoundStart;\n  if ($('modal')) $('modal').classList.remove('hide');\n}\n\nfunction handleModalClose()",'briefing close proceeds safely')
+ game=once(game,'function confirmRoundStart() {','function confirmRoundStart() {\n  if(!pendingRoundBriefing)return;\n  pendingRoundBriefing=false;','prevent duplicate briefing draw')
+ # Surviving enemies precede new spawns in the required preparation briefing.
+ game=once(game,"        freshHtml + oldHtml +", "        oldHtml + '<h4 style=\"margin:0;color:#f87171\">🆕 이번 라운드 신규 적 ('+fresh.length+'마리)</h4>' + freshHtml +",'accumulated enemies first')
+ game=once(game,"🎯 먼저 처치해야 할 이전 적 (' + old.length + '마리)","🎯 현재 누적 적 (' + old.length + '마리 · HP ' + old.reduce((n,e)=>n+e.hp,0) + ')",'accumulated enemy total HP')
+ game=once(game,"    : '';\n\n  const ap = attackParts();", "    : '<div style=\"background:#1e293b;padding:10px;border-radius:6px\"><b>🎯 현재 누적 적 0마리 · HP 0</b><p>이전 라운드에서 남은 적이 없습니다.</p></div>';\n\n  const ap = attackParts();",'explicit empty accumulated enemies')
  # Mixed-luck effects collect strings; triggerLink appends {text,color} objects.
  # Normalize only this presentation list after the real effect/link resolution.
  game=once(game,"    registerActionLink(c,changes);\n    log('🎲 '","    registerActionLink(c,changes);\n    changes.splice(0,changes.length,...changes.map(x=>typeof x==='string'?x:x.text));\n    log('🎲 '",'mixed luck readable link results')
