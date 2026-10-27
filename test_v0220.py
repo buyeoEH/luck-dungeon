@@ -109,4 +109,32 @@ class StabilityTests(unittest.TestCase):
   try:
    page.goto(path.as_uri());page.locator('#welcomeVisualModeToggle').uncheck();page.locator('#welcomeBattleMotionSkipToggle').check();page.locator('#welcomeNormal').click();self.assertEqual(page.evaluate('phase'),'hand');page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.locator('#nextBtn').click();self.assertEqual(page.evaluate('phase'),'hand');page.evaluate('Luck220.persist()');self.assertEqual(page.evaluate('Luck220.all().then(x=>x.length)'),1);self.assertEqual(errors,[])
   finally:context.close()
+ def test_11_mixed_luck_link_results_are_readable(self):
+  self.begin()
+  rows=self.page.evaluate('''()=>{const out=[],saved=Math.random;try{for(const id of ['luckforge','luckminer','fateblade','lucklink','luckdraw','luckguard'])for(const roll of [.1,.6,.95])for(const visual of [false,true]){phase='hand';enemies=[];dangerActive=false;roundLinkDone={};linkComboAttack=0;tempAttack=0;resource=0;prot={attack:0,resource:0,gem:0,combo:0,all:0};const c=cp(PROMOS.find(p=>p.card.id===id).card);deck=[c];hand=[c];graveyard=[];draw=Array.from({length:6},()=>cp(BASE.find(c=>c.type==='resource')));roundActionHistory=[actionTag(c)==='economy'?'luck':'economy'];$('visualModeToggle').checked=visual;Math.random=()=>roll;const before=stats.cardsUsed;use(0);const line=fullLogs.findLast(s=>s.includes(c.name+' 전용 판정'));out.push({id,roll,visual,line,flash:$('actionFlash').innerText,modal:visual?$('modalContent').innerText:'',resource,tempAttack,link:linkComboAttack,used:stats.cardsUsed-before});$('modal').classList.add('hide');}}finally{Math.random=saved;}return out;}''')
+  self.assertEqual(len(rows),36)
+  for r in rows:
+   for key in ['line','flash','modal']:self.assertNotIn('[object Object]',r[key],r)
+   self.assertIn('연계 [',r['line'],r);self.assertGreater(r['link'],0);self.assertEqual(r['used'],1)
+   if r['id'] in ['luckforge','luckminer']:self.assertEqual(r['resource'],([10,5,1] if r['id']=='luckforge' else [7,4,1])[[.1,.6,.95].index(r['roll'])])
+   if r['visual']:self.assertIn('연계 [',r['modal'])
+  (OUT/'hotfix-mixed-luck.json').write_text(json.dumps(rows,ensure_ascii=False,indent=2))
+ def test_12_link_score_and_actual_pierce_log(self):
+  self.begin()
+  r=self.page.evaluate('''()=>{phase='battle';deck=[cp({id:'qa_attack',name:'시험 공격',type:'attack',atk:100})];hand=[cp({id:'qa_pierce',name:'시험 관통',type:'attack',passive:'pierce',pierce:2})];draw=[];graveyard=[];tempAttack=0;bonusAtk=0;aoeAttack=0;pierce=0;linkComboAttack=0;roundLinkDone={};enemies=[20,30,200].map((hp,i)=>({name:'시험 적'+i,hp,debuffZone:1}));triggerLink('a_qa','시험 연계',10,'시험',[]);battle();const e=Luck220.events().find(e=>e.event_type==='battle_resolved');const s=Luck220.snapshot(),txt=LuckHistory.exportText(s);return {payload:e.payload,round:e.round,currentRound:round,stats,score:scoreValue(),sum:scoreBreakdown().reduce((n,x)=>n+x[1],0),summary:s.live.combat_summary,txt,logs:fullLogs.filter(x=>x.includes('연계 점수:')||x.includes('관통 수치:')),legacy:LuckHistory.exportText({version:'0.2.20',build_id:'old',id:'old',live:{round:1,stats:{},deck:[]},events:[]})};}''')
+  self.assertEqual(r['round'],1);self.assertEqual(r['currentRound'],2)
+  self.assertEqual(r['payload']['link_score'],{'raw_bonus':10,'triggers':1,'bonus_points':50,'trigger_points':40,'total_points':90,'included_in_combo_score':True})
+  self.assertEqual(r['payload']['pierce_summary'],{'prepared':2,'hits':2,'damage':90,'kills':1})
+  self.assertEqual(r['stats']['comboBonus'],10);self.assertEqual(r['stats']['comboTriggers'],1);self.assertEqual(r['stats']['pierceDamage'],90);self.assertEqual(r['score'],r['sum'])
+  self.assertEqual(r['summary']['official']['link_score'],90);self.assertEqual(r['summary']['official']['pierce_damage'],90)
+  self.assertIn('LINK_SCORE=',r['txt']);self.assertIn('PIERCE=',r['txt']);self.assertEqual(len(r['logs']),2)
+  self.assertTrue(all(line.startswith('[R1][battle]') for line in r['logs']))
+  self.assertIn('LINK_SCORE=null',r['legacy']);self.assertIn('PIERCE=null',r['legacy'])
+  (OUT/'hotfix-combat-log.json').write_text(json.dumps(r,ensure_ascii=False,indent=2))
+ def test_13_zero_pierce_aoe_wipe_and_official_summary_freeze(self):
+  self.begin()
+  r=self.page.evaluate('''()=>{round=30;phase='battle';deck=[cp({id:'qa',name:'시험',type:'attack',atk:100})];hand=[];draw=[];graveyard=[];tempAttack=0;bonusAtk=0;aoeAttack=20;pierce=2;linkComboAttack=0;roundLinkDone={};enemies=[{name:'광역 대상',hp:10,debuffZone:1}];battle();const official=JSON.stringify(Luck220.run().official_snapshot),frozenScore=officialRecord.score;endlessMode=true;round=31;phase='battle';aoeAttack=0;pierce=0;hand=[];enemies=[{name:'무한 대상',hp:10,debuffZone:1}];battle();const es=Luck220.events().filter(e=>e.event_type==='battle_resolved');return {first:es[0].payload.pierce_summary,second:es[1].payload.pierce_summary,officialUnchanged:official===JSON.stringify(Luck220.run().official_snapshot),scoreUnchanged:frozenScore===officialRecord.score,live:Luck220.snapshot().live.combat_summary,terminal:Luck220.run().terminal.combat_summary};}''')
+  self.assertEqual(r['first'],{'prepared':2,'hits':0,'damage':0,'kills':0});self.assertEqual(r['second'],{'prepared':0,'hits':0,'damage':0,'kills':0})
+  self.assertTrue(r['officialUnchanged']);self.assertTrue(r['scoreUnchanged']);self.assertEqual(r['live']['official']['battles'],1);self.assertEqual(r['live']['endless']['battles'],1);self.assertEqual(r['terminal']['endless']['battles'],0)
+  (OUT/'hotfix-official-freeze.json').write_text(json.dumps(r,ensure_ascii=False,indent=2))
 if __name__=='__main__':unittest.main()

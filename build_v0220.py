@@ -14,6 +14,10 @@ def build():
  build_id='0220-'+hashlib.sha256(''.join(sha(R/f) for f in inputs).encode()).hexdigest()[:16]
  meta={'version':'0.2.20','build_id':build_id,'base_commit':'567a22bb3d2da107e7553232a2096afd96ecd6f5','score_ruleset_version':'v2-actual-strike-0220'}
  game=(source/'game.js').read_text()
+ # Mixed-luck effects collect strings; triggerLink appends {text,color} objects.
+ # Normalize only this presentation list after the real effect/link resolution.
+ game=once(game,"    registerActionLink(c,changes);\n    log('🎲 '","    registerActionLink(c,changes);\n    changes.splice(0,changes.length,...changes.map(x=>typeof x==='string'?x:x.text));\n    log('🎲 '",'mixed luck readable link results')
+ game=once(game,'    comboNames:battleComboNames, linkNames:battleLinkNames, aoe:aoeTotal,','    linkBonus:linkComboAttack, linkTriggers:scoredLinkTriggers,\n    comboNames:battleComboNames, linkNames:battleLinkNames, aoe:aoeTotal,','link score measurement before reset')
  game=once(game,"const SCORE_RULE_VERSION='v1'", "const SCORE_RULE_VERSION='v2-actual-strike-0220'",'score ruleset')
  game=once(game,'  hand.splice(i, 1);','  hand.splice(i, 1);\n  if(c.type===\'oneuse\'){deck=deck.filter(x=>x.id!==c.id);draw=draw.filter(x=>x.id!==c.id);graveyard=graveyard.filter(x=>x.id!==c.id);}', 'consume all piles before effects')
  game=once(game,'  const scoredAttack = attackValue();','  let scoredAttack = 0, measuredAttackParts = null;\n  const previewAttackParts=attackParts();','strike measurement')
