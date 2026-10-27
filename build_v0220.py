@@ -15,6 +15,7 @@ def build():
  meta={'version':'0.2.20','build_id':build_id,'base_commit':'567a22bb3d2da107e7553232a2096afd96ecd6f5','score_ruleset_version':'v2-actual-strike-0220'}
  game=(source/'game.js').read_text()
  # Round preparation is required information, independent of card-effect popups.
+ game=once(game,"  addEnemy();\n  \n  if (isVisualMode()) {\n    showRoundStartModal();", "  addEnemy();\n  \n  if (isVisualMode() || !window.__luckAutoLabBotActive) {\n    showRoundStartModal();",'always show round one briefing for players')
  game=once(game,"  window.LuckGameAudio?.sync();\n  if (isVisualMode()) {\n    showRoundStartModal();", "  window.LuckGameAudio?.sync();\n  if (isVisualMode() || !window.__luckAutoLabBotActive) {\n    showRoundStartModal();",'always show next round briefing for players')
  game=once(game,'function showRoundStartModal() {','let pendingRoundBriefing=false;\nfunction showRoundStartModal() {\n  pendingRoundBriefing=true;','round briefing guard')
  game=once(game,"  if ($('close')) $('close').onclick = handleModalClose;\n  if ($('modal')) $('modal').classList.remove('hide');\n}\n\nfunction handleModalClose()", "  if ($('close')) $('close').onclick = confirmRoundStart;\n  if ($('modal')) $('modal').classList.remove('hide');\n}\n\nfunction handleModalClose()",'briefing close proceeds safely')
@@ -50,6 +51,7 @@ def build():
  index=index.replace("connect-src 'none'","connect-src 'self' https://xkmfjutncwblfebgdmar.supabase.co")
  index=index.replace('🧪 v0.2.20 테스트판 · 기록은 이 기기에만 저장 · 정식 랭킹에 반영되지 않습니다','🧪 v0.2.20 안정화 검증판 · 개인 기록 자동 저장·재연결 동기화 · 이니셜 등록 시에만 순위 공개')
  index=index.replace('기록은 브라우저에 저장','기록 자동 저장·온라인 동기화')
+ index=index.replace('라운드 시작과 카드 효과를 팝업으로 표시','카드 효과를 팝업으로 표시 · 라운드 적 정보는 항상 표시')
  index=index.replace('</head>','<link rel="stylesheet" href="v0220-ui.css"><script>window.LUCK_BUILD='+json.dumps(meta)+';</script></head>')
  index=index.replace('</body>','<script src="v0220-core.js?v='+build_id+'"></script></body>')
  index=index.replace('📊 테스트 기록','☁️ 온라인 기록').replace('🏆 테스트 랭킹','🏆 온라인 랭킹')

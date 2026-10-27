@@ -30,7 +30,7 @@ class StabilityTests(unittest.TestCase):
   self.page.locator('[data-adventurer-id="knight"]').wait_for()
   self.page.evaluate("localStorage.setItem('luck_dungeon_manual_runs_v0219_preview','stable-sentinel');localStorage.setItem('luck_cloud_queue_v1','stable-queue')")
  def begin(self):
-  self.page.locator('#welcomeVisualModeToggle').uncheck();self.page.locator('#welcomeBattleMotionSkipToggle').check();self.page.locator('#welcomeNormal').click()
+  self.page.locator('#welcomeVisualModeToggle').uncheck();self.page.locator('#welcomeBattleMotionSkipToggle').check();self.page.locator('#welcomeNormal').click();self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click()
  def tearDown(self):
   self.page.screenshot(path=str(OUT/(self._testMethodName+'.png')))
   self.assertEqual(self.errors,[])
@@ -90,7 +90,7 @@ class StabilityTests(unittest.TestCase):
   for width in [360,390,430]:
    for skip in [True,False]:
     self.page.goto('https://luck.test/preview/v0.2.20/');self.page.set_viewport_size({'width':width,'height':844})
-    self.page.locator('#welcomeVisualModeToggle').uncheck();self.page.locator('#welcomeBattleMotionSkipToggle').set_checked(skip);self.page.locator('[data-adventurer-id="mage"]').click();self.page.locator('#welcomeNormal').click()
+    self.page.locator('#welcomeVisualModeToggle').uncheck();self.page.locator('#welcomeBattleMotionSkipToggle').set_checked(skip);self.page.locator('[data-adventurer-id="mage"]').click();self.page.locator('#welcomeNormal').click();self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click()
     self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth'),width+1)
     self.page.locator('#hand button[onclick^="use("]:not([disabled])').first.tap()
     self.assertGreater(self.page.evaluate('stats.cardsUsed'),0)
@@ -108,7 +108,7 @@ class StabilityTests(unittest.TestCase):
   if not path.exists():self.skipTest('Run build_v0220_standalone.py for standalone validation')
   context=self.browser.new_context(offline=True,viewport={'width':360,'height':844});page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   try:
-   page.goto(path.as_uri());page.locator('#welcomeVisualModeToggle').uncheck();page.locator('#welcomeBattleMotionSkipToggle').check();page.locator('#welcomeNormal').click();self.assertEqual(page.evaluate('phase'),'hand');page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click();self.assertEqual(page.evaluate('phase'),'hand');page.evaluate('Luck220.persist()');self.assertEqual(page.evaluate('Luck220.all().then(x=>x.length)'),1);self.assertEqual(errors,[])
+   page.goto(path.as_uri());page.locator('#welcomeVisualModeToggle').uncheck();page.locator('#welcomeBattleMotionSkipToggle').check();page.locator('#welcomeNormal').click();page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click();self.assertEqual(page.evaluate('phase'),'hand');page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.locator('#nextBtn').click();page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click();self.assertEqual(page.evaluate('phase'),'hand');page.evaluate('Luck220.persist()');self.assertEqual(page.evaluate('Luck220.all().then(x=>x.length)'),1);self.assertEqual(errors,[])
   finally:context.close()
  def test_11_mixed_luck_link_results_are_readable(self):
   self.begin()
@@ -146,7 +146,8 @@ class StabilityTests(unittest.TestCase):
     for skip in [False,True]:
      self.page.goto('https://luck.test/preview/v0.2.20/');self.page.set_viewport_size({'width':width,'height':844})
      self.page.locator('#welcomeVisualModeToggle').set_checked(visual);self.page.locator('#welcomeBattleMotionSkipToggle').set_checked(skip);self.page.locator('#welcomeNormal').click()
-     if visual:self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click()
+     self.assertTrue(self.page.locator('#modal').is_visible());self.assertIn('ROUND 1 시작',self.page.locator('#modalTitle').inner_text());self.assertIn('약한 슬라임',self.page.locator('#modalContent').inner_text());self.assertIn('12 HP',self.page.locator('#modalContent').inner_text());self.assertEqual(self.page.evaluate('stats.cardsDrawn'),0)
+     self.page.get_by_role('button',name='⚔ 전투 준비하기',exact=True).click();self.assertEqual(self.page.evaluate('stats.cardsDrawn'),5)
      before=self.page.evaluate('stats.cardsDrawn')
      self.page.locator('#nextBtn').click();self.page.locator('#nextBtn').click();self.page.locator('#nextBtn').click()
      if not skip:self.page.locator('#close').click()
