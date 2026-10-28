@@ -1,4 +1,4 @@
-name: v0.3 stage 0 fixed ON verification
+name: v0.3 P1 fixed ON verification
 on:
   push:
     branches: [feature/game-v0.3-development]
@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: v030-stage0-verification
+  group: v030-p1-verification
   cancel-in-progress: true
 jobs:
   verify:
@@ -32,32 +32,34 @@ jobs:
         run: |
           mkdir -p results-v030
           python verify_v030_baseline.py
-          python -m unittest test_v030 -v 2>&1 | tee results-v030/ui-regression.log
-      - name: Compare 160 pairs and benchmark seeds 101 to 300 with fixed ON
-        run: python run_v030_stage0.py
+          mkdir -p results-v030-p1
+          python -m unittest test_v030 test_v030_p1 -v 2>&1 | tee results-v030-p1/ui-regression.log
+      - name: P1 OFF regression 160 pairs and staged ON benchmarks
+        run: python verify_v030_p1.py
       - name: Generate reports from completed evidence
         run: |
-          python write_v030_report.py
+          python write_v030_p1_report.py
           python - <<'PY'
           import os
           from pathlib import Path
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
-              f.write(Path('V030-STAGE0-REPORT.md').read_text())
+              f.write(Path('V030-P1-REPORT.md').read_text())
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: v030-stage0-results
+          name: v030-p1-results
           path: |
             results-v030/
-            V030-STAGE0-REPORT.md
+            results-v030-p1/
+            V030-P1-REPORT.md
             V030-SOURCE-AUDIT.md
             V030-P1-DESIGN.md
             V030-ROADMAP.md
             v030-build-report.json
             v030-standalone-report.json
-            v030-stage0-evidence.zip
+            v030-p1-evidence.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: v030-standalone-development-html
-          path: _site/downloads/LUCK-v0.3.0-dev.0.zip
+          name: v030-p1-standalone-development-html
+          path: _site/downloads/LUCK-v0.3.0-dev.1.zip
