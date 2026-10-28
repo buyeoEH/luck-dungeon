@@ -1,0 +1,63 @@
+name: v0.3 stage 0 fixed ON verification
+on:
+  push:
+    branches: [feature/game-v0.3-development]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v030-stage0-verification
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install playwright==1.51.0 pillow==11.1.0
+      - run: python -m playwright install --with-deps chromium --only-shell
+      - name: Build preserved versions and isolated fixed ON development version
+        run: |
+          python prepare_site.py
+          python build_v0219_preview.py
+          python build_v0220.py
+          python build_v030.py
+          python build_v030_standalone.py
+      - name: Verify the playable baseline and mobile flow
+        run: |
+          mkdir -p results-v030
+          python verify_v030_baseline.py
+          python -m unittest test_v030 -v 2>&1 | tee results-v030/ui-regression.log
+      - name: Compare 160 pairs and benchmark seeds 101 to 300 with fixed ON
+        run: python run_v030_stage0.py
+      - name: Generate reports from completed evidence
+        run: |
+          python write_v030_report.py
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write(Path('V030-STAGE0-REPORT.md').read_text())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v030-stage0-results
+          path: |
+            results-v030/
+            V030-STAGE0-REPORT.md
+            V030-SOURCE-AUDIT.md
+            V030-P1-DESIGN.md
+            V030-ROADMAP.md
+            v030-build-report.json
+            v030-standalone-report.json
+            v030-stage0-evidence.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v030-standalone-development-html
+          path: _site/downloads/LUCK-v0.3.0-dev.0.zip
