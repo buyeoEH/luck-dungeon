@@ -1,0 +1,15 @@
+{
+  "runs": 21600,
+  "required_combinations": 21600,
+  "missing": 0,
+  "duplicates": 0,
+  "object_object_logs": 0,
+  "effects_ban_leaks": 0,
+  "chromium_original_vs_adapter_pairs": 160,
+  "chromium_vs_node_pairs": 160,
+  "smoke_cross_host_runs": 108,
+  "intervention_unit_checks": 5,
+  "prior_p1_completion_groups_reproduced": 14,
+  "tracked_game_diff_empty": true,
+  "note": "Cross-host hashes normalize undefined object values to null as Playwright does. Runtime sampling used two non-game batching versions, with resumable completion and a 512 MiB final heap cap."
+}

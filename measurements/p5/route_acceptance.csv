@@ -1,0 +1,5 @@
+﻿reward,aoe_rate,threshold_80percent,passing_policies,at_least_two
+random3,0.49,0.392,"luck,link",True
+reroll,0.2275,0.18200000000000002,link,False
+restock,0.2275,0.18200000000000002,link,False
+stone,0.42,0.336,"luck,link",True

@@ -23,6 +23,11 @@ def main():
  from p5_measure import configs
  assert set(index)=={(c['experiment'],c['profile'],c['seed']) for c in configs(range(101,501))}
  assert all(r['persistent_draw'] and not r['object_object_count'] for r in rows)
+ # Independent reconciliation against previous 400-seed expanded P1 audit.
+ expected={'reroll':{'aoe':91,'attack':2,'balanced':24,'economy':1,'link':92,'luck':55,'pierce':3},'random3':{'aoe':196,'attack':107,'balanced':144,'economy':20,'link':269,'luck':175,'pierce':153}}
+ for e,ps in expected.items():
+  for p,n in ps.items():assert sum(index[e,p,s]['clear'] for s in range(101,501))==n,(e,p,'previous result drift')
+
  assert len({r['policy_sha256'] for r in rows})==1 and len({r['observer_sha256'] for r in rows})==1
  for r in rows:
   assert len(r['battles'])==len(r['audit']['battles'])
@@ -36,9 +41,11 @@ def main():
  pairs_host=json.loads((R/'p5-controls/node-pairs.json').read_text());assert len(pairs_host)==160 and all(x['same'] for x in pairs_host)
  groups=defaultdict(list)
  for r in rows:groups[r['experiment'],r['profile']].append(r)
- completion=[];conv=[]
+ completion=[];conv=[];cohorts=[]
  for (exp,p),g in sorted(groups.items()):
   n=len(g);assert n==400;k=sum(x['clear'] for x in g);lo,hi=wilson(k,n);w=sum(within(x) for x in g);wl,wh=wilson(w,n)
+  for low in [101,201,301,401]:
+   part=[r for r in g if low<=r['seed']<low+100];cohorts.append({'experiment':exp,'profile':p,'seeds':f'{low}-{low+99}','n':len(part),'completed':sum(r['clear'] for r in part),'within_r30':sum(within(r) for r in part)})
   completion.append({'experiment':exp,'profile':p,'n':n,'completed':k,'rate':k/n,'ci95_low':lo,'ci95_high':hi,'within_r30':w,'within_rate':w/n,'within_ci_low':wl,'within_ci_high':wh,'mean_round':statistics.mean(r['round'] for r in g),'death_r10_11':sum(not r['clear'] and 10<=r['round']<=11 for r in g),'death_r19_21':sum(not r['clear'] and 19<=r['round']<=21 for r in g),'death_r22_29':sum(not r['clear'] and 22<=r['round']<=29 for r in g)})
   bs=[b for r in g for b in r['audit']['battles']]
   conv.append({'experiment':exp,'profile':p,'runs':n,'battles':len(bs),'pure_displaced_battles':sum(b['pure_displaced'] for b in bs),'runs_pure_displaced':sum(any(b['pure_displaced'] for b in r['audit']['battles']) for r in g),'pure_eligible_battles':sum(b['pure_eligible'] for b in bs),'actual_pure_hits':sum(r['stats']['v0219PureHits'] for r in g),'actual_pure_damage':sum(r['stats']['v0219PureDamage'] for r in g),'conversion_kills':sum(b['conversion_kills'] for b in bs),'conversion_damage':sum(b['conversion_damage'] for b in bs),'aoe_damage':sum(r['stats']['aoeDamage'] for r in g),'pierce_damage':sum(r['stats']['pierceDamage'] for r in g),'effect_card_acquisitions':sum(len(r['audit']['acquiredEffects']) for r in g)})
@@ -72,7 +79,7 @@ def main():
  for e in REWARDS:
   aoe=lookup[e,'aoe']['rate'];passing=[p for p in PROFILES if p!='aoe' and lookup[e,p]['rate']>=aoe*.8]
   routes.append({'reward':e,'aoe_rate':aoe,'threshold_80percent':aoe*.8,'passing_policies':','.join(passing),'at_least_two':len(passing)>=2})
- for name,data in [('completion',completion),('paired',paired),('conversion',conv),('conversion_per_seed',relation),('association',association),('reward_dispersion',dispersion),('route_acceptance',routes)]:csvwrite(name+'.csv',data)
+ for name,data in [('completion',completion),('cohorts',cohorts),('paired',paired),('conversion',conv),('conversion_per_seed',relation),('association',association),('reward_dispersion',dispersion),('route_acceptance',routes)]:csvwrite(name+'.csv',data)
  summary={'runs':21600,'completion':completion,'paired':paired,'conversion':conv,'association':association,'dispersion':dispersion,'routes':routes,'control_pairs':160};(O/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
  text=['# LUCK Dungeon v0.3 P5 보상 균형: 변경 전 측정 보고서','','**게임·AI 정책 변경 없이 측정했다. 조정안은 아직 적용하지 않았다.**','', '시드 101–500, 모든 조건당 400판, 총 21,600판. 드로우 항상 ON. 기준 커밋 `15d1364`, 게임 빌드 `030-p1-5d62a9825cb6d2f9`, 고정 정책 `v030-reference-policy-v1`이다. 실행은 Node.js/jsdom이며 Chromium 예비 108판의 완료·라운드·통계·난수·첫 상점·보상·전투·계측이 일치하고, 전체 상태 추적 160쌍도 Chromium 원본→테스트 어댑터→Node 간 일치했다. GitHub Actions 실행으로 표기하지 않는다.','', '원본 tracked 게임·AI 파일 변경 0, 오브젝트 문자열 로그 0건. DB·웹 배포·R30·행동력·도박 카드·광역 카드 수치를 변경하지 않았다. AI 완료율은 사람 승률이 아니다.','', '## 보상 4종 고정 완료율','', '각 셀은 완료/400, 완료율, Wilson 95% 구간이다. R30 한계 이내 완료 및 사망 구간은 completion.csv에 따로 기재했다.','', '| AI | 랜덤카드 3장 | 상점 교체 | 재입고 | 만능승급석 |','|---|---|---|---|---|']
  for p in PROFILES:
@@ -83,7 +90,7 @@ def main():
  text += ['', '같은 정책·시드에서 보상끼리 짝 비교했다. 6개 보상 쌍 × 7정책의 개선/악화 수와 차이 95% 구간은 paired.csv에 있다. 95% 차이 구간은 시드 쌍을 유지한 2,000회 부트스트랩이다. 탐색적 비교이며 다중 검정 보정은 하지 않았다.','', '## 랜덤카드 1·2·3장 민감도','', '| AI | 1장 | 2장 | 3장 | 3→1 개선/악화 · 차이95% | 3→2 개선/악화 · 차이95% |','|---|---:|---:|---:|---|---|']
  for p in PROFILES:
   ps=[next(x for x in paired if x['profile']==p and x['candidate']==e and x['comparison']=='random_card_count') for e in ['random1','random2']];cells=[percent(lookup[e,p]['rate']) for e in ['random1','random2','random3']];cells += [f"{x['improved']}/{x['worsened']} · {100*x['ci95_low']:+.2f}~{100*x['ci95_high']:+.2f}%p" for x in ps];text.append('| '+names[p]+' | '+' | '.join(cells)+' |')
- text += ['', '장수 실험은 테스트 호스트에서만 원래 보상 처리의 slice 길이를 바꿨다. 2% 기본 카드 회수 규칙은 그대로다. 장수가 줄면 보상 이후 난수 소비·덱·전투 경로가 달라진다. 실험 로그의 기존 보상명에 “3장”이 남을 수 있으므로 actual 설정인 random_cards를 기준으로 판별한다. 선택제는 측정하지 않았으며 장수 결과로 선택제 효과를 단정하지 않는다.','', '## 변환 관통과 순수 연속타','', '| 보상 | AI | 조건 차단 전투 / 해당 판 | P1 완료율 | 변환 관통만 OFF 완료율 | OFF 개선/악화 · 차이95% |','|---|---|---:|---:|---|']
+ text += ['', '장수 실험은 테스트 호스트에서만 원래 보상 처리의 slice 길이를 바꿨다. 2% 기본 카드 회수 규칙은 그대로다. 장수가 줄면 보상 이후 난수 소비·덱·전투 경로가 달라진다. 실험 로그의 기존 보상명에 “3장”이 남을 수 있으므로 actual 설정인 random_cards를 기준으로 판별한다. 선택제는 측정하지 않았으며 장수 결과로 선택제 효과를 단정하지 않는다.','', '## 변환 관통과 순수 연속타','', '| 보상 | AI | 조건 차단 전투 / 해당 판 | P1 완료율 | 변환 관통만 OFF 완료율 | OFF 개선/악화 · 차이95% |','|---|---|---:|---:|---:|---|']
  for p in ['attack','balanced']:
   for e in ['reroll','random']:
    normal='random3' if e=='random' else e;c=next(x for x in conv if x['experiment']==normal and x['profile']==p);q=next(x for x in paired if x['comparison']=='converted_pierce_ablation' and x['profile']==p and x['candidate']=='noconv_'+e)
@@ -96,7 +103,11 @@ def main():
  text += ['', '이는 선호 AI 정책 기준이다. 비광역 정책도 제약없는 실험에서는 광역을 사용할 수 있어, 광역 피해 없이 독립적인 루트 2개가 달성됐다는 뜻은 아니다.','', '| AI | 4보상 최대–최소 | 4보상 평균으로부터 최대 편차 | ±10%p 이내 |','|---|---:|---:|---|']
  for x in dispersion:text.append(f"| {names[x['profile']]} | {100*x['max_minus_min']:.2f}%p | {100*x['maximum_deviation_from_mean']:.2f}%p | {'예' if x['within_plus_minus_10pp'] else '아니오'} |")
  text += ['', '보상 편차의 ±10%p는 각 AI 내 4보상 평균을 기준으로 해석했다. 더 엄격한 최대–최소≤10%p 결과도 reward_dispersion.csv에 병기했다. 사전 기준을 바꿔 통과시키지 않는다.','', '## 다음 조정안: 승인 전 미적용','', '이번 결과에서 완료율이 낮은 보상·정책부터 한 항목씩 실험해야 한다. 랜덤카드 장수만 줄여 평균을 맞추는 방식은 대안 루트 하락 위험과 광역 선너프 금지 원칙을 함께 검토해야 한다. 선택제, 유지 카드 2장 잠금, 품절 랜덤 카드 1장 복구, 만능승급석 승급비 1회 면제는 별도 후보이며 이번 결과가 그 효과를 직접 측정한 것은 아니다. 다음 승인안의 우선순위와 이유는 아래 검토 메모에 기재한다.','', '원본 기록·실행 메타·회귀 검증·집계 CSV를 결과 ZIP에 제공한다. 게임/AI tracked diff는 0이며 main·기존 사용자 데이터·배포는 그대로다.']
- (O/'LUCK-v030-P5-measurement.md').write_text('\n'.join(text)+'\n')
+ document='\n'.join(text)+'\n'
+ document=document.replace('## 보상 4종 고정 완료율',(R/'P5-REVIEW-SUMMARY.md').read_text()+'## 보상 4종 고정 완료율',1)
+ document=document.replace('이번 결과에서 완료율이 낮은 보상·정책부터 한 항목씩 실험해야 한다. 랜덤카드 장수만 줄여 평균을 맞추는 방식은 대안 루트 하락 위험과 광역 선너프 금지 원칙을 함께 검토해야 한다. 선택제, 유지 카드 2장 잠금, 품절 랜덤 카드 1장 복구, 만능승급석 승급비 1회 면제는 별도 후보이며 이번 결과가 그 효과를 직접 측정한 것은 아니다. 다음 승인안의 우선순위와 이유는 아래 검토 메모에 기재한다.',(R/'P5-REVIEW-PROPOSAL.md').read_text().strip(),1)
+ document=document.replace('21,600판. 드로우','21,600판. 실행 중 메모리 한계로 중단된 프로세스는 작은 묶음으로 재개했으며, 최종 21,600개 고유 조합만 집계했다. 드로우')
+ (O/'LUCK-v030-P5-measurement.md').write_text(document)
  with gzip.open(O/'runs.jsonl.gz','wt') as f:
   for r in rows:f.write(json.dumps(r,ensure_ascii=False,separators=(',',':'))+'\n')
  print(json.dumps({'runs':len(rows),'groups':len(completion),'paired_comparisons':len(paired),'controls':160}))
