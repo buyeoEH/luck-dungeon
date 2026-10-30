@@ -1,0 +1,8 @@
+﻿profile,mean,max_minus_min,maximum_deviation_from_mean,within_plus_minus_10pp,range_within_10pp
+aoe,0.34125,0.26249999999999996,0.14875,False,False
+economy,0.019375,0.0475,0.030625000000000003,True,True
+balanced,0.218125,0.3,0.15812500000000002,False,False
+pierce,0.19375,0.375,0.18875,False,False
+luck,0.278125,0.3175,0.159375,False,False
+link,0.453125,0.4425,0.223125,False,False
+attack,0.09125000000000001,0.2625,0.17625000000000002,False,False

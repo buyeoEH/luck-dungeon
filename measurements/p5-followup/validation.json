@@ -1,0 +1,29 @@
+{
+  "engine_commit": "15d136471bfc19e4cd21bb2e2dbf2218b7acc013",
+  "build_id": "030-p1-5d62a9825cb6d2f9",
+  "new_full_runs": 6800,
+  "new_opening_initializations": 800,
+  "full_runs_per_case": 400,
+  "seeds": "101-500",
+  "prior_reference_runs": 21600,
+  "prior_zip_sha256": "e9c2c93b6001c24ef7fbe75afddbf63e40909c2db906379c8a25d6f352561ef7",
+  "exact_reproduced_previous_strict_ban_runs": 1600,
+  "same_native_state_hash_pairs": 160,
+  "active_chromium_node_parity": 34,
+  "unit_checks": {
+    "decision_choice_matches": true,
+    "no_rng_calls": 0,
+    "deterministic_tie_handling": true,
+    "native_aoe_and_pierce_blocked": true,
+    "conversion_switch_works": true
+  },
+  "missing_combinations": 0,
+  "duplicate_combinations": 0,
+  "object_object_logs": 0,
+  "forbidden_native_aoe_pierce_damage_leaks": 0,
+  "original_game_and_ai_tracked_diff": 0,
+  "platform": "Node24.22.1/jsdom26.1.0; Chromium134 active cross-check",
+  "actions_executed": false,
+  "shipped_reward_changes": false,
+  "mixed_selector": "state-reward-v1, frozen before batch, no quotas or post-hoc tuning"
+}

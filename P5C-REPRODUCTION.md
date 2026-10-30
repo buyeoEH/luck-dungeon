@@ -1,0 +1,23 @@
+# Reproduction: P5 same-state reward forks
+
+Baseline source: `15d136471bfc19e4cd21bb2e2dbf2218b7acc013` (build `030-p1-5d62a9825cb6d2f9`). Approved candidate source: `d276fbc8bd3a484b9431ef39b5b072835e6e0f5d` (build `030-p5-2ae18b163156e902`). Both are preserved and unmerged. No live DB or deployment is required.
+
+Use two separate worktrees for these exact commits. Build each with `python prepare_site.py`, `python build_v0219_preview.py`, `python build_v0220.py`, `python build_v030.py`. Copy the experiment-only files from the measurement branch into the respective worktrees; never overwrite the baseline engine with candidate files. Node24.22.1, jsdom26.1.0, Python3.12, NumPy, Playwright1.51.0/Chromium134 were used. Set `P5_JSDOM_PATH` to an installed jsdom package if not using the sibling `p5-runtime/node_modules/jsdom` directory.
+
+The evidence archive includes a 2,800-run reference dataset, the 29,768-job configuration, 7,442 normalized pre-choice states, before/after fork rows, final fixed-policy rows, previous fixed-policy rows, build manifests, and validation outputs. Extract reference mixed rows into `p5b-results/worker-0.jsonl` (all rows in one file are accepted by the Python config/analyzer), or retain the original four shards. Extract job configuration as `p5c-jobs.json`.
+
+Baseline experiment files: `p5c-node.cjs`, `p5c-fork.js`, `p5c-run.cjs`, `p5c-batches.py`, `p5c-config.py`, `p5c-states.cjs`, `p5c-browser.py`, plus existing `p5-probe.js`, `p5b-policy.js`, and `v030-reference-ai.js`. Run `python p5c-config.py`, then `python p5c-batches.py`. Four shards are selected by `(seed-101)%4`. A process stops after160 new continuations and resumes from unique `(seed,profile,target,choice)` keys. Check actual rows, not only progress metadata: expected7412/7412/7408/7536, total29768. Four state hashes/RNG states per point must match; the reference action must reproduce the original continuation.
+
+Candidate: use `p5e-node.cjs`, `p5e-fork.js`, `p5e-run.cjs`, `p5e-batches.py` and the same job configuration. Derive `baseline-state-hashes.json` from baseline rows keyed `seed|profile|target`. Run `python p5e-batches.py`. Before each replay the P5 feature switch resets OFF; at the target choice it turns ON. This preserves the common baseline prefix and enables new mechanics only at the target and later rewards. The runner rejects any prestate mismatch. Same expected counts apply. No partial global-state restore is used.
+
+The first32 candidate rows were replayed using the final reset-per-run harness; their prestate and full outcomes matched exactly. This check is in `early-harness-revalidation.json`. No result was selected or dropped based on performance.
+
+Fixed policy runs: candidate `p5-fixed-run.cjs`/`p5-fixed-batch.py`: run each of `python p5-fixed-batch.py reroll p5-final-fixed`, `... restock ...`, `... random ...`. Check exactly2800 unique rows per reward, all400 seeds×7policies. No early stopping. Preferences remain `v030-reference-policy-v1`; the adapter resolves the new selection UI and actual discounted offer prices without retuning weights or reward quotas.
+
+Analysis: arrange baseline as `p5-followup/`, candidate as sibling `p5-live/`, and previous fixed data as `p5b-prior/runs.jsonl.gz`, then `OPENBLAS_NUM_THREADS=1 python p5c_analyze.py --final`. For this analyzer the previous fixed input must contain original `experiment`, `variant`, `reward_policy` fields. It outputs tie-aware seed-cluster95% intervals, reward/policy/state strata, pair comparisons and fixed-rate checks. Primary rank is `(officialComplete,reachedRound)`; no score tie breaker. Fractions are not selector quotas.
+
+For native Chromium parity run the corresponding `p5c-browser.py` / `p5e-browser.py` after generating seed101 first-reward smoke rows (`node p5c-run.cjs 0 4 --smoke`). Seven policies are defined, but economy seed101 has no reward moment, so six policies×four actions=24 matched branches. UI checks and standalone tests are also separate from accelerated headless measurement; they do not suppress rendering. Internal QA screenshots are excluded from the downloadable evidence.
+
+Final standalone builder: `python build_v030_standalone.py`; output `_site/downloads/LUCK-v0.3.0-dev.2.html`, with all63 image/audio assets embedded. This artifact is an offline development build; online uploads remain disabled in the isolated preview configuration.
+
+The report explicitly distinguishes conditional reward-moment completion from whole-run fixed-policy completion. No Actions dispatch, Supabase SQL execution, main update, release, or deployment is claimed.

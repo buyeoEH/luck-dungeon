@@ -1,0 +1,130 @@
+[
+  {
+    "key": "101|aoe|0|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "101|aoe|0|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "101|aoe|0|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "101|aoe|0|3",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|0|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|0|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|0|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|0|3",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|1|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|1|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|1|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "102|aoe|1|3",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|0|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|0|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|0|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|0|3",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|1|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|1|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|1|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "103|aoe|1|3",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|aoe|0|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|aoe|0|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|aoe|0|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|aoe|0|3",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|0|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|0|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|0|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|0|3",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|1|0",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|1|1",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|1|2",
+    "prestate_and_outcome_identical": true
+  },
+  {
+    "key": "104|attack|1|3",
+    "prestate_and_outcome_identical": true
+  }
+]
