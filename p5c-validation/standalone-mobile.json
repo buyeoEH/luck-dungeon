@@ -1,0 +1,35 @@
+[
+  {
+    "width": 360,
+    "offline": true,
+    "embedded_audio": true,
+    "reroll_seed_flow": true,
+    "restock_discount_flow": true,
+    "page_errors": [],
+    "external_requests": [],
+    "build": "030-p5-2ae18b163156e902",
+    "git_sha": "d276fbc8bd3a484b9431ef39b5b072835e6e0f5d"
+  },
+  {
+    "width": 390,
+    "offline": true,
+    "embedded_audio": true,
+    "reroll_seed_flow": true,
+    "restock_discount_flow": true,
+    "page_errors": [],
+    "external_requests": [],
+    "build": "030-p5-2ae18b163156e902",
+    "git_sha": "d276fbc8bd3a484b9431ef39b5b072835e6e0f5d"
+  },
+  {
+    "width": 430,
+    "offline": true,
+    "embedded_audio": true,
+    "reroll_seed_flow": true,
+    "restock_discount_flow": true,
+    "page_errors": [],
+    "external_requests": [],
+    "build": "030-p5-2ae18b163156e902",
+    "git_sha": "d276fbc8bd3a484b9431ef39b5b072835e6e0f5d"
+  }
+]
