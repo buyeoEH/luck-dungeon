@@ -1,0 +1,26 @@
+[
+  {
+    "width": 360,
+    "locks_cap2": true,
+    "eight_seed_choices": true,
+    "modal_within_width": true,
+    "next_round": 2,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "locks_cap2": true,
+    "eight_seed_choices": true,
+    "modal_within_width": true,
+    "next_round": 2,
+    "errors": []
+  },
+  {
+    "width": 430,
+    "locks_cap2": true,
+    "eight_seed_choices": true,
+    "modal_within_width": true,
+    "next_round": 2,
+    "errors": []
+  }
+]

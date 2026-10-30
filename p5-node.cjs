@@ -1,12 +1,12 @@
 const fs=require('fs'),path=require('path'),crypto=require('crypto'),vm=require('vm');
 const {JSDOM,VirtualConsole}=require(process.env.P5_JSDOM_PATH||path.join(__dirname,'../p5-runtime/node_modules/jsdom'));
 const R=__dirname;
-function create(variant,probe=true){
+function create(variant,probe=true,settings={}){
  const root=path.join(R,'_site/preview',variant==='baseline'?'v0.2.20':'v0.3.0');
  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
  const vc=new VirtualConsole();vc.on('jsdomError',e=>{if(!/Not implemented: (HTMLCanvasElement|window.scrollTo|HTMLMediaElement)/.test(e.message))process.stderr.write(e.message+'\n');});
  const dom=new JSDOM(html,{runScripts:'outside-only',url:'https://luck.test/preview/'+(variant==='baseline'?'v0.2.20':'v0.3.0')+'/',pretendToBeVisual:true,virtualConsole:vc});
- const w=dom.window;w.scrollTo=()=>{};w.fetch=()=>Promise.reject(Error('Network disabled in experiment'));w.structuredClone=global.structuredClone;w.crypto.randomUUID=crypto.randomUUID;
+ const w=dom.window;w.LUCK_P5_REWARDS_ENABLED=settings.p5!==false;w.scrollTo=()=>{};w.fetch=()=>Promise.reject(Error('Network disabled in experiment'));w.structuredClone=global.structuredClone;w.crypto.randomUUID=crypto.randomUUID;
  for(const sc of [...w.document.scripts]){
   let text=sc.src?fs.readFileSync(path.join(root,sc.getAttribute('src').split('?')[0]),'utf8'):sc.textContent;
   if(probe&&sc.getAttribute('src')?.startsWith('game.js')){
@@ -21,6 +21,8 @@ function create(variant,probe=true){
  const oldChoice="const choice={reroll:0,restock:1,random:2,stone:3}[cfg.reward_policy||'reroll'];";
  if(!ai.includes(oldChoice))throw Error('Reward decision gate changed');
  ai=ai.replace(oldChoice,"const choice=cfg.reward_policy==='mixed'?P5B.chooseReward(cfg.profile):({reroll:0,restock:1,random:2,stone:3}[cfg.reward_policy||'reroll']);");
+ ai=ai.replace("...BASIC.map(c=>({...c,group:'basic'})),...randomShop.map(c=>({...c,group:'random'}))","...BASIC.map(c=>({...c,price:window.LuckP5Rewards?.price(c)??c.price,group:'basic'})),...randomShop.map(c=>({...c,price:window.LuckP5Rewards?.price(c)??c.price,group:'random'}))");
+ ai=ai.replace('reward(choice);if(rewardRevealPending)', 'reward(choice);if(window.LuckP5Rewards?.enabled)LuckP5Rewards.botResolve(cfg.profile,value);if(rewardRevealPending)');
  vm.runInContext(ai,dom.getInternalVMContext());
  if(probe)vm.runInContext(fs.readFileSync(path.join(R,'p5-probe.js'),'utf8'),dom.getInternalVMContext());
  vm.runInContext(fs.readFileSync(path.join(R,'p5b-policy.js'),'utf8'),dom.getInternalVMContext());

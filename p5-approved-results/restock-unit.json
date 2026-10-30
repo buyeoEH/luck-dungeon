@@ -1,0 +1,87 @@
+{
+  "checks": [
+    "one slot 0→1 only; duplicate blocked; coupon caps and paid-price event",
+    "no sold-out: discount only; failed buy preserves; next buy consumes once",
+    "unused coupon expires at shop exit and new run resets",
+    "adapted AI finishes full run"
+  ],
+  "example": {
+    "stocks": [
+      0,
+      2,
+      3,
+      2,
+      2,
+      2,
+      2,
+      3
+    ],
+    "after": [
+      1,
+      2,
+      3,
+      2,
+      2,
+      2,
+      2,
+      3
+    ],
+    "basic_left": 0,
+    "coupon": {
+      "round": 2,
+      "uses": 1,
+      "rate": 0.5,
+      "cap": 2
+    },
+    "cost": 11,
+    "paid": 11,
+    "regular": 13,
+    "uses_after": null,
+    "event": {
+      "phase": "shop",
+      "card_id": "erase",
+      "instance_id": "a28f3cf5-a5d3-49ed-b243-2d10494fe7ad",
+      "name": "망각의 서",
+      "type": "remove",
+      "atk": 0,
+      "aoe": 0,
+      "pierce": 0,
+      "perEnemy": 0,
+      "passive": null,
+      "price": 11,
+      "regular_price": 13,
+      "stock_before": 1,
+      "stock_after": 0,
+      "source": "random"
+    }
+  },
+  "failed_and_repeated_buy": {
+    "start": {
+      "round": 2,
+      "uses": 1,
+      "rate": 0.5,
+      "cap": 2
+    },
+    "after_fail": {
+      "round": 2,
+      "uses": 1,
+      "rate": 0.5,
+      "cap": 2
+    },
+    "after": null,
+    "paid": 2,
+    "cost2": 4,
+    "n1": 1
+  },
+  "expiry": {
+    "before": {
+      "round": 2,
+      "uses": 1,
+      "rate": 0.5,
+      "cap": 2
+    },
+    "after": null,
+    "new_run": null,
+    "phase": "hand"
+  }
+}

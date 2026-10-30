@@ -1,0 +1,17 @@
+{
+  "description": "만능승급석 1장을 덱에 추가합니다. 손패에서 1차 승급을 선택하고, 부족한 비전설 랜덤 상점 재료 중 1종의 카드 1장을 보충합니다. 후보가 없으면 돌을 소모하지 않고 취소합니다. 승급 비용은 별도로 필요합니다.",
+  "used": {
+    "material_added": 1,
+    "stone_used": 1,
+    "stone_left": false,
+    "res": 0,
+    "gems": 0,
+    "promotions": 0
+  },
+  "cancel": {
+    "candidates": 0,
+    "used": 0,
+    "left": true,
+    "same_size": true
+  }
+}
