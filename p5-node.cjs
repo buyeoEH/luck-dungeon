@@ -21,6 +21,7 @@ function create(variant,probe=true,settings={}){
  const oldChoice="const choice={reroll:0,restock:1,random:2,stone:3}[cfg.reward_policy||'reroll'];";
  if(!ai.includes(oldChoice))throw Error('Reward decision gate changed');
  ai=ai.replace(oldChoice,"const choice=cfg.reward_policy==='mixed'?P5B.chooseReward(cfg.profile):({reroll:0,restock:1,random:2,stone:3}[cfg.reward_policy||'reroll']);");
+ ai=ai.replace("...BASIC.map(c=>({...c,group:'basic'})),...randomShop.map(c=>({...c,group:'random'}))","...BASIC.map(c=>({...c,price:window.LuckP5Rewards?.price(c)??c.price,group:'basic'})),...randomShop.map(c=>({...c,price:window.LuckP5Rewards?.price(c)??c.price,group:'random'}))");
  ai=ai.replace('reward(choice);if(rewardRevealPending)', 'reward(choice);if(window.LuckP5Rewards?.enabled)LuckP5Rewards.botResolve(cfg.profile,value);if(rewardRevealPending)');
  vm.runInContext(ai,dom.getInternalVMContext());
  if(probe)vm.runInContext(fs.readFileSync(path.join(R,'p5-probe.js'),'utf8'),dom.getInternalVMContext());

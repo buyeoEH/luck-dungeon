@@ -16,7 +16,7 @@ def build():
  source_paths=['p5_rewards_patch.py','p5-rewards.js','build_v030.py','v030-telemetry.js','v030-reference-ai.js','verify_v030.py','run_v030_stage0.py','test_v030.py','v030-p1.js','v030_p1_patch.py','test_v030_p1.py','verify_v030_p1.py','build_v030_standalone.py','write_v030_p1_report.py']
  source_manifest={f:sha(R/f) for f in source_paths}
  source_dirty=bool(subprocess.check_output(['git','status','--porcelain','--',*source_paths],cwd=R,text=True).strip())
- meta={'version':'0.3.0-dev.2','stage':'p5_reroll_seed','build_id':build_id,'git_sha':commit,'baseline_git_sha':'110d54876a121909b9bd6074cf682b6d99944083','baseline_build_id':json.loads((source/'build.json').read_text())['build_id'],'score_ruleset_version':'v2-actual-strike-0220','persistent_draw':True,'gameplay_changes':['draw_always_on','p1_link_conversion','p1_cards','p1_next_round_bonuses'],'comparison_contract':'P1 disabled regression; core, cards, extras isolated ON cohorts','cloud_mode':'isolated_local','source_tree_dirty':source_dirty,'source_manifest_sha256':hashlib.sha256(json.dumps(source_manifest,sort_keys=True).encode()).hexdigest(),'source_files':source_manifest}
+ meta={'version':'0.3.0-dev.2','stage':'p5_restock_coupon','build_id':build_id,'git_sha':commit,'baseline_git_sha':'110d54876a121909b9bd6074cf682b6d99944083','baseline_build_id':json.loads((source/'build.json').read_text())['build_id'],'score_ruleset_version':'v2-actual-strike-0220','persistent_draw':True,'gameplay_changes':['draw_always_on','p1_link_conversion','p1_cards','p1_next_round_bonuses','p5_reroll_seed','p5_single_restock','p5_purchase_coupon'],'comparison_contract':'P5 disabled state regression; isolated approved reward stages','cloud_mode':'isolated_local','source_tree_dirty':source_dirty,'source_manifest_sha256':hashlib.sha256(json.dumps(source_manifest,sort_keys=True).encode()).hexdigest(),'source_files':source_manifest}
  game=(source/'game.js').read_text()
  game=once(game,'let persistentDraw = PERSISTENT_DRAW;','const persistentDraw = true;','fixed ON draw policy')
  game=once(game,'      persistentDraw = pToggle.checked;','      // v0.3: draw policy is permanently ON.','no in-game draw toggle')
@@ -28,6 +28,7 @@ def build():
  game=p5_patch(game)
  (P/'game.js').write_text(game)
  core=(source/'v0220-core.js').read_text().replace("DBNAME='luck-v0220'","DBNAME='luck-v030-p1'").replace('id,!!$(id)?.checked','id,id===\'persistToggle\'?true:!!$(id)?.checked')
+ core=once(core,'price:s.price,stock_before:before','price:window.LuckP5Rewards?.lastPurchasePrice(id)??s.price,regular_price:s.price,stock_before:before','P5 paid purchase telemetry')
  (P/'v0220-core.js').write_text(core)
  (P/'rankings.js').write_text((source/'rankings.js').read_text().replace('0.2.20','0.3.0-dev.2 개발판').replace('온라인','기기 테스트'))
  (P/'history.js').write_text((source/'history.js').read_text().replace('v0.2.20','v0.3.0 개발판'))

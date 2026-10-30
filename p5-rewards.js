@@ -1,6 +1,6 @@
 /* P5 approved reward mechanics. OFF preserves native gameplay. */
-const P5_REWARDS_ENABLED=window.LUCK_P5_REWARDS_ENABLED!==false;
-const P5_REWARD_STAGE='reroll';
+let P5_REWARDS_ENABLED=window.LUCK_P5_REWARDS_ENABLED!==false;
+const P5_REWARD_STAGE='restock';
 const P5_SEEDS=[['sam','공격'],['combo','연계'],['lance','관통'],['cg','보호'],['coin','운빨'],['rd','경제'],['d5','드로우'],['bomber','광역']];
 let p5Flow=null,p5Locks=new Set(),p5NativeReroll=null,p5Coupon=null,p5LastPurchase=null;
 function p5Reset(){p5Flow=null;p5Locks=new Set();p5Coupon=null;p5LastPurchase=null;}
@@ -16,9 +16,21 @@ function p5ShowSeeds(){p5Flow='seed';p5Modal('🌱 루트 씨앗 카드 1장 무
 function p5Finish(){p5Flow=null;p5Locks=new Set();if($('modal'))$('modal').classList.add('hide');if($('close'))$('close').onclick=handleModalClose;nextRound();render();}
 function p5PickSeed(id){if(p5Flow!=='seed'||phase!=='reward')return;const row=p5SeedCards().find(x=>x.card.id===id);if(!row)return;p5Flow='finishing';const c=cp(row.card);addNewCard(c);log('🌱 보스 보상 ➔ ['+c.name+'] 무료 획득 · 자원/상점 재고 변화 없음','good');p5Emit('boss_seed_card',{card_id:id,instance_id:c.id,route:row.route,source:'boss_seed_pool',price:0,shop_stock_unchanged:true});p5Finish();}
 function p5SkipSeed(){if(p5Flow!=='seed')return;p5Emit('boss_seed_skipped',{});p5Finish();}
-const p5Boss0=bossReward;bossReward=function(){const out=p5Boss0.apply(this,arguments);if(!P5_REWARDS_ENABLED)return out;p5NativeReroll=rewards[0][2];rewards[0]=[rewards[0][0],'유지 카드 최대 2장을 잠그고, 남은 재고 상품 중 최대 3장을 교체합니다. 이후 루트 씨앗 풀에서 카드 1장을 무료로 선택합니다.',p5BeginReroll];render();return out;};
+function p5InstallOptions(){if(!P5_REWARDS_ENABLED)return;if(rewards[0][2]!==p5BeginReroll)p5NativeReroll=rewards[0][2];rewards[0]=[rewards[0][0],'유지 카드 최대 2장을 잠그고 최대 3장을 교체한 뒤, 루트 씨앗 1장을 무료로 선택합니다.',p5BeginReroll];rewards[1]=[rewards[1][0],'현재 상점의 품절 상품 1종 재고를 1개로 복구합니다. 다음 상점 첫 구매 1회 50% 할인, 최대 자원 2, 최종 가격 최소 1. 해당 상점 종료 시 소멸하며 중첩되지 않습니다.',p5BeginRestock];render();}
+const p5Boss0=bossReward;bossReward=function(){const out=p5Boss0.apply(this,arguments);p5InstallOptions();return out;};
 const p5Confirm0=confirmShopReroll;confirmShopReroll=function(){if(P5_REWARDS_ENABLED){if(p5Flow==='locks')return p5ConfirmLocks();if(p5Flow==='result'||p5Flow==='seed')return p5ShowSeeds();}return p5Confirm0.apply(this,arguments);};
-function p5Resume(){if(p5Flow==='locks')p5ShowLocks();else if(p5Flow==='result'||p5Flow==='seed')p5ShowSeeds();}
+function p5Resume(){if(p5Flow==='restock')return p5ShowRestock();if(p5Flow==='locks')p5ShowLocks();else if(p5Flow==='result'||p5Flow==='seed')p5ShowSeeds();}
 const p5Render0=render;render=function(){const out=p5Render0.apply(this,arguments);if(P5_REWARDS_ENABLED&&p5Flow&&phase==='reward'&&$('rewards'))$('rewards').insertAdjacentHTML('beforeend','<button class="primary-btn" onclick="LuckP5Rewards.resume()">보상 선택 계속</button>');return out;};
-function p5Bot(profile,value){if(p5Flow==='locks'){const a=randomShop.map((c,i)=>({c,i})).filter(x=>x.c.limit-(buyCount[x.c.id]||0)>0).sort((a,b)=>value(b.c,profile)-value(a.c,profile)||a.i-b.i);p5Locks=new Set(a.slice(0,2).map(x=>x.i));p5ConfirmLocks();}if(p5Flow==='result')p5ShowSeeds();if(p5Flow==='seed'){const best=p5SeedCards().sort((a,b)=>value(b.card,profile)-value(a.card,profile))[0];best?p5PickSeed(best.card.id):p5SkipSeed();}}
-window.LuckP5Rewards={enabled:P5_REWARDS_ENABLED,stage:P5_REWARD_STAGE,toggleLock:p5ToggleLock,confirmLocks:p5ConfirmLocks,pickSeed:p5PickSeed,skipSeed:p5SkipSeed,resume:p5Resume,botResolve:p5Bot,pending:()=>p5Flow,locks:()=>[...p5Locks],seedIds:()=>P5_SEEDS.map(x=>x[0])};
+function p5Bot(profile,value){if(p5Flow==='restock'){const a=p5SoldOut().sort((a,b)=>value(b.card,profile)-value(a.card,profile));a.length?p5PickRestock(a[0].kind,a[0].card.id):p5SkipRestock();}if(p5Flow==='locks'){const a=randomShop.map((c,i)=>({c,i})).filter(x=>x.c.limit-(buyCount[x.c.id]||0)>0).sort((a,b)=>value(b.c,profile)-value(a.c,profile)||a.i-b.i);p5Locks=new Set(a.slice(0,2).map(x=>x.i));p5ConfirmLocks();}if(p5Flow==='result')p5ShowSeeds();if(p5Flow==='seed'){const best=p5SeedCards().sort((a,b)=>value(b.card,profile)-value(a.card,profile))[0];best?p5PickSeed(best.card.id):p5SkipSeed();}}
+
+function p5SoldOut(){return [...BASIC.map(card=>({card,kind:'basic'})),...randomShop.map(card=>({card,kind:'random'}))].filter(x=>x.card.limit-(buyCount[x.card.id]||0)<=0);}
+function p5BeginRestock(){p5Flow='restock';if(p5SoldOut().length)p5ShowRestock();else{log('📦 품절 상품이 없어 재고 복구는 0개입니다. 구매 할인은 지급합니다.');p5SkipRestock();}}
+function p5ShowRestock(){if(p5Flow!=='restock')return;p5Modal('📦 품절 상품 1종 복구', '<div class="p5-grid">'+p5SoldOut().map(({card:c,kind})=>'<button onclick="LuckP5Rewards.pickRestock(\''+kind+'\',\''+c.id+'\')">'+c.name+' · '+(kind==='basic'?'기본':'랜덤')+' · 재고 0→1</button>').join('')+'</div><p>추가로 다음 상점 첫 구매 1회 50% 할인 · 최대 자원 2 · 최종 가격 최소 1</p><button onclick="LuckP5Rewards.skipRestock()">복구 없이 할인만 받고 진행</button>',p5SkipRestock);}
+function p5GiveCoupon(){p5Coupon={round:round+1,uses:1,rate:.5,cap:2};log('🎟 다음 상점 첫 구매 1회 50% 할인 · 최대 자원 2 · 최종 가격 최소 1 · 중첩 불가','good');p5Emit('purchase_coupon_granted',{...p5Coupon});}
+function p5PickRestock(kind,id){if(p5Flow!=='restock'||phase!=='reward')return;const row=p5SoldOut().find(x=>x.kind===kind&&x.card.id===id);if(!row)return;p5Flow='finishing';buyCount[id]=row.card.limit-1;log('📦 ['+row.card.name+'] 재고 0 → 1 복구','good');p5Emit('boss_restock_one',{card_id:id,kind,stock_before:0,stock_after:1});p5GiveCoupon();p5Finish();}
+function p5SkipRestock(){if(p5Flow!=='restock')return;p5Flow='finishing';p5Emit('boss_restock_skipped',{reason:p5SoldOut().length?'player_skipped':'no_sold_out_slots'});p5GiveCoupon();p5Finish();}
+function p5Price(c){if(!P5_REWARDS_ENABLED||!p5Coupon||p5Coupon.uses<=0||p5Coupon.round!==round||phase!=='shop')return c.price;return c.price-Math.max(0,Math.min(p5Coupon.cap,Math.floor(c.price*p5Coupon.rate),c.price-1));}
+function p5Bought(c,price){if(!P5_REWARDS_ENABLED)return;p5LastPurchase={id:c.id,regular_price:c.price,price,discount:c.price-price,round};if(p5Coupon&&p5Coupon.round===round&&p5Coupon.uses>0&&phase==='shop'){p5Coupon=null;log('🎟 구매 할인: '+c.price+' → '+price+' (자원 '+(c.price-price)+' 할인, 1회 사용 완료)','good');p5Emit('purchase_coupon_used',{...p5LastPurchase});}}
+function p5ExpireCoupon(){if(!P5_REWARDS_ENABLED||!p5Coupon)return;p5Emit('purchase_coupon_expired',{...p5Coupon});p5Coupon=null;log('🎟 상점 종료: 사용하지 않은 구매 할인이 소멸했습니다.');}
+
+window.LuckP5Rewards={get enabled(){return P5_REWARDS_ENABLED;},stage:P5_REWARD_STAGE,toggleLock:p5ToggleLock,confirmLocks:p5ConfirmLocks,pickSeed:p5PickSeed,skipSeed:p5SkipSeed,resume:p5Resume,botResolve:p5Bot,price:p5Price,lastPurchasePrice:id=>p5LastPurchase?.id===id&&p5LastPurchase.round===round?p5LastPurchase.price:null,pickRestock:p5PickRestock,skipRestock:p5SkipRestock,coupon:()=>p5Coupon?{...p5Coupon}:null,pending:()=>p5Flow,locks:()=>[...p5Locks],seedIds:()=>P5_SEEDS.map(x=>x[0])};
