@@ -17,8 +17,13 @@ function create(variant,probe=true){
  }
  Object.defineProperty(w.Element.prototype,'innerHTML',{get(){return '';},set(v){},configurable:true});w.Element.prototype.insertAdjacentHTML=()=>{};
  vm.runInContext(`render=()=>{};actionFlash=()=>{};focusSection=()=>{};log=s=>fullLogs.push('[R'+round+']['+phase+'] '+plainLogText(s));window.LuckGameAudio=undefined;`,dom.getInternalVMContext());
- vm.runInContext(fs.readFileSync(path.join(R,'v030-reference-ai.js'),'utf8'),dom.getInternalVMContext());
+ let ai=fs.readFileSync(path.join(R,'v030-reference-ai.js'),'utf8');
+ const oldChoice="const choice={reroll:0,restock:1,random:2,stone:3}[cfg.reward_policy||'reroll'];";
+ if(!ai.includes(oldChoice))throw Error('Reward decision gate changed');
+ ai=ai.replace(oldChoice,"const choice=cfg.reward_policy==='mixed'?P5B.chooseReward(cfg.profile):({reroll:0,restock:1,random:2,stone:3}[cfg.reward_policy||'reroll']);");
+ vm.runInContext(ai,dom.getInternalVMContext());
  if(probe)vm.runInContext(fs.readFileSync(path.join(R,'p5-probe.js'),'utf8'),dom.getInternalVMContext());
+ vm.runInContext(fs.readFileSync(path.join(R,'p5b-policy.js'),'utf8'),dom.getInternalVMContext());
  return dom;
 }
 module.exports={create};
