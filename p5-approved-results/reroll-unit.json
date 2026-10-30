@@ -1,0 +1,114 @@
+{
+  "checks": [
+    {
+      "name": "lock cap2, preserved stock, free seed once, no paid purchase",
+      "passed": true
+    },
+    {
+      "name": "eligible slots 0",
+      "passed": true
+    },
+    {
+      "name": "eligible slots 1",
+      "passed": true
+    },
+    {
+      "name": "eligible slots 2",
+      "passed": true
+    },
+    {
+      "name": "eligible slots 3",
+      "passed": true
+    },
+    {
+      "name": "no unseen reroll candidates still explicit seed reward",
+      "passed": true
+    },
+    {
+      "name": "full adapted AI completes without reward loop",
+      "passed": true
+    }
+  ],
+  "example": {
+    "before": [
+      {
+        "id": "erase",
+        "stock": 2
+      },
+      {
+        "id": "thief",
+        "stock": 2
+      },
+      {
+        "id": "rd",
+        "stock": 3
+      },
+      {
+        "id": "bomber",
+        "stock": 2
+      },
+      {
+        "id": "kill",
+        "stock": 2
+      },
+      {
+        "id": "d5",
+        "stock": 2
+      },
+      {
+        "id": "box",
+        "stock": 2
+      },
+      {
+        "id": "lance",
+        "stock": 3
+      }
+    ],
+    "after": [
+      {
+        "id": "erase",
+        "stock": 2
+      },
+      {
+        "id": "thief",
+        "stock": 2
+      },
+      {
+        "id": "master",
+        "stock": 3
+      },
+      {
+        "id": "bomber",
+        "stock": 2
+      },
+      {
+        "id": "linkpeak",
+        "stock": 2
+      },
+      {
+        "id": "d5",
+        "stock": 2
+      },
+      {
+        "id": "ag2",
+        "stock": 2
+      },
+      {
+        "id": "lance",
+        "stock": 3
+      }
+    ],
+    "locks": [
+      0,
+      1
+    ],
+    "size": 10,
+    "n": 11,
+    "twice": 11,
+    "bought": 0,
+    "res": 0,
+    "stocks_same": true,
+    "pending": null,
+    "round": 2
+  }
+}
