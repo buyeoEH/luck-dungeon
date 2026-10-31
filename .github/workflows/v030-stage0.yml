@@ -1,15 +1,21 @@
 name: v0.3 closeout review verification
 on:
   push:
-    branches: [feature/game-v0.3-development]
+    branches: [feature/game-v0.3-development, ops/v0.3.0-verified-pages]
   workflow_dispatch:
+    inputs:
+      deploy_web:
+        description: Deploy the verified v0.3.0 release with rollback
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
   group: v030-closeout-verification
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   verify:
+    if: ${{ !((github.event_name == 'workflow_dispatch' && inputs.deploy_web) || (github.event_name == 'push' && github.ref == 'refs/heads/ops/v0.3.0-verified-pages' && contains(github.event.head_commit.message, '[deploy-v030]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -66,3 +72,149 @@ jobs:
         with:
           name: v030-offline-and-web-distributions
           path: _site/downloads/LUCK-v0.3.0-rc.1-*.zip
+  deploy_verified_release:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.deploy_web) || (github.event_name == 'push' && github.ref == 'refs/heads/ops/v0.3.0-verified-pages' && contains(github.event.head_commit.message, '[deploy-v030]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: https://buyeoeh.github.io/luck-dungeon/preview/v0.3.0/
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore checked backup and overlay immutable release
+        id: prepare
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from concurrent.futures import ThreadPoolExecutor
+          import urllib.request,zipfile,hashlib,json,re,shutil
+          BASE='https://buyeoeh.github.io/luck-dungeon/'
+          RELEASE='https://github.com/buyeoEH/luck-dungeon/releases/download/v0.3.0/'
+          def fetch(url):
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Cache-Control':'no-cache'}),timeout=90) as r:
+                  assert r.status==200
+                  return r.read()
+          def file(name,digest):
+              p=Path(name);p.write_bytes(fetch(RELEASE+name));assert hashlib.sha256(p.read_bytes()).hexdigest()==digest,name
+              return p
+          backup=file('PRE-V030-PAGES-SNAPSHOT.zip','f72df3e2f090e81b1ae2466fb8ce1fcb93a8ce3e684ab14f1d4d41ee1302134d')
+          with zipfile.ZipFile(backup) as z:
+              m=json.loads(z.read('manifest.json'))
+              for name,v in m['files'].items():
+                  p=Path('_rollback')/name
+                  assert p.resolve().is_relative_to(Path('_rollback').resolve())
+                  raw=z.read('blobs/'+v['sha256']);assert hashlib.sha256(raw).hexdigest()==v['sha256']
+                  p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
+          checks=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js']
+          for name in checks:assert hashlib.sha256(fetch(BASE+name)).hexdigest()==m['files'][name]['sha256'],name
+          assert 'preview/v0.3.0/index.html' not in m['files']
+          shutil.copytree('_rollback','_site')
+          web=file('LUCK-v0.3.0-rc.2-web.zip','5733e35912901d924d1bcce255404b99569bd6a16fe46d9d55afcc5f40502eda')
+          new={}
+          with zipfile.ZipFile(web) as z:
+              assert z.testzip() is None
+              for entry in z.infolist():
+                  if entry.is_dir():continue
+                  name='preview/v0.3.0/'+entry.filename;p=Path('_site')/name
+                  assert p.resolve().is_relative_to(Path('_site/preview/v0.3.0').resolve())
+                  raw=z.read(entry);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
+                  new[name]=hashlib.sha256(raw).hexdigest()
+          raw=Path('_site/preview/v0.3.0/index.html').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=='a0a02201358230307103fa7d74a143ba0dbea294f0a596b61f584f445e9ce969'
+          b=json.loads(re.search(r'window.LUCK_BUILD=(\{.*?\});',raw.decode())[1])
+          assert b['version']=='0.3.0-rc.2' and b['build_id']=='030-rc2-34a22a66178a683d'
+          assert b['git_sha']=='28270786814f57ca968fe950136be2b3073699f1' and not b['source_tree_dirty']
+          for mode,h in [('offline','2d984744228fe6a933278f6f8735f6d5d88cf9748af9658144c065f43353c0af'),('web','5733e35912901d924d1bcce255404b99569bd6a16fe46d9d55afcc5f40502eda')]:
+              name='LUCK-v0.3.0-rc.2-'+mode+'.zip';p=file(name,h);dst=Path('_site/downloads')/name;dst.parent.mkdir(exist_ok=True);shutil.copyfile(p,dst);new['downloads/'+name]=h
+          for name,v in m['files'].items():assert hashlib.sha256((Path('_site')/name).read_bytes()).hexdigest()==v['sha256'],name
+          Path('deployment-manifest.json').write_text(json.dumps({'old':m,'new':new,'game':b},indent=2))
+          print('Preserved',len(m['files']),'old files; added',len(new),'files; game SHA',b['git_sha'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v030-predeployment-backup
+          path: |
+            PRE-V030-PAGES-SNAPSHOT.zip
+            deployment-manifest.json
+          retention-days: 90
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: v030-candidate-pages
+          path: _site
+          retention-days: 30
+      - uses: actions/deploy-pages@v4
+        id: deploy
+        continue-on-error: true
+        with:
+          artifact_name: v030-candidate-pages
+          timeout: '1200000'
+      - name: Verify live build and preserved version
+        id: live
+        if: ${{ steps.deploy.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib,time
+          m=json.loads(Path('deployment-manifest.json').read_text());base='https://buyeoeh.github.io/luck-dungeon/'
+          checks={name:v['sha256'] for name,v in m['old']['files'].items() if name in ['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js','preview/v0.2.20/luck-audio.js']}
+          checks.update({k:v for k,v in m['new'].items() if k.startswith('preview/')})
+          for attempt in range(12):
+              try:
+                  rows=[]
+                  for name,h in checks.items():
+                      with urllib.request.urlopen(urllib.request.Request(base+name,headers={'Cache-Control':'no-cache'}),timeout=40) as r:raw=r.read();assert r.status==200
+                      actual=hashlib.sha256(raw).hexdigest();assert actual==h,name
+                      rows.append({'path':name,'status':200,'sha256':actual})
+                  Path('deployment-verification.json').write_text(json.dumps({'pass':True,'checks':rows,'build_id':m['game']['build_id'],'git_sha':m['game']['git_sha']},indent=2));break
+              except Exception as e:
+                  if attempt==11:raise
+                  print('CDN verification retry',attempt+1,str(e));time.sleep(5)
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.live.outcome == 'failure') }}
+        with:
+          name: v030-rollback-pages
+          path: _rollback
+          retention-days: 30
+      - uses: actions/deploy-pages@v4
+        id: rollback
+        if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.live.outcome == 'failure') }}
+        with:
+          artifact_name: v030-rollback-pages
+          timeout: '1200000'
+      - name: Verify rollback
+        if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.live.outcome == 'failure') }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import urllib.request,hashlib,json,time
+          m=json.loads(Path('deployment-manifest.json').read_text())['old']
+          for attempt in range(12):
+              try:
+                  for name in ['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html']:
+                      with urllib.request.urlopen(m['base_url']+name,timeout=40) as r:raw=r.read()
+                      assert hashlib.sha256(raw).hexdigest()==m['files'][name]['sha256']
+                  Path('rollback-verification.json').write_text(json.dumps({'restored':True}));break
+              except Exception:
+                  if attempt==11:raise
+                  time.sleep(5)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v030-deployment-evidence
+          path: |
+            deployment-manifest.json
+            deployment-verification.json
+            rollback-verification.json
+          retention-days: 90
+      - name: Fail if deployment or live verification required rollback
+        if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.live.outcome == 'failure') }}
+        run: exit 1
