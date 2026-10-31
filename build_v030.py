@@ -15,7 +15,7 @@ def build():
  commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()
  build_id='030-rc-'+hashlib.sha256((sha(R/'build_v030.py')+sha(R/'optimize_v030_assets.py')+sha(R/'v030-telemetry.js')+sha(R/'v030-p1.js')+sha(R/'v030_p1_patch.py')+sha(R/'p5_rewards_patch.py')+sha(R/'p5-rewards.js')+sha(R/'v030-local-cloud.js')+sha(source/'game.js')).encode()).hexdigest()[:16]
  source_paths=['optimize_v030_assets.py','p5_rewards_patch.py','p5-rewards.js','build_v030.py','v030-telemetry.js','v030-reference-ai.js','verify_v030.py','run_v030_stage0.py','test_v030.py','v030-p1.js','v030_p1_patch.py','test_v030_p1.py','verify_v030_p1.py','build_v030_standalone.py','write_v030_p1_report.py']
- source_paths+=['v030-local-cloud.js']
+ source_paths+=['v030-local-cloud.js','v030-tutorial.js']
  source_manifest={f:sha(R/f) for f in source_paths}
  source_dirty=bool(subprocess.check_output(['git','status','--porcelain','--',*source_paths],cwd=R,text=True).strip())
  meta={'version':'0.3.0-rc.1','stage':'v030_embedded_audio_approved','build_id':build_id,'git_sha':commit,'baseline_git_sha':'110d54876a121909b9bd6074cf682b6d99944083','baseline_build_id':json.loads((source/'build.json').read_text())['build_id'],'score_ruleset_version':'v2-actual-strike-0220','persistent_draw':True,'gameplay_changes':['draw_always_on','p1_link_conversion','p1_cards','p1_next_round_bonuses','p5_reroll_seed','p5_single_restock','p5_purchase_coupon','p5_seed_three_offer','p5_restock_experiment_flags'],'comparison_contract':'P5 disabled state regression; isolated approved reward stages','cloud_mode':'isolated_local','source_tree_dirty':source_dirty,'source_manifest_sha256':hashlib.sha256(json.dumps(source_manifest,sort_keys=True).encode()).hexdigest(),'source_files':source_manifest}
@@ -37,6 +37,7 @@ def build():
  (P/'cloud/config.js').write_text('window.LUCK_CLOUD_CONFIG={};\n')
  shutil.copyfile(R/'v030-local-cloud.js',P/'cloud/cloud.js')
  shutil.copyfile(R/'v030-telemetry.js',P/'v030-telemetry.js')
+ shutil.copyfile(R/'v030-tutorial.js',P/'v030-tutorial.js')
  index=(source/'index.html').read_text()
  import re
  index=re.sub(r'window.LUCK_BUILD=\{[^<]+?\};',lambda _: 'window.LUCK_BUILD='+json.dumps(meta)+';',index,count=1)
@@ -53,6 +54,7 @@ def build():
  index=index.replace('</head>','<style>.p5-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.p5-content button{background:#26364a;color:#e5e7eb;border:1px solid #526477;border-radius:8px;white-space:normal;overflow-wrap:anywhere;max-width:100%;padding:10px;min-height:44px}.p5-content [aria-pressed=true]{background:#193c5e;border-color:#60a5fa}.p5-content small{display:block;line-height:1.4}</style></head>')
  index=index.replace('</head>','<style>.p1-gauge{padding:9px;margin:6px 0;border:1px solid #34d399;border-radius:8px;background:#102d2a;color:#d1fae5;line-height:1.5;font-size:12px;overflow-wrap:anywhere}.p1-gauge small{color:#a7f3d0}</style></head>')
  index=index.replace('</body>','<script src="v030-telemetry.js?v='+build_id+'"></script></body>')
+ index=index.replace('</body>','<script src="v030-tutorial.js?v='+build_id+'"></script></body>')
  (P/'preview-ui.js').write_text((source/'preview-ui.js').read_text().replace('v0.2.20 안정화 검증판 · 기록 자동 저장·온라인 동기화','v0.3.0-rc.1 P5 개발판 · 기기 테스트 기록'))
  (P/'index.html').write_text(index)
  optimization=optimize_assets(P)
