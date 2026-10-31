@@ -1,5 +1,5 @@
 """Build concrete audio comparison candidates; an explicit mode is required."""
-import argparse,base64,hashlib,json,mimetypes,re,shutil,zipfile
+import argparse,base64,hashlib,json,mimetypes,re,shutil,zipfile,os
 from pathlib import Path
 R=Path(__file__).resolve().parent;P=R/'_site/preview/v0.3.0';D=R/'_site/downloads'
 def build(mode):
@@ -33,11 +33,14 @@ def build(mode):
  # Preview keeps cloud isolation; data media is scoped to this review artifact.
  if 'media-src' not in html:html=html.replace("connect-src 'none'", "connect-src 'none'; media-src 'self' data: blob:")
  out=folder/'index.html';out.write_text(html)
+ with out.open('rb') as f:os.fsync(f.fileno())
  total=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file());assert total<=15_000_000,(mode,total,'15MB budget exceeded')
  zip_path=D/(folder.name+'.zip')
  with zipfile.ZipFile(zip_path,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
   for p in sorted(folder.rglob('*')):
    if p.is_file():z.write(p,str(p.relative_to(folder)))
+ with zip_path.open('rb') as f:os.fsync(f.fileno())
+ with zipfile.ZipFile(zip_path) as z:assert z.testzip() is None
  report={'mode':mode,'approval_status':'pending_user_choice','html_bytes':out.stat().st_size,'package_uncompressed_bytes':total,'zip_bytes':zip_path.stat().st_size,'html_sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'tracks':len(entries),'aliases':len(aliases),'image_assets':len(assets),'external_audio_files_required':mode=='external','original_assets_unchanged':True,'build_id':json.loads((P/'build.json').read_text())['build_id']}
  (R/('close-audio-'+mode+'.json')).write_text(json.dumps(report,indent=2));print(json.dumps(report));return report
 if __name__=='__main__':
