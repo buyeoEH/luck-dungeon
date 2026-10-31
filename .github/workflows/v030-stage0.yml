@@ -19,15 +19,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install playwright==1.51.0 pillow==11.1.0
+      - run: python -m pip install playwright==1.51.0 pillow==12.3.0
       - run: python -m playwright install --with-deps chromium --only-shell
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Build preserved versions and isolated fixed ON development version
         run: |
           python prepare_site.py
           python build_v0219_preview.py
           python build_v0220.py
           python build_v030.py
-          python build_v030_standalone.py
+          python prepare_release_audio.py
+          python build_v030_standalone.py --audio embedded
+          python build_v030_standalone.py --audio external
       - name: Verify the playable baseline and mobile flow
         run: |
           mkdir -p results-v030
@@ -57,9 +60,10 @@ jobs:
             V030-P1-DESIGN.md
             V030-ROADMAP.md
             v030-build-report.json
-            v030-standalone-report.json
+            close-audio-embedded.json
+            close-audio-external.json
             v030-p1-evidence.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: v030-p1-standalone-development-html
-          path: _site/downloads/LUCK-v0.3.0-dev.1.zip
+          name: v030-audio-review-candidates
+          path: _site/downloads/LUCK-v0.3.0-rc.1-*.zip
