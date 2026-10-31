@@ -1,0 +1,63 @@
+[
+  {
+    "mode": "A",
+    "stock": 4,
+    "random_limit_gain": 1,
+    "deck": 0,
+    "bought": 0,
+    "coupon": {
+      "round": 2,
+      "uses": 1,
+      "rate": 0.5,
+      "cap": 6
+    },
+    "res": 0,
+    "flow": null
+  },
+  {
+    "mode": "B",
+    "stock": 0,
+    "random_limit_gain": 0,
+    "deck": 1,
+    "bought": 1,
+    "coupon": null,
+    "res": 0,
+    "flow": null
+  },
+  {
+    "mode": "C",
+    "stock": 1,
+    "random_limit_gain": 0,
+    "deck": 0,
+    "bought": 0,
+    "coupon": {
+      "round": 2,
+      "uses": 1,
+      "rate": 0.5,
+      "cap": 2
+    },
+    "res": 0,
+    "flow": null
+  },
+  {
+    "mode": "legacy",
+    "stock": 3,
+    "random_limit_gain": 1,
+    "deck": 0,
+    "bought": 0,
+    "coupon": null,
+    "res": 0,
+    "flow": null
+  },
+  {
+    "stock": 1,
+    "bought": 0,
+    "coupon": null,
+    "round": 2
+  },
+  {
+    "a": 24,
+    "b": 1,
+    "c": 22
+  }
+]

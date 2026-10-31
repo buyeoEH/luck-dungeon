@@ -1,0 +1,23 @@
+{
+  "html": "LUCK-v0.3.0-dev.2.html",
+  "audio_requests": [
+    "file:///workspace/scratch/2f12885a11d4/p5f-size-base/_site/downloads/assets/audio/bgm_title.ogg"
+  ],
+  "failed_audio_requests": [
+    {
+      "url": "file:///workspace/scratch/2f12885a11d4/p5f-size-base/_site/downloads/assets/audio/bgm_title.ogg",
+      "failure": "net::ERR_FILE_NOT_FOUND"
+    }
+  ],
+  "snapshot": {
+    "started": true,
+    "ended": false,
+    "cinematic": false,
+    "bgmOn": true,
+    "sfxOn": true,
+    "bgm": null,
+    "voices": 0,
+    "scene": "bgm_title"
+  },
+  "offline_audio_embedded": false
+}
