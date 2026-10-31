@@ -1,0 +1,353 @@
+[
+  {
+    "asset": "assets/cards/ag2.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 175668
+  },
+  {
+    "asset": "assets/cards/annihilation.webp",
+    "pixels": [
+      192,
+      192
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 58046
+  },
+  {
+    "asset": "assets/cards/aoe.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 161596
+  },
+  {
+    "asset": "assets/cards/bountygold.webp",
+    "pixels": [
+      192,
+      192
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 63122
+  },
+  {
+    "asset": "assets/cards/combo.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 110044
+  },
+  {
+    "asset": "assets/cards/dagger.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 59922
+  },
+  {
+    "asset": "assets/cards/fateblade.webp",
+    "pixels": [
+      192,
+      192
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 62778
+  },
+  {
+    "asset": "assets/cards/gem.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 112276
+  },
+  {
+    "asset": "assets/cards/luckminer.webp",
+    "pixels": [
+      192,
+      192
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 69128
+  },
+  {
+    "asset": "assets/cards/promo_stone.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 103552
+  },
+  {
+    "asset": "assets/cards/royalgold.webp",
+    "pixels": [
+      192,
+      192
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 66250
+  },
+  {
+    "asset": "assets/cards/skylance.webp",
+    "pixels": [
+      192,
+      192
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 62786
+  },
+  {
+    "asset": "assets/cards/smash.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 115396
+  },
+  {
+    "asset": "assets/cards/sword.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 59760
+  },
+  {
+    "asset": "assets/enemies/bandit.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 252172
+  },
+  {
+    "asset": "assets/enemies/fate_guardian.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 287998
+  },
+  {
+    "asset": "assets/enemies/gem_hunter.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 252750
+  },
+  {
+    "asset": "assets/enemies/goblin.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 249738
+  },
+  {
+    "asset": "assets/enemies/greed_dragon.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 305478
+  },
+  {
+    "asset": "assets/enemies/iron_giant.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 302816
+  },
+  {
+    "asset": "assets/enemies/resource_thief.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 228206
+  },
+  {
+    "asset": "assets/enemies/sealer.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 255382
+  },
+  {
+    "asset": "assets/enemies/slime.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 177722
+  },
+  {
+    "asset": "assets/enemies/twisted_knight.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 231188
+  },
+  {
+    "asset": "assets/enemies/wolf.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 242802
+  },
+  {
+    "asset": "assets/icons/cards/luckdraw.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 151516
+  },
+  {
+    "asset": "assets/icons/cards/luckforge.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 119282
+  },
+  {
+    "asset": "assets/icons/cards/luckguard.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 126158
+  },
+  {
+    "asset": "assets/icons/cards/lucklink.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 77418
+  },
+  {
+    "asset": "assets/icons/cards/masterlink.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 87194
+  },
+  {
+    "asset": "assets/icons/cards/raiderking.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 82150
+  },
+  {
+    "asset": "assets/icons/cards/stararmor.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 170596
+  },
+  {
+    "asset": "assets/icons/cards/wisdomsword.webp",
+    "pixels": [
+      384,
+      384
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 114736
+  },
+  {
+    "asset": "assets/player/adventurer-archer.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 209226
+  },
+  {
+    "asset": "assets/player/adventurer-knight.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 224180
+  },
+  {
+    "asset": "assets/player/adventurer-mage.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 247676
+  },
+  {
+    "asset": "assets/player/adventurer-priest.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 209984
+  },
+  {
+    "asset": "assets/player/adventurer-rogue.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 184590
+  },
+  {
+    "asset": "assets/player/hero.webp",
+    "pixels": [
+      512,
+      512
+    ],
+    "rgba_exact_to_resized_original": true,
+    "bytes": 273916
+  }
+]

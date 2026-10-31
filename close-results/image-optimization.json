@@ -1,0 +1,753 @@
+{
+  "max_edge": 512,
+  "card_max_edge": 384,
+  "lossless": true,
+  "pillow_webp": "1.6.0",
+  "assets": [
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1838658,
+      "output_bytes": 175668,
+      "original_sha256": "8a291b1470c1000fcb600f0dbca5b777e7345ce114236212d53e888ec8ec4b5f",
+      "output_sha256": "62be9e936e2352b798d705711d0b73e7d958a19a1d60497531b6d151b12b9d42",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/ag2.png",
+      "output": "assets/cards/ag2.webp"
+    },
+    {
+      "original_pixels": [
+        192,
+        192
+      ],
+      "output_pixels": [
+        192,
+        192
+      ],
+      "original_bytes": 80221,
+      "output_bytes": 58046,
+      "original_sha256": "712284a8b6f35fb41ace280c42b07b8ca739df22af56252869a7e5e8facec0e8",
+      "output_sha256": "fe3125e0982d2ad5cfe08c87ad24de3be0e3d003ebac2fad2e990adbd5c673f5",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/annihilation.png",
+      "output": "assets/cards/annihilation.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1608864,
+      "output_bytes": 161596,
+      "original_sha256": "0da8b7a5365340c71e688869900b5647ed3c1721d772329d2f633514ab3d0646",
+      "output_sha256": "dad218120bf8602de2f78da6f346cb2e3355f4eca6ca753d287980f1b39ad438",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/aoe.png",
+      "output": "assets/cards/aoe.webp"
+    },
+    {
+      "original_pixels": [
+        192,
+        192
+      ],
+      "output_pixels": [
+        192,
+        192
+      ],
+      "original_bytes": 84378,
+      "output_bytes": 63122,
+      "original_sha256": "d7dfa10e487ebc441474d358e84d2b07abf8dd227312a5a1dfe6ba04daa557b1",
+      "output_sha256": "051e9e965f9df7aaccad2425a189c84961ab73bd16d627c19e548d43c3fb60fd",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/bountygold.png",
+      "output": "assets/cards/bountygold.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1155639,
+      "output_bytes": 110044,
+      "original_sha256": "b315f0b4495166f86f11dd8d1835eec96a19cc935ef97bc5e1eca4ab9a13d8e7",
+      "output_sha256": "519bf6846d4c049270338a422958a73f72362a5fc477d19cdf8cbb38debf2a7b",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/combo.png",
+      "output": "assets/cards/combo.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 665718,
+      "output_bytes": 59922,
+      "original_sha256": "6cc1d514ad29f3d3d1362c9d1f6c714f2dae0429d42fd529eab7802662bf96b0",
+      "output_sha256": "9c460296b9e2ddc5be86ad3acaaad5755b2c70e4953c124330c4618b6cacbecb",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/dagger.png",
+      "output": "assets/cards/dagger.webp"
+    },
+    {
+      "original_pixels": [
+        192,
+        192
+      ],
+      "output_pixels": [
+        192,
+        192
+      ],
+      "original_bytes": 84065,
+      "output_bytes": 62778,
+      "original_sha256": "ac7087fb1a62925cb572cba991587d973b5383af36bf3439ec7519787d058bdb",
+      "output_sha256": "2489d51757b05ba1dfb76c0b1747695fda498eb6cbeefda971b63ab92a70ed75",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/fateblade.png",
+      "output": "assets/cards/fateblade.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1197461,
+      "output_bytes": 112276,
+      "original_sha256": "39352d12da7eba903fde5cdf629afb8b6aacd5965aab9cd8de87c3eaee916482",
+      "output_sha256": "730528e2a5a56d225f75d3c3b563e24dba78c0061c2d6bbc23504a1fa1da0c55",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/gem.png",
+      "output": "assets/cards/gem.webp"
+    },
+    {
+      "original_pixels": [
+        192,
+        192
+      ],
+      "output_pixels": [
+        192,
+        192
+      ],
+      "original_bytes": 85650,
+      "output_bytes": 69128,
+      "original_sha256": "c01872ee33d0ef9a17d210e5f2acebf26f5f86f98a95f17e17464a2551b120cf",
+      "output_sha256": "c182fd3f9687c66f5b592fd3f7775522306c5d11173331e5d44b77b4849cebb6",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/luckminer.png",
+      "output": "assets/cards/luckminer.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1075617,
+      "output_bytes": 103552,
+      "original_sha256": "924d585db88f71c1b6728aeb52f15994c3461983bebd1104a65ab24808a2139b",
+      "output_sha256": "6af1d86f456f247c87d10880074d0f9f1db871aceeec76f228820c234fae1ecf",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/promo_stone.png",
+      "output": "assets/cards/promo_stone.webp"
+    },
+    {
+      "original_pixels": [
+        192,
+        192
+      ],
+      "output_pixels": [
+        192,
+        192
+      ],
+      "original_bytes": 87469,
+      "output_bytes": 66250,
+      "original_sha256": "fd65cfa73de0dc7bc315febf27b4fd74b3310946c532ffd7656d94a2cd9d4a2d",
+      "output_sha256": "37dbd33a39cf4b66a6506a946a45434b84ec16e2111405e5bf3762b9f543db18",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/royalgold.png",
+      "output": "assets/cards/royalgold.webp"
+    },
+    {
+      "original_pixels": [
+        192,
+        192
+      ],
+      "output_pixels": [
+        192,
+        192
+      ],
+      "original_bytes": 83833,
+      "output_bytes": 62786,
+      "original_sha256": "ffcbbce6e0ae4f99d0253b28f3d70d400844014e6429d0ccd30266d86c1900f0",
+      "output_sha256": "04bb048a18eb91a41a09f4d0cc479e1876c83b545fb93cd08bcd29e82ce008b9",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/skylance.png",
+      "output": "assets/cards/skylance.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1211624,
+      "output_bytes": 115396,
+      "original_sha256": "70ea56d4efd62547cb3fb3e0499dc6d8c221bd4f61f4b6badebf55009ab4f60e",
+      "output_sha256": "1a2caff228cb98619af2597f94b52666303dd93f80677dc777c29b95d5d3cfa4",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/smash.png",
+      "output": "assets/cards/smash.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 706841,
+      "output_bytes": 59760,
+      "original_sha256": "f49bed92dde3b667583540c24e4bdb22730b343caff31f33bbf985b94c228391",
+      "output_sha256": "bf81329da5c9c416abb8e9c0687e25d8ede68fb281bfc4392046e4b22dd86be1",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/cards/sword.png",
+      "output": "assets/cards/sword.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1655601,
+      "output_bytes": 252172,
+      "original_sha256": "52bb14485f8b616a27840ed8eabf8d2b39425041f2d1d0cb9dc63cbdd3265b71",
+      "output_sha256": "ea8920a2b52d12395c87576c7a5604961bfbe815f302fda5c38bd4200c046489",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/bandit.png",
+      "output": "assets/enemies/bandit.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1745381,
+      "output_bytes": 287998,
+      "original_sha256": "5e4ffccdb87ebdfbde4299fd74fdad3ed257323e92403a999ed3d7a8b1276ca4",
+      "output_sha256": "69efb48007fac56811af989a702a3146472a600a48ad88cd1d08fab2446ad568",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/fate_guardian.png",
+      "output": "assets/enemies/fate_guardian.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1558728,
+      "output_bytes": 252750,
+      "original_sha256": "1dbfd13276f54f0f8f00ce7b40b814d95008ed33074f303faa4fd90d28447eb3",
+      "output_sha256": "86c8cc1c63dadadc56ccb1495200a0b1a074c084b87cf88db54a4338dbc6b299",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/gem_hunter.png",
+      "output": "assets/enemies/gem_hunter.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1618304,
+      "output_bytes": 249738,
+      "original_sha256": "f0155fe9da39692136e62bd2b2fe808180a4743db19dd9af02c415e8a89904b3",
+      "output_sha256": "1c363cfbab78f84a193fab7e7494f21469dada37b1a1e53e3e162add674671e5",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/goblin.png",
+      "output": "assets/enemies/goblin.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1776626,
+      "output_bytes": 305478,
+      "original_sha256": "d7e1a2992e349111c1ef74bd036b9410ea71c32ccb9c1a0ae6da9082171f14b7",
+      "output_sha256": "b641e5be7ac1b671c478e1c5c2d7fd86577f1affc6766585451bd3444f0ee7fa",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/greed_dragon.png",
+      "output": "assets/enemies/greed_dragon.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1904748,
+      "output_bytes": 302816,
+      "original_sha256": "5a8b4902aff02c576a5b14473b9f8534822b3c534059a0d461a8a92f143b6683",
+      "output_sha256": "0261af7548ced09ceeb881893eda404faa6b6d0e2824c04ac147bb9577fb79d5",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/iron_giant.png",
+      "output": "assets/enemies/iron_giant.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1453185,
+      "output_bytes": 228206,
+      "original_sha256": "4dbbe1b4d279209d4afbfebd867c34432d53d702a8de195b12ef26b59c2568d7",
+      "output_sha256": "df756f842d3bdc6c2d5cf4f8e0877afa6c765fc31cfb8c28737560e2eb95f922",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/resource_thief.png",
+      "output": "assets/enemies/resource_thief.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1637066,
+      "output_bytes": 255382,
+      "original_sha256": "451b7625cdd59d10dd815b96bcb583bc69d8358a67bf4b5aa812fb3f4c36aecc",
+      "output_sha256": "7f430b446dc6381de815f286fc2df85e1ae46be2ffbb30081de854657e166e78",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/sealer.png",
+      "output": "assets/enemies/sealer.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1106913,
+      "output_bytes": 177722,
+      "original_sha256": "490dfebf2a2c79b3885b1936de869ea89eb57619d7e248054f644a1e49c8a46c",
+      "output_sha256": "51f65a4512dbd68f2e87138dcb05c82773c3fe8169d5e45b593d2c52a07041f1",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/slime.png",
+      "output": "assets/enemies/slime.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1630870,
+      "output_bytes": 231188,
+      "original_sha256": "ace576674dd23bdc62aa3460a43ccd41a1a181a3e7e5afe66bd855eb54b9e703",
+      "output_sha256": "9889db4f75f91012a73f4d7f8767217850e250623fe332b142535fde99db12bf",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/twisted_knight.png",
+      "output": "assets/enemies/twisted_knight.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1607913,
+      "output_bytes": 242802,
+      "original_sha256": "22e1c88669472845b518e22bc345e84379950bf8b0b7ea21acb5f17111eb1058",
+      "output_sha256": "66f5e8b15226ec2f052d436c299526205dd8b14dac0e32ecad25b83be8ddcc4c",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/enemies/wolf.png",
+      "output": "assets/enemies/wolf.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1907987,
+      "output_bytes": 151516,
+      "original_sha256": "e88d7b729e7ef49fda3b26d6daa8725bcc10a9dfc5c6fa01a488e4c540471260",
+      "output_sha256": "9c0b66f3cc0a6974853d957590187c7096c5f50f3843f7c06956abb579626296",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/luckdraw.png",
+      "output": "assets/icons/cards/luckdraw.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1321591,
+      "output_bytes": 119282,
+      "original_sha256": "8bfc376647f8cacdc1c9c21246650156c61eba94ef0837a79e6e8957205beb12",
+      "output_sha256": "66840198b4f00ecfed2752dfecfed9219a716770a46fdcf6602762dd49c0dedf",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/luckforge.png",
+      "output": "assets/icons/cards/luckforge.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1567242,
+      "output_bytes": 126158,
+      "original_sha256": "ca4c2adb69e081754163f77e114d13f665b7dc2a18e6c3dd91e9ab03040f1e28",
+      "output_sha256": "e75eaa0500c90dc502c00af0eff5194872da1aebd19d3cf09ff47d4a9666c5fa",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/luckguard.png",
+      "output": "assets/icons/cards/luckguard.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 888123,
+      "output_bytes": 77418,
+      "original_sha256": "12079e05fcf7a516dde28c40e097c32823d943626bce2e9eadc1477570e8b6ae",
+      "output_sha256": "6a2b014433279319fcea4cb9f276d2c879a30104b9d409b4edbac6969c568510",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/lucklink.png",
+      "output": "assets/icons/cards/lucklink.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1266324,
+      "output_bytes": 87194,
+      "original_sha256": "dc72fc3e7bfb51f0efa98480a9781fca43cce6744fa5a565de0602f11614d301",
+      "output_sha256": "781af1f1d8dbbbb7fb190b72de5556579810335c9ac55044a4dfcb899d76a5be",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/masterlink.png",
+      "output": "assets/icons/cards/masterlink.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1011966,
+      "output_bytes": 82150,
+      "original_sha256": "926594f4904d82d048949c91292758d5df2e651d2881179db02e97dc9ee3f35f",
+      "output_sha256": "d021598a6b99865e72714a749f3e7f7de23ec06cb4c545e7e4ffdce52aff9b4b",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/raiderking.png",
+      "output": "assets/icons/cards/raiderking.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 2158329,
+      "output_bytes": 170596,
+      "original_sha256": "ace8c11cbd7f005db646053d746e229ad136b589e2a801f6ce7880fe64a8f63d",
+      "output_sha256": "e2bfdc72f6c0263b2fd8a619a305dbdf8ac9b56a7fc764216455e1c6de07879b",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/stararmor.png",
+      "output": "assets/icons/cards/stararmor.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        384,
+        384
+      ],
+      "original_bytes": 1384027,
+      "output_bytes": 114736,
+      "original_sha256": "8d01ebd067078b4dbc5776ce98a811ccb6f6df3b325fe4d6e5f2c26427cbee3c",
+      "output_sha256": "b03b17bc22202346e1942f7f1f5bee25b45f9b8c945d4ef14cbad74218db9be2",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/icons/cards/wisdomsword.png",
+      "output": "assets/icons/cards/wisdomsword.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1545169,
+      "output_bytes": 209226,
+      "original_sha256": "20d017a01f9724e3ef5267ab54c98c10c2dbf6320dcf8f59701760b8c17df3fe",
+      "output_sha256": "7d4c84926f6a09a6bb726e90d59383618eb825285122b739f148b0771c3ad169",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/player/adventurer-archer.png",
+      "output": "assets/player/adventurer-archer.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1578922,
+      "output_bytes": 224180,
+      "original_sha256": "468dd7b387ba2c2791cb0441c7e42c063b7a82dd6a7b61ee16001e34c4df8fb8",
+      "output_sha256": "d8e38a6c8804ce2231b2cac5eb1e1dc7d4e5ad0a693370269e700d167da21cc6",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/player/adventurer-knight.png",
+      "output": "assets/player/adventurer-knight.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1731825,
+      "output_bytes": 247676,
+      "original_sha256": "9477953c022dfaeffcf006dcd45cdffb24583577a0cac91aaa1655ef59b8b7e9",
+      "output_sha256": "85a3bfa735374911e07bdfe121cd080800d04adb56e6a317311439cc151c8729",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/player/adventurer-mage.png",
+      "output": "assets/player/adventurer-mage.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1546529,
+      "output_bytes": 209984,
+      "original_sha256": "350aa56cd8f9e89d8472ca5ec3965be2a15b81b88f80f9f587fa60590609053b",
+      "output_sha256": "5668d5dd1d38c9536cb1755f8721caef54d26629a4527c9c638f2bd00ccfb0b1",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/player/adventurer-priest.png",
+      "output": "assets/player/adventurer-priest.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1398740,
+      "output_bytes": 184590,
+      "original_sha256": "4952a465ffd0fb7645f6c78ed537d42acebcd368192f8aedd4bc1c118d8b2d9c",
+      "output_sha256": "1fa5c5b5dff3c7cd657c3b0b128bda30d458aad1dffd4c60232d00c67a9ff589",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/player/adventurer-rogue.png",
+      "output": "assets/player/adventurer-rogue.webp"
+    },
+    {
+      "original_pixels": [
+        1254,
+        1254
+      ],
+      "output_pixels": [
+        512,
+        512
+      ],
+      "original_bytes": 1673239,
+      "output_bytes": 273916,
+      "original_sha256": "9b501318dee9f578d3782e1fae33fa901f0d74457fe245902419c5a71d3f407b",
+      "output_sha256": "14903bee56b4ca517e6e5a9953d685f8e4d8a61b2f71bb690c7cdfa5b70deac3",
+      "alpha_exact": true,
+      "psnr_min_composited_db": null,
+      "lossless": true,
+      "original": "assets/player/hero.png",
+      "output": "assets/player/hero.webp"
+    }
+  ],
+  "inline": [],
+  "raw_asset_bytes": 48641386,
+  "webp_asset_bytes": 6345198,
+  "source_assets_preserved": true
+}

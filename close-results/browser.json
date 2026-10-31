@@ -1,0 +1,469 @@
+{
+  "mobile": [
+    {
+      "width": 360,
+      "dpr": 2,
+      "images_loaded": true,
+      "default_A": true,
+      "coupon_cap": 6,
+      "seed3": true,
+      "modal_within_width": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "dpr": 2,
+      "images_loaded": true,
+      "default_A": true,
+      "coupon_cap": 6,
+      "seed3": true,
+      "modal_within_width": true,
+      "errors": []
+    },
+    {
+      "width": 430,
+      "dpr": 2,
+      "images_loaded": true,
+      "default_A": true,
+      "coupon_cap": 6,
+      "seed3": true,
+      "modal_within_width": true,
+      "errors": []
+    }
+  ],
+  "decoded_images": [
+    {
+      "path": "assets/cards/ag2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/cards/annihilation.webp",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "path": "assets/cards/aoe.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/cards/bountygold.webp",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "path": "assets/cards/combo.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/cards/dagger.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/cards/fateblade.webp",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "path": "assets/cards/gem.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/cards/luckminer.webp",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "path": "assets/cards/promo_stone.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/cards/royalgold.webp",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "path": "assets/cards/skylance.webp",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "path": "assets/cards/smash.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/cards/sword.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/enemies/bandit.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/fate_guardian.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/gem_hunter.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/goblin.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/greed_dragon.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/iron_giant.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/resource_thief.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/sealer.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/slime.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/twisted_knight.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/enemies/wolf.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/icons/cards/luckdraw.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/icons/cards/luckforge.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/icons/cards/luckguard.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/icons/cards/lucklink.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/icons/cards/masterlink.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/icons/cards/raiderking.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/icons/cards/stararmor.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/icons/cards/wisdomsword.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "path": "assets/player/adventurer-archer.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/player/adventurer-knight.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/player/adventurer-mage.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/player/adventurer-priest.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/player/adventurer-rogue.webp",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "assets/player/hero.webp",
+      "width": 512,
+      "height": 512
+    }
+  ],
+  "rollback_modes": [
+    "B",
+    "C",
+    "legacy"
+  ],
+  "all_p5_off": true,
+  "audio": [
+    {
+      "mode": "embedded",
+      "decoded": [
+        {
+          "id": "bgm_title",
+          "duration": 43.636371882086166,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_round",
+          "duration": 53.333333333333336,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_battle",
+          "duration": 41.73913832199546,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_danger",
+          "duration": 25.6,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_infinite",
+          "duration": 40,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_round_clear",
+          "duration": 3,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_round30_clear",
+          "duration": 4.2,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_infinite_enter",
+          "duration": 3.5999773242630386,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_attack_01",
+          "duration": 0.62,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_attack_02",
+          "duration": 0.62,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_attack_03",
+          "duration": 0.62,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_aoe",
+          "duration": 1.6,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_pierce",
+          "duration": 0.95,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_max_intro",
+          "duration": 2.1,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_max_hit",
+          "duration": 1.7,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_danger_enter",
+          "duration": 2.4,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_run_end",
+          "duration": 3.3,
+          "channels": 2,
+          "sample_rate": 44100
+        }
+      ],
+      "actual_playback": {
+        "duration": 53.368163,
+        "time": 0.105025,
+        "paused": false,
+        "source": "data",
+        "mappings": 22
+      },
+      "embedded_offline": true
+    },
+    {
+      "mode": "external",
+      "decoded": [
+        {
+          "id": "bgm_title",
+          "duration": 43.636371882086166,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_round",
+          "duration": 53.333333333333336,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_battle",
+          "duration": 41.73913832199546,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_danger",
+          "duration": 25.6,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "bgm_infinite",
+          "duration": 40,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_round_clear",
+          "duration": 3,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_round30_clear",
+          "duration": 4.2,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_infinite_enter",
+          "duration": 3.5999773242630386,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_attack_01",
+          "duration": 0.62,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_attack_02",
+          "duration": 0.62,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_attack_03",
+          "duration": 0.62,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_aoe",
+          "duration": 1.6,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_pierce",
+          "duration": 0.95,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_max_intro",
+          "duration": 2.1,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "sfx_max_hit",
+          "duration": 1.7,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_danger_enter",
+          "duration": 2.4,
+          "channels": 2,
+          "sample_rate": 44100
+        },
+        {
+          "id": "cue_run_end",
+          "duration": 3.3,
+          "channels": 2,
+          "sample_rate": 44100
+        }
+      ],
+      "actual_playback": {
+        "duration": 53.368163,
+        "time": 0.133117,
+        "paused": false,
+        "source": "relative",
+        "mappings": 22
+      },
+      "embedded_offline": null
+    }
+  ]
+}
