@@ -1,7 +1,7 @@
 """Additive v0.3 P1 development build; v0.2.20 remains byte-identical."""
 import hashlib,json,shutil,subprocess
 from pathlib import Path
-from v0219_patch import once,offline_cloud
+from v0219_patch import once
 from v030_p1_patch import patch as p1_patch
 from p5_rewards_patch import patch as p5_patch
 from optimize_v030_assets import optimize as optimize_assets
@@ -13,8 +13,9 @@ def build():
  if P.exists():shutil.rmtree(P)
  shutil.copytree(source,P)
  commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()
- build_id='030-rc-'+hashlib.sha256((sha(R/'build_v030.py')+sha(R/'optimize_v030_assets.py')+sha(R/'v030-telemetry.js')+sha(R/'v030-p1.js')+sha(R/'v030_p1_patch.py')+sha(R/'p5_rewards_patch.py')+sha(R/'p5-rewards.js')+sha(source/'game.js')).encode()).hexdigest()[:16]
+ build_id='030-rc-'+hashlib.sha256((sha(R/'build_v030.py')+sha(R/'optimize_v030_assets.py')+sha(R/'v030-telemetry.js')+sha(R/'v030-p1.js')+sha(R/'v030_p1_patch.py')+sha(R/'p5_rewards_patch.py')+sha(R/'p5-rewards.js')+sha(R/'v030-local-cloud.js')+sha(source/'game.js')).encode()).hexdigest()[:16]
  source_paths=['optimize_v030_assets.py','p5_rewards_patch.py','p5-rewards.js','build_v030.py','v030-telemetry.js','v030-reference-ai.js','verify_v030.py','run_v030_stage0.py','test_v030.py','v030-p1.js','v030_p1_patch.py','test_v030_p1.py','verify_v030_p1.py','build_v030_standalone.py','write_v030_p1_report.py']
+ source_paths+=['v030-local-cloud.js']
  source_manifest={f:sha(R/f) for f in source_paths}
  source_dirty=bool(subprocess.check_output(['git','status','--porcelain','--',*source_paths],cwd=R,text=True).strip())
  meta={'version':'0.3.0-rc.1','stage':'v030_embedded_audio_approved','build_id':build_id,'git_sha':commit,'baseline_git_sha':'110d54876a121909b9bd6074cf682b6d99944083','baseline_build_id':json.loads((source/'build.json').read_text())['build_id'],'score_ruleset_version':'v2-actual-strike-0220','persistent_draw':True,'gameplay_changes':['draw_always_on','p1_link_conversion','p1_cards','p1_next_round_bonuses','p5_reroll_seed','p5_single_restock','p5_purchase_coupon','p5_seed_three_offer','p5_restock_experiment_flags'],'comparison_contract':'P5 disabled state regression; isolated approved reward stages','cloud_mode':'isolated_local','source_tree_dirty':source_dirty,'source_manifest_sha256':hashlib.sha256(json.dumps(source_manifest,sort_keys=True).encode()).hexdigest(),'source_files':source_manifest}
@@ -34,7 +35,7 @@ def build():
  (P/'rankings.js').write_text((source/'rankings.js').read_text().replace('0.2.20','0.3.0-rc.1 개발판').replace('온라인','기기 테스트'))
  (P/'history.js').write_text((source/'history.js').read_text().replace('v0.2.20','v0.3.0 개발판'))
  (P/'cloud/config.js').write_text('window.LUCK_CLOUD_CONFIG={};\n')
- (P/'cloud/cloud.js').write_text(offline_cloud().replace('0.2.19','0.3.0-rc.1 개발판').replace('로컬 테스트','v0.3 계측 테스트'))
+ shutil.copyfile(R/'v030-local-cloud.js',P/'cloud/cloud.js')
  shutil.copyfile(R/'v030-telemetry.js',P/'v030-telemetry.js')
  index=(source/'index.html').read_text()
  import re
