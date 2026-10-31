@@ -40,7 +40,8 @@ class V030Tests(unittest.TestCase):
   self.begin();r=self.p.evaluate("()=>{hand=[{id:'audit',passive:'pierce',pierce:4}];pierce=7;const uncapped=totalPierce();hand=[];pierce=0;round=30;phase='battle';dangerActive=false;enemies=[{name:'R30 기준 판정 시험',hp:10000,debuffZone:1}];battle();return {uncapped,official:!!officialRecord,within:Luck030.records().findLast(x=>x.type==='battle_metrics').payload.within_limits};}")
   self.assertEqual(r,{'uncapped':11,'official':True,'within':False});(O/'unchanged-r30-pierce.json').write_text(json.dumps(r,indent=2))
  def test_06_standalone_offline(self):
-  path=R/'_site/downloads/LUCK-v0.3.0-dev.1.html'
+  version=__import__('json').loads((R/'_site/preview/v0.3.0/build.json').read_text())['version']
+  path=R/'_site/downloads'/('LUCK-v'+version+'-embedded')/'index.html'
   self.assertTrue(path.exists(),'build_v030_standalone.py must run first')
   context=self.browser.new_context(offline=True,viewport={'width':360,'height':844});p=context.new_page()
   try:

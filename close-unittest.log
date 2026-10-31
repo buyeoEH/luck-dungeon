@@ -1,0 +1,20 @@
+test_01_fixed_on_and_private_archive (test_v030.V030Tests.test_01_fixed_on_and_private_archive) ... ok
+test_02_mobile_first_and_next_briefings (test_v030.V030Tests.test_02_mobile_first_and_next_briefings) ... ok
+test_03_post_debuff_gauge_observation (test_v030.V030Tests.test_03_post_debuff_gauge_observation) ... ok
+test_04_all_promotion_attack_deltas (test_v030.V030Tests.test_04_all_promotion_attack_deltas) ... ok
+test_05_existing_pierce_and_r30_are_not_changed (test_v030.V030Tests.test_05_existing_pierce_and_r30_are_not_changed) ... ok
+test_06_standalone_offline (test_v030.V030Tests.test_06_standalone_offline) ... ok
+test_actual_pierce_frozen_before_debuff_spend (test_v030_p1.P1Tests.test_actual_pierce_frozen_before_debuff_spend) ... ok
+test_aoe_cleanup_and_pure_exclusion (test_v030_p1.P1Tests.test_aoe_cleanup_and_pure_exclusion) ... ok
+test_boundaries_cap_and_attack_order (test_v030_p1.P1Tests.test_boundaries_cap_and_attack_order) ... ok
+test_card_effects_no_score_inflation_and_peak (test_v030_p1.P1Tests.test_card_effects_no_score_inflation_and_peak) ... ok
+test_lance_order_instances_and_shared_cap (test_v030_p1.P1Tests.test_lance_order_instances_and_shared_cap) ... ok
+test_mobile_new_cards_and_gauge (test_v030_p1.P1Tests.test_mobile_new_cards_and_gauge) ... ok
+test_official_score_stays_frozen_in_endless (test_v030_p1.P1Tests.test_official_score_stays_frozen_in_endless) ... ok
+test_promotion_materials_and_step_no_stacking (test_v030_p1.P1Tests.test_promotion_materials_and_step_no_stacking) ... ok
+test_rewards_apply_once_next_round_and_reset (test_v030_p1.P1Tests.test_rewards_apply_once_next_round_and_reset) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 26.652s
+
+OK

@@ -4,7 +4,7 @@ let P5_REWARDS_ENABLED=window.LUCK_P5_REWARDS_ENABLED!==false&&p5Flags.get('p5')
 const P5_REWARD_STAGE='restock_abc_seed3';
 let p5SeedChoices=Number(window.LUCK_P5_SEED_CHOICES??p5Flags.get('seeds'))===8?8:3,p5SeedOffer=null;
 const p5RequestedMode=window.LUCK_P5_RESTOCK_MODE??p5Flags.get('restock');
-let p5RestockMode=['A','B','C','legacy'].includes(p5RequestedMode)?p5RequestedMode:'C';
+let p5RestockMode=['A','B','C','legacy'].includes(p5RequestedMode)?p5RequestedMode:'A';
 let p5RestockCandidates=[],p5Immediate=null;
 const P5_SEEDS=[['sam','공격'],['combo','연계'],['lance','관통'],['cg','보호'],['coin','운빨'],['rd','경제'],['d5','드로우'],['bomber','광역']];
 let p5Flow=null,p5Locks=new Set(),p5NativeReroll=null,p5Coupon=null,p5LastPurchase=null;

@@ -1,0 +1,18 @@
+[
+  {
+    "mode": "embedded",
+    "offline_file": true,
+    "time": 0.108844,
+    "paused": false,
+    "duration": 53.368163,
+    "src": "data"
+  },
+  {
+    "mode": "external",
+    "offline_file": true,
+    "time": 0.07565,
+    "paused": false,
+    "duration": 53.368163,
+    "src": "file"
+  }
+]
