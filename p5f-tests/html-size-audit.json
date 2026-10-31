@@ -1,0 +1,937 @@
+{
+  "baseline_html_bytes": 65986084,
+  "html_sha256": "76f695e6b4479df7d8ec3ae72745786d6fcb78d20de1b0c2ef547d5bf1f6150a",
+  "zip_bytes": 48930733,
+  "asset_categories": {
+    "audio": {
+      "files": 24,
+      "raw_bytes": 13106537,
+      "embedded_bytes": 0,
+      "embedded_files": 0
+    },
+    "image": {
+      "files": 39,
+      "raw_bytes": 48641386,
+      "embedded_bytes": 64855220,
+      "embedded_files": 39
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/audio/README-source.md",
+      "raw_bytes": 5661,
+      "base64_chars": 7548,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "62ee25262f8c9f3f4ede1bbe70854afc5f6e029ebdc30300181e763daac909b2"
+    },
+    {
+      "path": "assets/audio/bgm_battle.mp3",
+      "raw_bytes": 1003146,
+      "base64_chars": 1337528,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "8132e88d12c38884fe41862c7079a3edc6c5f5f44b23d7e8ad5c1d0ad2aee45f",
+      "audio": {
+        "duration": "41.769796",
+        "bit_rate": "192128"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_battle.ogg",
+      "raw_bytes": 878215,
+      "base64_chars": 1170956,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "25b5fd9c0d6d76db387984b19a7c72b3461d35d675d05225196176d7ef56d969",
+      "audio": {
+        "duration": "41.739138",
+        "bit_rate": "168324"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_danger.mp3",
+      "raw_bytes": 615697,
+      "base64_chars": 820932,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "8230c076cb5316267307db2a323e7020ed186774d7165f8c618ce2d9e94007f9",
+      "audio": {
+        "duration": "25.626122",
+        "bit_rate": "192209"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_danger.ogg",
+      "raw_bytes": 553305,
+      "base64_chars": 737740,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "66ff926af1e970a4a1ba7c4fc38759774c4333aadc3a6e7ebe0e5d5ca43b4330",
+      "audio": {
+        "duration": "25.600000",
+        "bit_rate": "172907"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_infinite.mp3",
+      "raw_bytes": 961768,
+      "base64_chars": 1282360,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "2b23a5c5e12fac9e6dc6096ddf86824b68f160c7b55bfa10014316cd9d1bf025",
+      "audio": {
+        "duration": "40.045714",
+        "bit_rate": "192134"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_infinite.ogg",
+      "raw_bytes": 883630,
+      "base64_chars": 1178176,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "7ff1d13388f29dfa06ae6876e5acc8b40f84a7f48e4861daa4f6b06d9a015722",
+      "audio": {
+        "duration": "40.000000",
+        "bit_rate": "176726"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_round.mp3",
+      "raw_bytes": 1281506,
+      "base64_chars": 1708676,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "676b570d047a659db3d806f65d4434d28d7bd914ddbc4ba06c344e52c21c4949",
+      "audio": {
+        "duration": "53.368163",
+        "bit_rate": "192100"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_round.ogg",
+      "raw_bytes": 1116926,
+      "base64_chars": 1489236,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "a90d96c718703135a57967d88b9b30b0f6f496132ade2532bc3fa6c7e87e9030",
+      "audio": {
+        "duration": "53.333333",
+        "bit_rate": "167538"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_title.mp3",
+      "raw_bytes": 1048912,
+      "base64_chars": 1398552,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "3269cba823bea0e17d2446b440519f22d84446d13cb6577012c9f9ad2e27cee5",
+      "audio": {
+        "duration": "43.676735",
+        "bit_rate": "192122"
+      }
+    },
+    {
+      "path": "assets/audio/bgm_title.ogg",
+      "raw_bytes": 393983,
+      "base64_chars": 525312,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "8b49cbb87e7627070057741387e8147a26e7fcaec9a02b97f53e54018614059c",
+      "audio": {
+        "duration": "43.636372",
+        "bit_rate": "72230"
+      }
+    },
+    {
+      "path": "assets/audio/cue_danger_enter.wav",
+      "raw_bytes": 423404,
+      "base64_chars": 564540,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "b0bda89e47e550d0110460b0420043012336d08cea0cf1be825e29dfae82e31d",
+      "audio": {
+        "duration": "2.400000",
+        "bit_rate": "1411346"
+      }
+    },
+    {
+      "path": "assets/audio/cue_infinite_enter.wav",
+      "raw_bytes": 635080,
+      "base64_chars": 846776,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "7750ab0b450d1f425d79584f7daf1444ac5748a571f5b790aa2cf239d1872dea",
+      "audio": {
+        "duration": "3.599977",
+        "bit_rate": "1411297"
+      }
+    },
+    {
+      "path": "assets/audio/cue_round30_clear.wav",
+      "raw_bytes": 740924,
+      "base64_chars": 987900,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "defdc1d5a6c94aa61520b6419f410f06ad64561d18fd8234230b2c1bab00b4cd",
+      "audio": {
+        "duration": "4.200000",
+        "bit_rate": "1411283"
+      }
+    },
+    {
+      "path": "assets/audio/cue_round_clear.wav",
+      "raw_bytes": 529244,
+      "base64_chars": 705660,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "a30c1b82ec58449e3f64d1d59642f06a281a96fd16d73faddad191b27cc72e9a",
+      "audio": {
+        "duration": "3.000000",
+        "bit_rate": "1411317"
+      }
+    },
+    {
+      "path": "assets/audio/cue_run_end.wav",
+      "raw_bytes": 582164,
+      "base64_chars": 776220,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "70807cd0c7cd8ec5608954e6cda002e633b77974c752faa17c7b199030f01c2f",
+      "audio": {
+        "duration": "3.300000",
+        "bit_rate": "1411306"
+      }
+    },
+    {
+      "path": "assets/audio/manifest.json",
+      "raw_bytes": 4420,
+      "base64_chars": 5896,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "b98168a4c7dd5d31c32b3d8fe407f4975982fc05e92519177feda1e6d1f19810"
+    },
+    {
+      "path": "assets/audio/sfx_aoe.wav",
+      "raw_bytes": 282284,
+      "base64_chars": 376380,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "aa1acac4cc7854e01483c682e91020b40f773298e9a399a58b88c77b214f53ec",
+      "audio": {
+        "duration": "1.600000",
+        "bit_rate": "1411420"
+      }
+    },
+    {
+      "path": "assets/audio/sfx_attack_01.wav",
+      "raw_bytes": 109412,
+      "base64_chars": 145884,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "df18703470950d21cb71382b0e5991066c085565dc226fadc78e6c2ea4136af3",
+      "audio": {
+        "duration": "0.620000",
+        "bit_rate": "1411767"
+      }
+    },
+    {
+      "path": "assets/audio/sfx_attack_02.wav",
+      "raw_bytes": 109412,
+      "base64_chars": 145884,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "4d80835e181e9f69072a47ca67121a883efcd19f06f95a10c8f65df896c7aa5f",
+      "audio": {
+        "duration": "0.620000",
+        "bit_rate": "1411767"
+      }
+    },
+    {
+      "path": "assets/audio/sfx_attack_03.wav",
+      "raw_bytes": 109412,
+      "base64_chars": 145884,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "2b6dd2019a264c73ca501c0f8d5456529243736d283daec2e9f9ff6ab88dc96d",
+      "audio": {
+        "duration": "0.620000",
+        "bit_rate": "1411767"
+      }
+    },
+    {
+      "path": "assets/audio/sfx_max_hit.wav",
+      "raw_bytes": 299924,
+      "base64_chars": 399900,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "68f65270157a1aff6f15a0ee276da9dcb1d63f4ae46568cbde6ab347e97acf2f",
+      "audio": {
+        "duration": "1.700000",
+        "bit_rate": "1411407"
+      }
+    },
+    {
+      "path": "assets/audio/sfx_max_intro.wav",
+      "raw_bytes": 370484,
+      "base64_chars": 493980,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "73c92fe2fcc381cb829216cb2a4ed9a76a2af516416ee9423f41afe7d4ea5062",
+      "audio": {
+        "duration": "2.100000",
+        "bit_rate": "1411367"
+      }
+    },
+    {
+      "path": "assets/audio/sfx_pierce.wav",
+      "raw_bytes": 167624,
+      "base64_chars": 223500,
+      "embedded_copies": 0,
+      "embedded_bytes": 0,
+      "sha256": "6523cc6529c3a113e78f5979c4d5406eb15fe16ffe0ffdd121e20fdd140ce5d2",
+      "audio": {
+        "duration": "0.950000",
+        "bit_rate": "1411570"
+      }
+    },
+    {
+      "path": "assets/cards/ag2.png",
+      "raw_bytes": 1838658,
+      "base64_chars": 2451544,
+      "embedded_copies": 1,
+      "embedded_bytes": 2451544,
+      "sha256": "8a291b1470c1000fcb600f0dbca5b777e7345ce114236212d53e888ec8ec4b5f",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/annihilation.png",
+      "raw_bytes": 80221,
+      "base64_chars": 106964,
+      "embedded_copies": 1,
+      "embedded_bytes": 106964,
+      "sha256": "712284a8b6f35fb41ace280c42b07b8ca739df22af56252869a7e5e8facec0e8",
+      "pixels": [
+        192,
+        192
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/aoe.png",
+      "raw_bytes": 1608864,
+      "base64_chars": 2145152,
+      "embedded_copies": 1,
+      "embedded_bytes": 2145152,
+      "sha256": "0da8b7a5365340c71e688869900b5647ed3c1721d772329d2f633514ab3d0646",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/bountygold.png",
+      "raw_bytes": 84378,
+      "base64_chars": 112504,
+      "embedded_copies": 1,
+      "embedded_bytes": 112504,
+      "sha256": "d7dfa10e487ebc441474d358e84d2b07abf8dd227312a5a1dfe6ba04daa557b1",
+      "pixels": [
+        192,
+        192
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/combo.png",
+      "raw_bytes": 1155639,
+      "base64_chars": 1540852,
+      "embedded_copies": 1,
+      "embedded_bytes": 1540852,
+      "sha256": "b315f0b4495166f86f11dd8d1835eec96a19cc935ef97bc5e1eca4ab9a13d8e7",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/dagger.png",
+      "raw_bytes": 665718,
+      "base64_chars": 887624,
+      "embedded_copies": 1,
+      "embedded_bytes": 887624,
+      "sha256": "6cc1d514ad29f3d3d1362c9d1f6c714f2dae0429d42fd529eab7802662bf96b0",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/fateblade.png",
+      "raw_bytes": 84065,
+      "base64_chars": 112088,
+      "embedded_copies": 1,
+      "embedded_bytes": 112088,
+      "sha256": "ac7087fb1a62925cb572cba991587d973b5383af36bf3439ec7519787d058bdb",
+      "pixels": [
+        192,
+        192
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/gem.png",
+      "raw_bytes": 1197461,
+      "base64_chars": 1596616,
+      "embedded_copies": 1,
+      "embedded_bytes": 1596616,
+      "sha256": "39352d12da7eba903fde5cdf629afb8b6aacd5965aab9cd8de87c3eaee916482",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/luckminer.png",
+      "raw_bytes": 85650,
+      "base64_chars": 114200,
+      "embedded_copies": 1,
+      "embedded_bytes": 114200,
+      "sha256": "c01872ee33d0ef9a17d210e5f2acebf26f5f86f98a95f17e17464a2551b120cf",
+      "pixels": [
+        192,
+        192
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/promo_stone.png",
+      "raw_bytes": 1075617,
+      "base64_chars": 1434156,
+      "embedded_copies": 1,
+      "embedded_bytes": 1434156,
+      "sha256": "924d585db88f71c1b6728aeb52f15994c3461983bebd1104a65ab24808a2139b",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/royalgold.png",
+      "raw_bytes": 87469,
+      "base64_chars": 116628,
+      "embedded_copies": 1,
+      "embedded_bytes": 116628,
+      "sha256": "fd65cfa73de0dc7bc315febf27b4fd74b3310946c532ffd7656d94a2cd9d4a2d",
+      "pixels": [
+        192,
+        192
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/skylance.png",
+      "raw_bytes": 83833,
+      "base64_chars": 111780,
+      "embedded_copies": 1,
+      "embedded_bytes": 111780,
+      "sha256": "ffcbbce6e0ae4f99d0253b28f3d70d400844014e6429d0ccd30266d86c1900f0",
+      "pixels": [
+        192,
+        192
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/smash.png",
+      "raw_bytes": 1211624,
+      "base64_chars": 1615500,
+      "embedded_copies": 1,
+      "embedded_bytes": 1615500,
+      "sha256": "70ea56d4efd62547cb3fb3e0499dc6d8c221bd4f61f4b6badebf55009ab4f60e",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/cards/sword.png",
+      "raw_bytes": 706841,
+      "base64_chars": 942456,
+      "embedded_copies": 1,
+      "embedded_bytes": 942456,
+      "sha256": "f49bed92dde3b667583540c24e4bdb22730b343caff31f33bbf985b94c228391",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/bandit.png",
+      "raw_bytes": 1655601,
+      "base64_chars": 2207468,
+      "embedded_copies": 1,
+      "embedded_bytes": 2207468,
+      "sha256": "52bb14485f8b616a27840ed8eabf8d2b39425041f2d1d0cb9dc63cbdd3265b71",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/fate_guardian.png",
+      "raw_bytes": 1745381,
+      "base64_chars": 2327176,
+      "embedded_copies": 1,
+      "embedded_bytes": 2327176,
+      "sha256": "5e4ffccdb87ebdfbde4299fd74fdad3ed257323e92403a999ed3d7a8b1276ca4",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/gem_hunter.png",
+      "raw_bytes": 1558728,
+      "base64_chars": 2078304,
+      "embedded_copies": 1,
+      "embedded_bytes": 2078304,
+      "sha256": "1dbfd13276f54f0f8f00ce7b40b814d95008ed33074f303faa4fd90d28447eb3",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/goblin.png",
+      "raw_bytes": 1618304,
+      "base64_chars": 2157740,
+      "embedded_copies": 1,
+      "embedded_bytes": 2157740,
+      "sha256": "f0155fe9da39692136e62bd2b2fe808180a4743db19dd9af02c415e8a89904b3",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/greed_dragon.png",
+      "raw_bytes": 1776626,
+      "base64_chars": 2368836,
+      "embedded_copies": 1,
+      "embedded_bytes": 2368836,
+      "sha256": "d7e1a2992e349111c1ef74bd036b9410ea71c32ccb9c1a0ae6da9082171f14b7",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/iron_giant.png",
+      "raw_bytes": 1904748,
+      "base64_chars": 2539664,
+      "embedded_copies": 1,
+      "embedded_bytes": 2539664,
+      "sha256": "5a8b4902aff02c576a5b14473b9f8534822b3c534059a0d461a8a92f143b6683",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/resource_thief.png",
+      "raw_bytes": 1453185,
+      "base64_chars": 1937580,
+      "embedded_copies": 1,
+      "embedded_bytes": 1937580,
+      "sha256": "4dbbe1b4d279209d4afbfebd867c34432d53d702a8de195b12ef26b59c2568d7",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/sealer.png",
+      "raw_bytes": 1637066,
+      "base64_chars": 2182756,
+      "embedded_copies": 1,
+      "embedded_bytes": 2182756,
+      "sha256": "451b7625cdd59d10dd815b96bcb583bc69d8358a67bf4b5aa812fb3f4c36aecc",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/slime.png",
+      "raw_bytes": 1106913,
+      "base64_chars": 1475884,
+      "embedded_copies": 1,
+      "embedded_bytes": 1475884,
+      "sha256": "490dfebf2a2c79b3885b1936de869ea89eb57619d7e248054f644a1e49c8a46c",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/twisted_knight.png",
+      "raw_bytes": 1630870,
+      "base64_chars": 2174496,
+      "embedded_copies": 1,
+      "embedded_bytes": 2174496,
+      "sha256": "ace576674dd23bdc62aa3460a43ccd41a1a181a3e7e5afe66bd855eb54b9e703",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/enemies/wolf.png",
+      "raw_bytes": 1607913,
+      "base64_chars": 2143884,
+      "embedded_copies": 1,
+      "embedded_bytes": 2143884,
+      "sha256": "22e1c88669472845b518e22bc345e84379950bf8b0b7ea21acb5f17111eb1058",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/luckdraw.png",
+      "raw_bytes": 1907987,
+      "base64_chars": 2543984,
+      "embedded_copies": 1,
+      "embedded_bytes": 2543984,
+      "sha256": "e88d7b729e7ef49fda3b26d6daa8725bcc10a9dfc5c6fa01a488e4c540471260",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/luckforge.png",
+      "raw_bytes": 1321591,
+      "base64_chars": 1762124,
+      "embedded_copies": 1,
+      "embedded_bytes": 1762124,
+      "sha256": "8bfc376647f8cacdc1c9c21246650156c61eba94ef0837a79e6e8957205beb12",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/luckguard.png",
+      "raw_bytes": 1567242,
+      "base64_chars": 2089656,
+      "embedded_copies": 1,
+      "embedded_bytes": 2089656,
+      "sha256": "ca4c2adb69e081754163f77e114d13f665b7dc2a18e6c3dd91e9ab03040f1e28",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/lucklink.png",
+      "raw_bytes": 888123,
+      "base64_chars": 1184164,
+      "embedded_copies": 1,
+      "embedded_bytes": 1184164,
+      "sha256": "12079e05fcf7a516dde28c40e097c32823d943626bce2e9eadc1477570e8b6ae",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/masterlink.png",
+      "raw_bytes": 1266324,
+      "base64_chars": 1688432,
+      "embedded_copies": 1,
+      "embedded_bytes": 1688432,
+      "sha256": "dc72fc3e7bfb51f0efa98480a9781fca43cce6744fa5a565de0602f11614d301",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/raiderking.png",
+      "raw_bytes": 1011966,
+      "base64_chars": 1349288,
+      "embedded_copies": 1,
+      "embedded_bytes": 1349288,
+      "sha256": "926594f4904d82d048949c91292758d5df2e651d2881179db02e97dc9ee3f35f",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/stararmor.png",
+      "raw_bytes": 2158329,
+      "base64_chars": 2877772,
+      "embedded_copies": 1,
+      "embedded_bytes": 2877772,
+      "sha256": "ace8c11cbd7f005db646053d746e229ad136b589e2a801f6ce7880fe64a8f63d",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/icons/cards/wisdomsword.png",
+      "raw_bytes": 1384027,
+      "base64_chars": 1845372,
+      "embedded_copies": 1,
+      "embedded_bytes": 1845372,
+      "sha256": "8d01ebd067078b4dbc5776ce98a811ccb6f6df3b325fe4d6e5f2c26427cbee3c",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/player/adventurer-archer.png",
+      "raw_bytes": 1545169,
+      "base64_chars": 2060228,
+      "embedded_copies": 1,
+      "embedded_bytes": 2060228,
+      "sha256": "20d017a01f9724e3ef5267ab54c98c10c2dbf6320dcf8f59701760b8c17df3fe",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/player/adventurer-knight.png",
+      "raw_bytes": 1578922,
+      "base64_chars": 2105232,
+      "embedded_copies": 1,
+      "embedded_bytes": 2105232,
+      "sha256": "468dd7b387ba2c2791cb0441c7e42c063b7a82dd6a7b61ee16001e34c4df8fb8",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/player/adventurer-mage.png",
+      "raw_bytes": 1731825,
+      "base64_chars": 2309100,
+      "embedded_copies": 1,
+      "embedded_bytes": 2309100,
+      "sha256": "9477953c022dfaeffcf006dcd45cdffb24583577a0cac91aaa1655ef59b8b7e9",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/player/adventurer-priest.png",
+      "raw_bytes": 1546529,
+      "base64_chars": 2062040,
+      "embedded_copies": 1,
+      "embedded_bytes": 2062040,
+      "sha256": "350aa56cd8f9e89d8472ca5ec3965be2a15b81b88f80f9f587fa60590609053b",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/player/adventurer-rogue.png",
+      "raw_bytes": 1398740,
+      "base64_chars": 1864988,
+      "embedded_copies": 1,
+      "embedded_bytes": 1864988,
+      "sha256": "4952a465ffd0fb7645f6c78ed537d42acebcd368192f8aedd4bc1c118d8b2d9c",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/player/hero.png",
+      "raw_bytes": 1673239,
+      "base64_chars": 2230988,
+      "embedded_copies": 1,
+      "embedded_bytes": 2230988,
+      "sha256": "9b501318dee9f578d3782e1fae33fa901f0d74457fe245902419c5a71d3f407b",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    }
+  ],
+  "uri_occurrences": 103,
+  "unique_uris": 103,
+  "uri_total_bytes": 65669822,
+  "duplicate_uri_bytes": 0,
+  "audio_format_pairs": [
+    {
+      "stem": "bgm_infinite",
+      "ogg_bytes": 883630,
+      "mp3_bytes": 961768
+    },
+    {
+      "stem": "bgm_danger",
+      "ogg_bytes": 553305,
+      "mp3_bytes": 615697
+    },
+    {
+      "stem": "bgm_battle",
+      "ogg_bytes": 878215,
+      "mp3_bytes": 1003146
+    },
+    {
+      "stem": "bgm_round",
+      "ogg_bytes": 1116926,
+      "mp3_bytes": 1281506
+    },
+    {
+      "stem": "bgm_title",
+      "ogg_bytes": 393983,
+      "mp3_bytes": 1048912
+    }
+  ],
+  "top_assets": [
+    {
+      "path": "assets/icons/cards/stararmor.png",
+      "raw_bytes": 2158329,
+      "base64_chars": 2877772,
+      "embedded_copies": 1,
+      "embedded_bytes": 2877772,
+      "sha256": "ace8c11cbd7f005db646053d746e229ad136b589e2a801f6ce7880fe64a8f63d"
+    },
+    {
+      "path": "assets/icons/cards/luckdraw.png",
+      "raw_bytes": 1907987,
+      "base64_chars": 2543984,
+      "embedded_copies": 1,
+      "embedded_bytes": 2543984,
+      "sha256": "e88d7b729e7ef49fda3b26d6daa8725bcc10a9dfc5c6fa01a488e4c540471260"
+    },
+    {
+      "path": "assets/enemies/iron_giant.png",
+      "raw_bytes": 1904748,
+      "base64_chars": 2539664,
+      "embedded_copies": 1,
+      "embedded_bytes": 2539664,
+      "sha256": "5a8b4902aff02c576a5b14473b9f8534822b3c534059a0d461a8a92f143b6683"
+    },
+    {
+      "path": "assets/cards/ag2.png",
+      "raw_bytes": 1838658,
+      "base64_chars": 2451544,
+      "embedded_copies": 1,
+      "embedded_bytes": 2451544,
+      "sha256": "8a291b1470c1000fcb600f0dbca5b777e7345ce114236212d53e888ec8ec4b5f"
+    },
+    {
+      "path": "assets/enemies/greed_dragon.png",
+      "raw_bytes": 1776626,
+      "base64_chars": 2368836,
+      "embedded_copies": 1,
+      "embedded_bytes": 2368836,
+      "sha256": "d7e1a2992e349111c1ef74bd036b9410ea71c32ccb9c1a0ae6da9082171f14b7"
+    },
+    {
+      "path": "assets/enemies/fate_guardian.png",
+      "raw_bytes": 1745381,
+      "base64_chars": 2327176,
+      "embedded_copies": 1,
+      "embedded_bytes": 2327176,
+      "sha256": "5e4ffccdb87ebdfbde4299fd74fdad3ed257323e92403a999ed3d7a8b1276ca4"
+    },
+    {
+      "path": "assets/player/adventurer-mage.png",
+      "raw_bytes": 1731825,
+      "base64_chars": 2309100,
+      "embedded_copies": 1,
+      "embedded_bytes": 2309100,
+      "sha256": "9477953c022dfaeffcf006dcd45cdffb24583577a0cac91aaa1655ef59b8b7e9"
+    },
+    {
+      "path": "assets/player/hero.png",
+      "raw_bytes": 1673239,
+      "base64_chars": 2230988,
+      "embedded_copies": 1,
+      "embedded_bytes": 2230988,
+      "sha256": "9b501318dee9f578d3782e1fae33fa901f0d74457fe245902419c5a71d3f407b"
+    },
+    {
+      "path": "assets/enemies/bandit.png",
+      "raw_bytes": 1655601,
+      "base64_chars": 2207468,
+      "embedded_copies": 1,
+      "embedded_bytes": 2207468,
+      "sha256": "52bb14485f8b616a27840ed8eabf8d2b39425041f2d1d0cb9dc63cbdd3265b71"
+    },
+    {
+      "path": "assets/enemies/sealer.png",
+      "raw_bytes": 1637066,
+      "base64_chars": 2182756,
+      "embedded_copies": 1,
+      "embedded_bytes": 2182756,
+      "sha256": "451b7625cdd59d10dd815b96bcb583bc69d8358a67bf4b5aa812fb3f4c36aecc"
+    },
+    {
+      "path": "assets/enemies/twisted_knight.png",
+      "raw_bytes": 1630870,
+      "base64_chars": 2174496,
+      "embedded_copies": 1,
+      "embedded_bytes": 2174496,
+      "sha256": "ace576674dd23bdc62aa3460a43ccd41a1a181a3e7e5afe66bd855eb54b9e703"
+    },
+    {
+      "path": "assets/enemies/goblin.png",
+      "raw_bytes": 1618304,
+      "base64_chars": 2157740,
+      "embedded_copies": 1,
+      "embedded_bytes": 2157740,
+      "sha256": "f0155fe9da39692136e62bd2b2fe808180a4743db19dd9af02c415e8a89904b3"
+    }
+  ]
+}

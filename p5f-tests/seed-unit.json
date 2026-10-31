@@ -1,0 +1,37 @@
+[
+  {
+    "offer": [
+      "d5",
+      "coin",
+      "bomber"
+    ],
+    "ignored": true,
+    "same": true,
+    "added": 1,
+    "round": 2
+  },
+  {
+    "offer": [
+      "sam",
+      "combo",
+      "lance",
+      "cg",
+      "coin",
+      "rd",
+      "d5",
+      "bomber"
+    ],
+    "ignored": true,
+    "same": true,
+    "added": 1,
+    "round": 2
+  },
+  {
+    "seed": 123,
+    "repeated_offer": [
+      "bomber",
+      "rd",
+      "coin"
+    ]
+  }
+]
