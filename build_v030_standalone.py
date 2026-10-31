@@ -1,8 +1,8 @@
-"""Build concrete audio comparison candidates; an explicit mode is required."""
+"""Default offline embedded audio; external files are a separate web distribution."""
 import argparse,base64,hashlib,json,mimetypes,re,shutil,zipfile,os
 from pathlib import Path
 R=Path(__file__).resolve().parent;P=R/'_site/preview/v0.3.0';D=R/'_site/downloads'
-def build(mode):
+def build(mode='embedded'):
  assert mode in ['embedded','external'];audio=R/'release-audio-candidates';manifest=json.loads((audio/'manifest.json').read_text());D.mkdir(exist_ok=True)
  version=json.loads((P/'build.json').read_text())['version'];folder=D/('LUCK-v'+version+'-'+mode)
  if folder.exists():shutil.rmtree(folder)
@@ -17,7 +17,7 @@ def build(mode):
   if mode=='embedded':entries.append('data:audio/mpeg;base64,'+base64.b64encode(raw).decode())
   else:
    rel='assets/audio/'+t['file'];out=folder/rel;out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(raw);entries.append(rel)
- media={'mode':mode,'approval_status':'review_candidate','assets':entries,'aliases':aliases};html=(P/'index.html').read_text()
+ media={'mode':mode,'approval_status':'approved_embedded_default' if mode=='embedded' else 'approved_external_web_artifact','distribution_target':'offline_single_html' if mode=='embedded' else 'web_with_external_audio','assets':entries,'aliases':aliases};html=(P/'index.html').read_text()
  bootstrap='<script>window.LUCK_RELEASE_MEDIA='+json.dumps(media,separators=(',',':'))+';</script>'
  html=html.replace('</head>',bootstrap+'</head>')
  def script(m):
@@ -41,7 +41,7 @@ def build(mode):
    if p.is_file():z.write(p,str(p.relative_to(folder)))
  with zip_path.open('rb') as f:os.fsync(f.fileno())
  with zipfile.ZipFile(zip_path) as z:assert z.testzip() is None
- report={'mode':mode,'approval_status':'pending_user_choice','html_bytes':out.stat().st_size,'package_uncompressed_bytes':total,'zip_bytes':zip_path.stat().st_size,'html_sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'tracks':len(entries),'aliases':len(aliases),'image_assets':len(assets),'external_audio_files_required':mode=='external','original_assets_unchanged':True,'build_id':json.loads((P/'build.json').read_text())['build_id']}
+ report={'mode':mode,'approval_status':'approved','default_audio_mode':'embedded','distribution_target':'offline_single_html' if mode=='embedded' else 'web_with_external_audio','html_bytes':out.stat().st_size,'package_uncompressed_bytes':total,'zip_bytes':zip_path.stat().st_size,'html_sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'tracks':len(entries),'aliases':len(aliases),'image_assets':len(assets),'external_audio_files_required':mode=='external','original_assets_unchanged':True,'build_id':json.loads((P/'build.json').read_text())['build_id']}
  (R/('close-audio-'+mode+'.json')).write_text(json.dumps(report,indent=2));print(json.dumps(report));return report
 if __name__=='__main__':
- p=argparse.ArgumentParser(description='Audio packaging review; no strategy selected automatically.');p.add_argument('--audio',choices=['embedded','external'],required=True);build(p.parse_args().audio)
+ p=argparse.ArgumentParser(description='Embedded audio is the approved default; external is for web deployment.');p.add_argument('--audio',choices=['embedded','external'],default='embedded');build(p.parse_args().audio)

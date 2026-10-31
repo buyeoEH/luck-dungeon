@@ -35,14 +35,14 @@ jobs:
           python build_v0219_preview.py
           python build_v0220.py
           python build_v030.py
-      - name: Build review candidates without selecting audio policy
+      - name: Build offline default and separate web audio artifact
         run: |
           python prepare_site.py
           python build_v0219_preview.py
           python build_v0220.py
           python build_v030.py
           python prepare_release_audio.py
-          python build_v030_standalone.py --audio embedded
+          python build_v030_standalone.py
           python build_v030_standalone.py --audio external
       - name: Regression and input/media checks
         env:
@@ -64,5 +64,5 @@ jobs:
             V030-LATE-REWARD-SUMMARY.md
       - uses: actions/upload-artifact@v4
         with:
-          name: v030-audio-review-candidates-not-approved
+          name: v030-offline-and-web-distributions
           path: _site/downloads/LUCK-v0.3.0-rc.1-*.zip

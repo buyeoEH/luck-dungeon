@@ -17,7 +17,7 @@ def build():
  source_paths=['optimize_v030_assets.py','p5_rewards_patch.py','p5-rewards.js','build_v030.py','v030-telemetry.js','v030-reference-ai.js','verify_v030.py','run_v030_stage0.py','test_v030.py','v030-p1.js','v030_p1_patch.py','test_v030_p1.py','verify_v030_p1.py','build_v030_standalone.py','write_v030_p1_report.py']
  source_manifest={f:sha(R/f) for f in source_paths}
  source_dirty=bool(subprocess.check_output(['git','status','--porcelain','--',*source_paths],cwd=R,text=True).strip())
- meta={'version':'0.3.0-rc.1','stage':'v030_closeout_pending_audio_approval','build_id':build_id,'git_sha':commit,'baseline_git_sha':'110d54876a121909b9bd6074cf682b6d99944083','baseline_build_id':json.loads((source/'build.json').read_text())['build_id'],'score_ruleset_version':'v2-actual-strike-0220','persistent_draw':True,'gameplay_changes':['draw_always_on','p1_link_conversion','p1_cards','p1_next_round_bonuses','p5_reroll_seed','p5_single_restock','p5_purchase_coupon','p5_seed_three_offer','p5_restock_experiment_flags'],'comparison_contract':'P5 disabled state regression; isolated approved reward stages','cloud_mode':'isolated_local','source_tree_dirty':source_dirty,'source_manifest_sha256':hashlib.sha256(json.dumps(source_manifest,sort_keys=True).encode()).hexdigest(),'source_files':source_manifest}
+ meta={'version':'0.3.0-rc.1','stage':'v030_embedded_audio_approved','build_id':build_id,'git_sha':commit,'baseline_git_sha':'110d54876a121909b9bd6074cf682b6d99944083','baseline_build_id':json.loads((source/'build.json').read_text())['build_id'],'score_ruleset_version':'v2-actual-strike-0220','persistent_draw':True,'gameplay_changes':['draw_always_on','p1_link_conversion','p1_cards','p1_next_round_bonuses','p5_reroll_seed','p5_single_restock','p5_purchase_coupon','p5_seed_three_offer','p5_restock_experiment_flags'],'comparison_contract':'P5 disabled state regression; isolated approved reward stages','cloud_mode':'isolated_local','source_tree_dirty':source_dirty,'source_manifest_sha256':hashlib.sha256(json.dumps(source_manifest,sort_keys=True).encode()).hexdigest(),'source_files':source_manifest}
  game=(source/'game.js').read_text()
  game=once(game,'let persistentDraw = PERSISTENT_DRAW;','const persistentDraw = true;','fixed ON draw policy')
  game=once(game,'      persistentDraw = pToggle.checked;','      // v0.3: draw policy is permanently ON.','no in-game draw toggle')
@@ -56,7 +56,8 @@ def build():
  (P/'index.html').write_text(index)
  optimization=optimize_assets(P)
  meta['default_rewards']={'restock':'A','seed_choices':3,'fallbacks':['B','C','legacy']}
- meta['release_status']='audio_approval_and_real_device_checks_pending'
+ meta['release_status']='real_device_checks_pending'
+ meta['audio_strategy']={'default':'embedded','external_role':'separate_web_artifact','approved':True}
  meta['asset_optimization']={'max_edge':512,'card_max_edge':384,'lossless':True,'assets':len(optimization['assets']),'inline':len(optimization['inline']),'manifest_sha256':sha(P/'asset-optimization.json')}
  index=(P/'index.html').read_text()
  index=re.sub(r'window.LUCK_BUILD=\{[^<]+?\};',lambda _: 'window.LUCK_BUILD='+json.dumps(meta)+';',index,count=1)
