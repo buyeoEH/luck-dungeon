@@ -1,14 +1,16 @@
 {
   "mode": "external",
-  "approval_status": "pending_user_choice",
-  "html_bytes": 9596117,
-  "package_uncompressed_bytes": 13278243,
-  "zip_bytes": 10739610,
-  "html_sha256": "c237f66dc99fd186fd81e6494bc354b02db213810df11dc335538d796666e01b",
+  "approval_status": "approved",
+  "default_audio_mode": "embedded",
+  "distribution_target": "web_with_external_audio",
+  "html_bytes": 9596255,
+  "package_uncompressed_bytes": 13278381,
+  "zip_bytes": 10739732,
+  "html_sha256": "6ad12637778308bf3cf8421121d544d52cc4289b09f84de5255a477466406d13",
   "tracks": 17,
   "aliases": 22,
   "image_assets": 39,
   "external_audio_files_required": true,
   "original_assets_unchanged": true,
-  "build_id": "030-rc-b29b0fd152e741c8"
+  "build_id": "030-rc-ff8f468ed48e29de"
 }

@@ -1,0 +1,37 @@
+[
+  {
+    "file": "p5-rewards.js",
+    "unchanged": true,
+    "sha256": "a938a4a46a86b6ddb9a40d91926a21d4a337d462c590b8b41c491222c86deeef"
+  },
+  {
+    "file": "v030-p1.js",
+    "unchanged": true,
+    "sha256": "40e165bde318664969ab14b07b1cf42aeebfc41a1cf89e3dda30f8bc92c13fc2"
+  },
+  {
+    "file": "v030_p1_patch.py",
+    "unchanged": true,
+    "sha256": "1b8c801e1da8168a2c41b4cd389957df10306d37676ac3b2767ac6b84462943d"
+  },
+  {
+    "file": "v0219_patch.py",
+    "unchanged": true,
+    "sha256": "5f85e928a764cea57150823abf21a6050835622394be4652b5253800256a4bbc"
+  },
+  {
+    "file": "v0220-core.js",
+    "unchanged": true,
+    "sha256": "e39ad4f02ad8dc0abaffdf7bd6cbd3919c501fbbaf21d1e66a3b61109f43d95d"
+  },
+  {
+    "file": "v030-reference-ai.js",
+    "unchanged": true,
+    "sha256": "21547704592e343597911df7c8551f3b5019dc895eceb12c8c3db35627e63098"
+  },
+  {
+    "file": "luck-audio.js",
+    "unchanged": true,
+    "sha256": "16d52b9b91425e5b3afc60cdd14510a23f6ca32785e175c99dd30d0223b0e580"
+  }
+]

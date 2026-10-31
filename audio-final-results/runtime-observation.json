@@ -1,0 +1,223 @@
+[
+  {
+    "mode": "embedded",
+    "before_touch": {
+      "decodeCalls": 0,
+      "created": [],
+      "scene": {
+        "started": false,
+        "ended": false,
+        "cinematic": false,
+        "bgmOn": false,
+        "sfxOn": true,
+        "bgm": null,
+        "voices": 0,
+        "scene": "bgm_title"
+      }
+    },
+    "after_touch": {
+      "decodeCalls": 0,
+      "created": [
+        {
+          "id": "bgm_title",
+          "preload": "none",
+          "paused": true,
+          "source": "data",
+          "currentTime": 0,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              43.676735
+            ]
+          ]
+        },
+        {
+          "id": "bgm_round",
+          "preload": "none",
+          "paused": false,
+          "source": "data",
+          "currentTime": 0.391777,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              53.368163
+            ]
+          ]
+        }
+      ],
+      "scene": {
+        "started": true,
+        "ended": false,
+        "cinematic": false,
+        "bgmOn": true,
+        "sfxOn": true,
+        "bgm": "bgm_round",
+        "voices": 0,
+        "scene": "bgm_round"
+      }
+    },
+    "after_bgm_off": {
+      "decodeCalls": 0,
+      "created": [
+        {
+          "id": "bgm_title",
+          "preload": "none",
+          "paused": true,
+          "source": "data",
+          "currentTime": 0,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              43.676735
+            ]
+          ]
+        },
+        {
+          "id": "bgm_round",
+          "preload": "none",
+          "paused": true,
+          "source": "data",
+          "currentTime": 0.395179,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              53.368163
+            ]
+          ]
+        }
+      ],
+      "scene": {
+        "started": true,
+        "ended": false,
+        "cinematic": false,
+        "bgmOn": false,
+        "sfxOn": true,
+        "bgm": "bgm_round",
+        "voices": 0,
+        "scene": "bgm_round"
+      }
+    },
+    "media_requests": [],
+    "actual_RAM_measured": false
+  },
+  {
+    "mode": "external",
+    "before_touch": {
+      "decodeCalls": 0,
+      "created": [],
+      "scene": {
+        "started": false,
+        "ended": false,
+        "cinematic": false,
+        "bgmOn": false,
+        "sfxOn": true,
+        "bgm": null,
+        "voices": 0,
+        "scene": "bgm_title"
+      }
+    },
+    "after_touch": {
+      "decodeCalls": 0,
+      "created": [
+        {
+          "id": "bgm_title",
+          "preload": "none",
+          "paused": true,
+          "source": "http",
+          "currentTime": 0,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              43.676735
+            ]
+          ]
+        },
+        {
+          "id": "bgm_round",
+          "preload": "none",
+          "paused": false,
+          "source": "http",
+          "currentTime": 0.337897,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              53.368163
+            ]
+          ]
+        }
+      ],
+      "scene": {
+        "started": true,
+        "ended": false,
+        "cinematic": false,
+        "bgmOn": true,
+        "sfxOn": true,
+        "bgm": "bgm_round",
+        "voices": 0,
+        "scene": "bgm_round"
+      }
+    },
+    "after_bgm_off": {
+      "decodeCalls": 0,
+      "created": [
+        {
+          "id": "bgm_title",
+          "preload": "none",
+          "paused": true,
+          "source": "http",
+          "currentTime": 0,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              43.676735
+            ]
+          ]
+        },
+        {
+          "id": "bgm_round",
+          "preload": "none",
+          "paused": true,
+          "source": "http",
+          "currentTime": 0.342028,
+          "readyState": 4,
+          "buffered": [
+            [
+              0,
+              53.368163
+            ]
+          ]
+        }
+      ],
+      "scene": {
+        "started": true,
+        "ended": false,
+        "cinematic": false,
+        "bgmOn": false,
+        "sfxOn": true,
+        "bgm": "bgm_round",
+        "voices": 0,
+        "scene": "bgm_round"
+      }
+    },
+    "media_requests": [
+      {
+        "path": "/assets/audio/bgm_title.mp3",
+        "range_requested": "bytes=0-",
+        "test_response": 200
+      },
+      {
+        "path": "/assets/audio/bgm_round.mp3",
+        "range_requested": "bytes=0-",
+        "test_response": 200
+      }
+    ],
+    "actual_RAM_measured": false
+  }
+]

@@ -1,5 +1,7 @@
 # v0.3.0 closeout review results
 
+Superseding audio decision: embedded audio is now approved as the default; external audio is a separate web artifact. The historical comparison and pending-approval statements below describe the preceding phase. Current build sizes, runtime checks and downloads are in [V030-AUDIO-FINAL-RESULTS.md](V030-AUDIO-FINAL-RESULTS.md). Physical-device checks remain pending.
+
 Default restock A + seed3 is implemented. B/C/legacy, seeds8 and p5=0 rollback flags remain. No random-card/R30/action-point/reward-quota changes. Main and existing player data remain unchanged; no merge/deployment/direct Actions batch/SQL execution.
 
 Actual tested game source: ae9900a379da4ee933adf0ff4f95ff8a22ea2e27, build030-rc-b29b0fd152e741c8, source_tree_dirty=false. Candidate remains0.3.0-rc.1 while audio strategy approval and real-device checks are pending.

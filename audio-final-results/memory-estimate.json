@@ -1,0 +1,131 @@
+{
+  "type": "hypothetical_float32_pcm_capacity_not_actual_RAM",
+  "runtime_source_sha256": "16d52b9b91425e5b3afc60cdd14510a23f6ca32785e175c99dd30d0223b0e580",
+  "runtime_uses_media_elements": true,
+  "runtime_eager_decodeAudioData": false,
+  "embedded_http_streaming": false,
+  "preload": "none_hint_only",
+  "bgm_tracks": 5,
+  "all_tracks": 17,
+  "bgm_seconds": 204.308,
+  "all_seconds": 229.018,
+  "scenarios": [
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bytes_per_sample": 4,
+      "all_bgm": {
+        "bytes": 72079862,
+        "MB": 72.0798624,
+        "MiB": 68.74071350097655
+      },
+      "all_tracks": {
+        "bytes": 80797550,
+        "MB": 80.7975504,
+        "MiB": 77.05454864501954
+      },
+      "largest_bgm": {
+        "bytes": 18815882,
+        "MB": 18.8158824,
+        "MiB": 17.94422378540039
+      },
+      "two_largest_bgm": {
+        "bytes": 34210663,
+        "MB": 34.2106632,
+        "MiB": 32.62583084106445
+      }
+    },
+    {
+      "sample_rate": 48000,
+      "channels": 2,
+      "bytes_per_sample": 4,
+      "all_bgm": {
+        "bytes": 78454272,
+        "MB": 78.454272,
+        "MiB": 74.81982421875
+      },
+      "all_tracks": {
+        "bytes": 87942912,
+        "MB": 87.942912,
+        "MiB": 83.868896484375
+      },
+      "largest_bgm": {
+        "bytes": 20479872,
+        "MB": 20.479872,
+        "MiB": 19.5311279296875
+      },
+      "two_largest_bgm": {
+        "bytes": 37236096,
+        "MB": 37.236096,
+        "MiB": 35.5111083984375
+      }
+    }
+  ],
+  "bgm": [
+    {
+      "id": "bgm_title",
+      "title": "시작 전 · 운명의 문",
+      "file": "audio/bgm_title.ogg",
+      "duration": 43.636,
+      "loop": true,
+      "bpm": 88,
+      "description": "직접 작곡한 합성 악기 기반 반복 음악"
+    },
+    {
+      "id": "bgm_round",
+      "title": "라운드 진행 · 선택의 불씨",
+      "file": "audio/bgm_round.ogg",
+      "duration": 53.333,
+      "loop": true,
+      "bpm": 108,
+      "description": "직접 작곡한 합성 악기 기반 반복 음악"
+    },
+    {
+      "id": "bgm_battle",
+      "title": "전투 모션 · 뒤집는 한 수",
+      "file": "audio/bgm_battle.ogg",
+      "duration": 41.739,
+      "loop": true,
+      "bpm": 138,
+      "description": "직접 작곡한 합성 악기 기반 반복 음악"
+    },
+    {
+      "id": "bgm_danger",
+      "title": "위험모드 · 붉은 경계",
+      "file": "audio/bgm_danger.ogg",
+      "duration": 25.6,
+      "loop": true,
+      "bpm": 150,
+      "description": "직접 작곡한 합성 악기 기반 반복 음악"
+    },
+    {
+      "id": "bgm_infinite",
+      "title": "무한모드 · 끝없는 계단",
+      "file": "audio/bgm_infinite.ogg",
+      "duration": 40.0,
+      "loop": true,
+      "bpm": 144,
+      "description": "직접 작곡한 합성 악기 기반 반복 음악"
+    }
+  ],
+  "excludes": [
+    "compressed/base64 copies",
+    "images/DOM/JS",
+    "decoder/mixer overhead",
+    "retained media buffers",
+    "GC timing"
+  ],
+  "sources": [
+    "https://html.spec.whatwg.org/multipage/media.html#attr-media-preload",
+    "https://www.w3.org/TR/2021/REC-webaudio-20210617/#AudioBuffer"
+  ],
+  "compressed_bgm": {
+    "bytes": 3274091,
+    "base64_chars_excluding_prefix": 4365460,
+    "base64_string_storage_scenarios_bytes": [
+      4365460,
+      8730920
+    ],
+    "warning": "string scenarios only, not measured JS heap; copies and decoder buffers may add memory"
+  }
+}
