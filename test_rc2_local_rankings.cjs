@@ -1,0 +1,6 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const version='0.3.0-rc.2',old=JSON.stringify([{id:'legacy',version:'0.2.19',initials:'OLD',score:99999}]);
+const data=new Map([['luck_local_0219_rankings',old],['luck_local_v030_rankings',JSON.stringify([{id:'mixed',version:'0.2.20',initials:'MIX',score:99999},null,{id:'rc1',version:'0.3.0-rc.1',initials:'RC1',score:99999}])]]);
+const w={LUCK_BUILD:{version},LuckHistory:{read:()=>[]}},storage={getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v)};
+vm.runInNewContext(fs.readFileSync('v030-local-cloud.js','utf8'),{window:w,localStorage:storage,document:{addEventListener(){}}});
+(async()=>{assert.equal((await w.LuckCloud.ranks()).length,0);assert.equal(await w.LuckCloud.register({id:'foreign',version:'0.2.20'}),false);assert.equal(await w.LuckCloud.register({id:'new',version,initials:'NEW',score:100,date:new Date().toISOString(),endlessMaxRound:31}),true);for(const mode of ['all','daily','weekly','monthly','endless']){const rows=await w.LuckCloud.ranks(mode);assert.equal(rows.length,1);assert.equal(rows[0].id,'new');}assert.equal(data.get('luck_local_0219_rankings'),old);assert.equal(data.has('luck_cloud_auth_v1'),false);console.log('ranking isolation: 5 views, foreign/rc1 rejection, old key preserved');})().catch(e=>{console.error(e);process.exitCode=1;});
