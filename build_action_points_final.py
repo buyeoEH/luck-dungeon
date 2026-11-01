@@ -1,6 +1,7 @@
 """One applied AP play build. The experiment remains a measurement-only source."""
 import hashlib,json,re,shutil,subprocess
 from pathlib import Path
+from defeat_presentation_patch import patch as defeat_patch
 R=Path(__file__).resolve().parent
 P=R/'_site/preview/v0.3-ap-final'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -8,14 +9,14 @@ def build():
  source=R/'_site/preview/v0.3-ap'
  if P.exists():shutil.rmtree(P)
  shutil.copytree(source,P)
- game=(P/'game.js').read_text()
+ game=defeat_patch((P/'game.js').read_text())
  old="el.textContent='🧪 행동력 검증 · '+names[AP_MODE]+(apEnabled()?' | ⚡ '+apState.points+' | 매 라운드 2 · 손패/상점 공유 · 이월 없음':' | 행동력 제한 없음');"
  assert game.count(old)==1
  game=game.replace(old,"el.textContent='⚡ 행동력 '+apState.points;")
  (P/'game.js').write_text("window.LUCK_AP_MODE='promo'; // Fixed applied rules; query choices are ignored.\n"+game)
  meta=json.loads((P/'build.json').read_text())
- final_hashes={p:sha(R/p) for p in ['build_action_points_final.py','test-ap-final.cjs']}
- meta.update(version='0.3.1-ap.1',stage='action_points_applied',git_sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),build_id='031-ap-final-'+hashlib.sha256((json.dumps(final_hashes,sort_keys=True)+meta['build_id']).encode()).hexdigest()[:16],final_sources=final_hashes,release_scope='single_applied_play_build',ap_mode='promo',mode_selection=False)
+ final_hashes={p:sha(R/p) for p in ['build_action_points_final.py','test-ap-final.cjs','defeat_presentation_patch.py','test-defeat-presentation.cjs']}
+ meta.update(version='0.3.1-ap.2',stage='action_points_applied',git_sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),build_id='031-ap-final-'+hashlib.sha256((json.dumps(final_hashes,sort_keys=True)+meta['build_id']).encode()).hexdigest()[:16],final_sources=final_hashes,release_scope='single_applied_play_build',ap_mode='promo',mode_selection=False,defeat_presentation='combat_then_gameover')
  meta['source_tree_dirty']=bool(subprocess.check_output(['git','status','--porcelain','--',*meta['ap_sources'],*final_hashes],text=True).strip())
  mode="(new URLSearchParams(location.search).get('ap')||'new')"
  for f in ['v0220-core.js','cloud/cloud.js']:
