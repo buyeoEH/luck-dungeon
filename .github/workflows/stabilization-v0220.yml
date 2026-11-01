@@ -114,9 +114,21 @@ jobs:
                   p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
           checks=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js']
           for name in checks:assert hashlib.sha256(fetch(BASE+name)).hexdigest()==m['files'][name]['sha256'],name
-          assert 'preview/v0.3.0/index.html' not in m['files']
+          # Reconstruct the currently served RC2 overlay before preparing its replacement.
+          previous=file('LUCK-v0.3.0-rc.2-web.zip','5733e35912901d924d1bcce255404b99569bd6a16fe46d9d55afcc5f40502eda')
+          with zipfile.ZipFile(previous) as z:
+              for entry in z.infolist():
+                  if entry.is_dir():continue
+                  name='preview/v0.3.0/'+entry.filename;p=Path('_rollback')/name
+                  assert p.resolve().is_relative_to(Path('_rollback/preview/v0.3.0').resolve())
+                  raw=z.read(entry);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
+                  m['files'][name]={'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}
+          for mode,h in [('offline','2d984744228fe6a933278f6f8735f6d5d88cf9748af9658144c065f43353c0af'),('web','5733e35912901d924d1bcce255404b99569bd6a16fe46d9d55afcc5f40502eda')]:
+              name='LUCK-v0.3.0-rc.2-'+mode+'.zip';p=file(name,h);dst=Path('_rollback/downloads')/name;dst.parent.mkdir(exist_ok=True);shutil.copyfile(p,dst)
+              m['files']['downloads/'+name]={'sha256':h,'bytes':p.stat().st_size}
+          assert hashlib.sha256(fetch(BASE+'preview/v0.3.0/')).hexdigest()==m['files']['preview/v0.3.0/index.html']['sha256']
           shutil.copytree('_rollback','_site')
-          web=file('LUCK-v0.3.0-rc.2-web.zip','5733e35912901d924d1bcce255404b99569bd6a16fe46d9d55afcc5f40502eda')
+          web=file('LUCK-battle-preparation-r2-web.zip','647699161ac54f94a04beb53b8b5f124f3a055f651b7824e5e16b2e86902eeb2')
           new={}
           with zipfile.ZipFile(web) as z:
               assert z.testzip() is None
@@ -127,13 +139,14 @@ jobs:
                   raw=z.read(entry);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
                   new[name]=hashlib.sha256(raw).hexdigest()
           raw=Path('_site/preview/v0.3.0/index.html').read_bytes()
-          assert hashlib.sha256(raw).hexdigest()=='a0a02201358230307103fa7d74a143ba0dbea294f0a596b61f584f445e9ce969'
+          assert hashlib.sha256(raw).hexdigest()=='69749fba476f62f6db4c2ba18e070941a82fbfe5eb8ba8f2757371acb4532e8e'
           b=json.loads(re.search(r'window.LUCK_BUILD=(\{.*?\});',raw.decode())[1])
-          assert b['version']=='0.3.0-rc.2' and b['build_id']=='030-rc2-34a22a66178a683d'
-          assert b['git_sha']=='28270786814f57ca968fe950136be2b3073699f1' and not b['source_tree_dirty']
-          for mode,h in [('offline','2d984744228fe6a933278f6f8735f6d5d88cf9748af9658144c065f43353c0af'),('web','5733e35912901d924d1bcce255404b99569bd6a16fe46d9d55afcc5f40502eda')]:
-              name='LUCK-v0.3.0-rc.2-'+mode+'.zip';p=file(name,h);dst=Path('_site/downloads')/name;dst.parent.mkdir(exist_ok=True);shutil.copyfile(p,dst);new['downloads/'+name]=h
-          for name,v in m['files'].items():assert hashlib.sha256((Path('_site')/name).read_bytes()).hexdigest()==v['sha256'],name
+          assert b['version']=='0.3.0-rc.3' and b['build_id']=='030-rc3-c2b4d145a1cf38e3'
+          assert b['git_sha']=='f9a0eeb90a4b12ba6f4b4f5fac187c852d8c086e' and not b['source_tree_dirty']
+          for mode,h in [('offline','91ce3c5e390b53890f78cc39aad2c6e6128aa98f1b5ab7e5a7b97df2168f6c5d'),('web','647699161ac54f94a04beb53b8b5f124f3a055f651b7824e5e16b2e86902eeb2')]:
+              name='LUCK-battle-preparation-r2-'+mode+'.zip';p=file(name,h);dst=Path('_site/downloads')/name;dst.parent.mkdir(exist_ok=True);shutil.copyfile(p,dst);new['downloads/'+name]=h
+          for name,v in m['files'].items():
+              if name not in new:assert hashlib.sha256((Path('_site')/name).read_bytes()).hexdigest()==v['sha256'],name
           Path('deployment-manifest.json').write_text(json.dumps({'old':m,'new':new,'game':b},indent=2))
           print('Preserved',len(m['files']),'old files; added',len(new),'files; game SHA',b['git_sha'])
           PY
@@ -199,7 +212,7 @@ jobs:
           m=json.loads(Path('deployment-manifest.json').read_text())['old']
           for attempt in range(12):
               try:
-                  for name in ['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html']:
+                  for name in ['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.3.0/index.html']:
                       with urllib.request.urlopen(m['base_url']+name,timeout=40) as r:raw=r.read()
                       assert hashlib.sha256(raw).hexdigest()==m['files'][name]['sha256']
                   Path('rollback-verification.json').write_text(json.dumps({'restored':True}));break
