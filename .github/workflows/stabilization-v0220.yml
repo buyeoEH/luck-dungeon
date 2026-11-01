@@ -282,7 +282,7 @@ jobs:
               t.extractall(rollback,filter='data')
           old={str(p.relative_to(rollback)):H(p) for p in rollback.rglob('*') if p.is_file()}
           assert 'preview/v0.3.0/index.html' in old
-          assert old['preview/v0.3.0/index.html','preview/v0.3-ap/index.html']=='69749fba476f62f6db4c2ba18e070941a82fbfe5eb8ba8f2757371acb4532e8e'
+          assert old['preview/v0.3.0/index.html']=='69749fba476f62f6db4c2ba18e070941a82fbfe5eb8ba8f2757371acb4532e8e'
           base='https://buyeoeh.github.io/luck-dungeon/'
           protected=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js','preview/v0.2.20/luck-audio.js','preview/v0.3.0/index.html','preview/v0.3-ap/index.html']
           def check(name):
@@ -306,7 +306,7 @@ jobs:
           # Only commit metadata differs from the tested local source; game bytes
           # and the complete source tree above are identical to the tested build.
           shutil.rmtree('_site');shutil.copytree(rollback,'_site')
-          target=Path('_site/preview/v0.3-ap');target.mkdir(parents=True)
+          target=Path('_site/preview/v0.3-ap');target.mkdir(parents=True,exist_ok=True)
           shutil.copyfile(html,target/'index.html');(target/'build.json').write_text(json.dumps(meta,indent=2))
           new={str(p.relative_to('_site')):H(p) for p in target.iterdir()}
           assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in new),'old Pages content changed'
@@ -389,3 +389,4 @@ jobs:
       - name: Fail if AP deployment or verification required rollback
         if: ${{ always() && (steps.deploy_ap.outcome == 'failure' || steps.verify_ap.outcome == 'failure') }}
         run: exit 1
+
