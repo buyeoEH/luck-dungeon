@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   validate:
-    if: ${{ github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && !contains(github.event.head_commit.message, '[deploy-v030]') && !(github.event_name == 'workflow_dispatch' && inputs.deploy_web) }}
+    if: ${{ github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && !contains(github.event.head_commit.message, '[deploy-v030]') && !contains(github.event.head_commit.message, '[deploy-ap]') && !(github.event_name == 'workflow_dispatch' && inputs.deploy_web) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -231,4 +231,161 @@ jobs:
           retention-days: 90
       - name: Fail if deployment or live verification required rollback
         if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.live.outcome == 'failure') }}
+        run: exit 1
+
+  deploy_action_points:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && contains(github.event.head_commit.message, '[deploy-ap]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: https://buyeoeh.github.io/luck-dungeon/preview/v0.3-ap/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c85dd9412522fa993a6270211bf03f6be2c88776
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic asset builder
+        run: |
+          python -m pip install pillow==12.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Download the currently deployed complete Pages artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/13066367632/zip > baseline-pages.zip
+      - name: Verify backup, reproduce tested game and add only the AP preview
+        id: prepare
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,zipfile,tarfile,json,shutil,subprocess,re,urllib.request
+          from concurrent.futures import ThreadPoolExecutor
+          H=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+          assert H(Path('baseline-pages.zip'))=='00c445a3be1fbd43fc76baf796ce74ab0d5292a146df2d71815fa2f227e69ccf'
+          with zipfile.ZipFile('baseline-pages.zip') as z:
+              assert z.testzip() is None and z.namelist()==['artifact.tar'],z.namelist()
+              z.extract('artifact.tar','_archive')
+          rollback=Path('_rollback');rollback.mkdir()
+          with tarfile.open('_archive/artifact.tar') as t:
+              for m in t.getmembers():
+                  assert m.isfile() or m.isdir(),m.name
+                  assert (rollback/m.name).resolve().is_relative_to(rollback.resolve()),m.name
+              t.extractall(rollback,filter='data')
+          old={str(p.relative_to(rollback)):H(p) for p in rollback.rglob('*') if p.is_file()}
+          assert 'preview/v0.3.0/index.html' in old
+          assert old['preview/v0.3.0/index.html']=='69749fba476f62f6db4c2ba18e070941a82fbfe5eb8ba8f2757371acb4532e8e'
+          base='https://buyeoeh.github.io/luck-dungeon/'
+          protected=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js','preview/v0.2.20/luck-audio.js','preview/v0.3.0/index.html']
+          def check(name):
+              with urllib.request.urlopen(urllib.request.Request(base+name,headers={'Cache-Control':'no-cache'}),timeout=60) as r:raw=r.read();assert r.status==200
+              assert hashlib.sha256(raw).hexdigest()==old[name],name
+          with ThreadPoolExecutor(max_workers=6) as ex:list(ex.map(check,protected))
+          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='b88d578bd3b192315d547bf994a95b5ba56f47e6'
+          for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','prepare_release_audio.py']:
+              subprocess.run(['python',script],check=True)
+          game=Path('_site/preview/v0.3-ap/game.js')
+          assert H(game)=='c77125f2a641a0a298869bcaea7eb726f595059bc345f6b3540d343e78e51b1e','compiled game differs from tested build'
+          meta=json.loads(Path('_site/preview/v0.3-ap/build.json').read_text())
+          assert meta['build_id']=='031-ap-7bc8dea1388c7cd8' and not meta['source_tree_dirty']
+          assert meta['git_sha']=='c85dd9412522fa993a6270211bf03f6be2c88776'
+          import build_v030_standalone as standalone
+          root=Path.cwd();work=root/'_ap-package';work.mkdir();(work/'release-audio-candidates').symlink_to(root/'release-audio-candidates',target_is_directory=True)
+          standalone.R=work;standalone.P=root/'_site/preview/v0.3-ap';standalone.D=root/'_ap-downloads';standalone.D.mkdir()
+          standalone.build('embedded')
+          html=standalone.D/'LUCK-v0.3.1-ap.exp.1-embedded/index.html'
+          raw=html.read_bytes();assert len(raw)<15_000_000
+          # Only commit metadata differs from the tested local source; game bytes
+          # and the complete source tree above are identical to the tested build.
+          shutil.rmtree('_site');shutil.copytree(rollback,'_site')
+          target=Path('_site/preview/v0.3-ap');target.mkdir(parents=True)
+          shutil.copyfile(html,target/'index.html');(target/'build.json').write_text(json.dumps(meta,indent=2))
+          new={str(p.relative_to('_site')):H(p) for p in target.iterdir()}
+          assert all(H(Path('_site')/name)==h for name,h in old.items()),'old Pages content changed'
+          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'b88d578bd3b192315d547bf994a95b5ba56f47e6','tested_compiled_game_sha256':H(game) if game.exists() else 'c77125f2a641a0a298869bcaea7eb726f595059bc345f6b3540d343e78e51b1e'},indent=2))
+          print('Preserved',len(old),'existing files; added',len(new),'AP files')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ap-complete-predeployment-backup
+          path: |
+            baseline-pages.zip
+            ap-deployment-manifest.json
+          retention-days: 90
+          compression-level: 0
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: ap-candidate-pages
+          path: _site
+          retention-days: 30
+      - uses: actions/deploy-pages@v4
+        id: deploy_ap
+        continue-on-error: true
+        with:
+          artifact_name: ap-candidate-pages
+          timeout: '1200000'
+      - name: Verify published AP build and preserved games
+        id: verify_ap
+        if: ${{ steps.deploy_ap.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib,urllib.request,time
+          m=json.loads(Path('ap-deployment-manifest.json').read_text());base='https://buyeoeh.github.io/luck-dungeon/'
+          checks={k:m['old'][k] for k in m['protected']};checks.update(m['new'])
+          for attempt in range(12):
+              try:
+                  rows=[]
+                  for name,h in checks.items():
+                      with urllib.request.urlopen(urllib.request.Request(base+name,headers={'Cache-Control':'no-cache'}),timeout=60) as r:raw=r.read();assert r.status==200
+                      assert hashlib.sha256(raw).hexdigest()==h,name
+                      rows.append({'path':name,'sha256':h,'status':200})
+                  Path('ap-live-verification.json').write_text(json.dumps({'pass':True,'checks':rows,'build_id':m['game']['build_id']},indent=2));break
+              except Exception as e:
+                  if attempt==11:raise
+                  print('CDN verification retry',attempt+1,str(e));time.sleep(5)
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ always() && (steps.deploy_ap.outcome == 'failure' || steps.verify_ap.outcome == 'failure') }}
+        with:
+          name: ap-rollback-pages
+          path: _rollback
+          retention-days: 30
+      - uses: actions/deploy-pages@v4
+        if: ${{ always() && (steps.deploy_ap.outcome == 'failure' || steps.verify_ap.outcome == 'failure') }}
+        with:
+          artifact_name: ap-rollback-pages
+          timeout: '1200000'
+      - name: Verify restored previous site
+        if: ${{ always() && (steps.deploy_ap.outcome == 'failure' || steps.verify_ap.outcome == 'failure') }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,urllib.request,hashlib
+          m=json.loads(Path('ap-deployment-manifest.json').read_text())
+          for name in m['protected']:
+              with urllib.request.urlopen('https://buyeoeh.github.io/luck-dungeon/'+name,timeout=60) as r:raw=r.read()
+              assert hashlib.sha256(raw).hexdigest()==m['old'][name],name
+          Path('ap-rollback-verification.json').write_text(json.dumps({'restored':True}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ap-deployment-evidence
+          path: |
+            ap-deployment-manifest.json
+            ap-live-verification.json
+            ap-rollback-verification.json
+          retention-days: 90
+      - name: Fail if AP deployment or verification required rollback
+        if: ${{ always() && (steps.deploy_ap.outcome == 'failure' || steps.verify_ap.outcome == 'failure') }}
         run: exit 1
