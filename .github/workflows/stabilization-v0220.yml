@@ -248,7 +248,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: c85dd9412522fa993a6270211bf03f6be2c88776
+          ref: f9648186bc2a751bedce0d14b8859d8bff092944
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -261,7 +261,7 @@ jobs:
       - name: Download the currently deployed complete Pages artifact
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/13066367632/zip > baseline-pages.zip
+        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/13080701452/zip > baseline-pages.zip
       - name: Verify backup, reproduce tested game and add only the AP preview
         id: prepare
         run: |
@@ -270,7 +270,7 @@ jobs:
           import hashlib,zipfile,tarfile,json,shutil,subprocess,re,urllib.request
           from concurrent.futures import ThreadPoolExecutor
           H=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-          assert H(Path('baseline-pages.zip'))=='00c445a3be1fbd43fc76baf796ce74ab0d5292a146df2d71815fa2f227e69ccf'
+          assert H(Path('baseline-pages.zip'))=='f29eb78c8b3332305d2591b01fd531c58c136c2b6260e1d8f1be6c11738b60b6'
           with zipfile.ZipFile('baseline-pages.zip') as z:
               assert z.testzip() is None and z.namelist()==['artifact.tar'],z.namelist()
               z.extract('artifact.tar','_archive')
@@ -282,26 +282,26 @@ jobs:
               t.extractall(rollback,filter='data')
           old={str(p.relative_to(rollback)):H(p) for p in rollback.rglob('*') if p.is_file()}
           assert 'preview/v0.3.0/index.html' in old
-          assert old['preview/v0.3.0/index.html']=='69749fba476f62f6db4c2ba18e070941a82fbfe5eb8ba8f2757371acb4532e8e'
+          assert old['preview/v0.3.0/index.html','preview/v0.3-ap/index.html']=='69749fba476f62f6db4c2ba18e070941a82fbfe5eb8ba8f2757371acb4532e8e'
           base='https://buyeoeh.github.io/luck-dungeon/'
-          protected=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js','preview/v0.2.20/luck-audio.js','preview/v0.3.0/index.html']
+          protected=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js','preview/v0.2.20/luck-audio.js','preview/v0.3.0/index.html','preview/v0.3-ap/index.html']
           def check(name):
               with urllib.request.urlopen(urllib.request.Request(base+name,headers={'Cache-Control':'no-cache'}),timeout=60) as r:raw=r.read();assert r.status==200
               assert hashlib.sha256(raw).hexdigest()==old[name],name
           with ThreadPoolExecutor(max_workers=6) as ex:list(ex.map(check,protected))
-          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='b88d578bd3b192315d547bf994a95b5ba56f47e6'
-          for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','prepare_release_audio.py']:
+          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='eeee8b5398ed1aac6ba1c1c9cb26c8a654e5471d'
+          for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','build_action_points_final.py','prepare_release_audio.py']:
               subprocess.run(['python',script],check=True)
-          game=Path('_site/preview/v0.3-ap/game.js')
-          assert H(game)=='c77125f2a641a0a298869bcaea7eb726f595059bc345f6b3540d343e78e51b1e','compiled game differs from tested build'
-          meta=json.loads(Path('_site/preview/v0.3-ap/build.json').read_text())
-          assert meta['build_id']=='031-ap-7bc8dea1388c7cd8' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='c85dd9412522fa993a6270211bf03f6be2c88776'
+          game=Path('_site/preview/v0.3-ap-final/game.js')
+          assert H(game)=='37be1347afeef6c6bdf654a8db30332c6fd0740d12d2ec91ef8e053336968bd4','compiled game differs from tested build'
+          meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
+          assert meta['build_id']=='031-ap-final-bafaf075b14240cf' and not meta['source_tree_dirty']
+          assert meta['git_sha']=='f9648186bc2a751bedce0d14b8859d8bff092944'
           import build_v030_standalone as standalone
           root=Path.cwd();work=root/'_ap-package';work.mkdir();(work/'release-audio-candidates').symlink_to(root/'release-audio-candidates',target_is_directory=True)
-          standalone.R=work;standalone.P=root/'_site/preview/v0.3-ap';standalone.D=root/'_ap-downloads';standalone.D.mkdir()
+          standalone.R=work;standalone.P=root/'_site/preview/v0.3-ap-final';standalone.D=root/'_ap-downloads';standalone.D.mkdir()
           standalone.build('embedded')
-          html=standalone.D/'LUCK-v0.3.1-ap.exp.1-embedded/index.html'
+          html=standalone.D/'LUCK-v0.3.1-ap.1-embedded/index.html'
           raw=html.read_bytes();assert len(raw)<15_000_000
           # Only commit metadata differs from the tested local source; game bytes
           # and the complete source tree above are identical to the tested build.
@@ -309,8 +309,8 @@ jobs:
           target=Path('_site/preview/v0.3-ap');target.mkdir(parents=True)
           shutil.copyfile(html,target/'index.html');(target/'build.json').write_text(json.dumps(meta,indent=2))
           new={str(p.relative_to('_site')):H(p) for p in target.iterdir()}
-          assert all(H(Path('_site')/name)==h for name,h in old.items()),'old Pages content changed'
-          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'b88d578bd3b192315d547bf994a95b5ba56f47e6','tested_compiled_game_sha256':H(game) if game.exists() else 'c77125f2a641a0a298869bcaea7eb726f595059bc345f6b3540d343e78e51b1e'},indent=2))
+          assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in new),'old Pages content changed'
+          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'eeee8b5398ed1aac6ba1c1c9cb26c8a654e5471d','tested_compiled_game_sha256':H(game) if game.exists() else '37be1347afeef6c6bdf654a8db30332c6fd0740d12d2ec91ef8e053336968bd4'},indent=2))
           print('Preserved',len(old),'existing files; added',len(new),'AP files')
           PY
       - uses: actions/upload-artifact@v4
@@ -341,7 +341,7 @@ jobs:
           from pathlib import Path
           import json,hashlib,urllib.request,time
           m=json.loads(Path('ap-deployment-manifest.json').read_text());base='https://buyeoeh.github.io/luck-dungeon/'
-          checks={k:m['old'][k] for k in m['protected']};checks.update(m['new'])
+          checks={k:m['old'][k] for k in m['protected'] if k not in m['new']};checks.update(m['new'])
           for attempt in range(12):
               try:
                   rows=[]
