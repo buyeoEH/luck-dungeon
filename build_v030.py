@@ -33,8 +33,8 @@ def build():
  game=game[:start]+"function renderBattleStage(){renderBattlePreparation();}\n"+game[end:]
  (P/'game.js').write_text(game)
  audio=(R/'luck-audio.js').read_text()
- audio=once(audio,"  if(cinematic)return 'bgm_battle';","  if(cinematic||(typeof phase!=='undefined'&&phase==='battle'))return 'bgm_battle';",'battle preparation music')
- audio=once(audio,"  if(typeof dangerActive!=='undefined'&&dangerActive)return 'bgm_danger';\n  if(cinematic||(typeof phase!=='undefined'&&phase==='battle'))return 'bgm_battle';","  if(cinematic||(typeof phase!=='undefined'&&phase==='battle'))return 'bgm_battle';\n  if(typeof dangerActive!=='undefined'&&dangerActive)return 'bgm_danger';",'battle music priority during preparation')
+ audio=once(audio,"  if(cinematic)return 'bgm_battle';","  if(cinematic||(typeof phase!=='undefined'&&phase==='battle'&&!(typeof pendingRoundBriefing!=='undefined'&&pendingRoundBriefing)))return 'bgm_battle';",'battle preparation music')
+ audio=once(audio,"  if(typeof dangerActive!=='undefined'&&dangerActive)return 'bgm_danger';\n  if(cinematic||(typeof phase!=='undefined'&&phase==='battle'&&!(typeof pendingRoundBriefing!=='undefined'&&pendingRoundBriefing)))return 'bgm_battle';","  if(cinematic||(typeof phase!=='undefined'&&phase==='battle'&&!(typeof pendingRoundBriefing!=='undefined'&&pendingRoundBriefing)))return 'bgm_battle';\n  if(typeof dangerActive!=='undefined'&&dangerActive)return 'bgm_danger';",'battle music priority during preparation')
  (P/'luck-audio.js').write_text(audio)
  core=(source/'v0220-core.js').read_text().replace("DBNAME='luck-v0220'","DBNAME='luck-v030-p1'").replace('id,!!$(id)?.checked','id,id===\'persistToggle\'?true:!!$(id)?.checked')
  core=once(core,'price:s.price,stock_before:before','price:window.LuckP5Rewards?.lastPurchasePrice(id)??s.price,regular_price:s.price,stock_before:before','P5 paid purchase telemetry')

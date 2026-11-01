@@ -3,14 +3,15 @@ function battlePreparationPlan(){
   const originalEnemies=enemies, originalLink=linkComboAttack;
   const rows=enemies.map((e,id)=>({...e,id,before:e.hp,aoeDamage:0,strikeDamage:0,pierceDamage:0,pureDamage:0}));
   const links=[];
+  const recorded=id=>window.Luck220?.events().findLast(e=>e.round===round&&e.event_type==='link_triggered'&&e.payload.link_id===id)?.payload.raw_bonus;
   try{
     const tags=tacticalTags();
     for(const l of TACTICAL_LINKS){
       const pending=!roundLinkDone['t_'+l.id]&&l.need.every(t=>tags.has(t));
-      if(roundLinkDone['t_'+l.id]||pending)links.push({name:l.name,bonus:l.bonus+deckLinkAmp(),pending});
+      if(roundLinkDone['t_'+l.id]||pending)links.push({name:l.name,bonus:pending?l.bonus+deckLinkAmp():recorded('t_'+l.id),pending});
       if(pending)linkComboAttack+=l.bonus+deckLinkAmp();
     }
-    for(const l of ACTION_LINKS)if(roundLinkDone['a_'+l.id])links.push({name:l.name,bonus:l.bonus+deckLinkAmp(),pending:false});
+    for(const l of ACTION_LINKS)if(roundLinkDone['a_'+l.id])links.push({name:l.name,bonus:recorded('a_'+l.id),pending:false});
     const beforeAoe=attackParts(),aoe=totalAoe();
     for(const e of rows){e.aoeDamage=Math.min(e.hp,aoe);e.hp-=e.aoeDamage;}
     enemies=rows.filter(e=>e.hp>0);
@@ -38,11 +39,12 @@ function battlePreparationPlan(){
 function renderBattlePreparation(){
   const el=$('battleStage');if(!el)return;
   if(phase!=='battle'){el.classList.add('hide');return;}
+  const firstView=el.classList.contains('hide');
   const p=battlePreparationPlan(),a=p.ap,m=a.p1;
   window.LuckGameAudio?.sync();
   window.LuckGameAudio?.previewAttack(p.hasStrike?a.final:0,stats.maxEffectiveAttack);
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const names=p.links.map(l=>esc(l.name)+' +'+l.bonus+(l.pending?' (전투 시작 시)':''))
+  const names=p.links.map(l=>esc(l.name)+(l.bonus==null?' (발동)':(' +'+l.bonus))+(l.pending?' (전투 시작 시)':''))
     .concat(p.combos.map(c=>esc(c.name)+' 콤보 +'+c.bonus));
   const foes=p.rows.map(e=>{
     const bars=[['aoe',e.aoeDamage],['strike',e.strikeDamage],['pierce',e.pierceDamage],['pure',e.pureDamage],['remaining',e.hp]];
@@ -61,4 +63,5 @@ function renderBattlePreparation(){
     '<div class="prep-breakdown"><b>② 피해 적용 순서</b><p>광역 '+p.aoe+'/적 → 생존 적 기준 디버프 재계산 → 기본 공격 → 관통'+(p.pure?' → 순수 연속타':'')+'</p><small>광역으로 처치된 적의 디버프는 이후 공격에 적용되지 않습니다. 피해는 적의 남은 HP까지만 계산합니다.</small></div>'+
     '<div class="prep-enemies">'+(foes||'<p>공격할 적이 없습니다.</p>')+'</div>'+
     '<p class="prep-ready">준비를 확인했으면 아래 「전투 시작」을 누르세요. 아직 피해는 적용되지 않았습니다.</p>';
+  if(firstView)focusSection('battleStage');
 }
