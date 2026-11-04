@@ -46,7 +46,7 @@ def patch(P):
  h=h.replace(marker,'<div class="dash-item">💎 <b id="gem">0</b></div>'+hud+'<div class="dash-item gem-actions" id="gemActionBox"></div>').replace('💰 <b id="res">','💰 자원 <b id="res">').replace('💎 <b id="gem">','💎 보석 <b id="gem">')
  h=h.replace("connect-src 'none'","connect-src https://xkmfjutncwblfebgdmar.supabase.co")
  h=h.replace('</head>','<style>'+CSS+'</style></head>')
- h=h.replace('<span id="cloudStatus">','<span id="buildLabel">').replace('이 기기에만 테스트 기록 저장','플레이 기록 서버 자동 저장').replace('기기 자동 저장 · 종료 전 플레이도 보관합니다.','기기·서버 자동 저장 · 종료 전 플레이도 보관합니다.')
+ h=h.replace('<span id="cloudStatus" style=','<span id="buildLabel" style=').replace('이 기기에만 테스트 기록 저장','플레이 기록 서버 자동 저장').replace('기기 자동 저장 · 종료 전 플레이도 보관합니다.','기기·서버 자동 저장 · 종료 전 플레이도 보관합니다.')
  h=h.replace('기기 저장 전용','서버 자동 저장').replace('게임 데이터를 자동 전송하지는 않아.','플레이 기록은 서버에 자동 저장돼.')
  h=h.replace('숙련의 손: 행동력 +1','보석 1개 → 행동력 +1 (이월 없음). 숙련의 손: 행동력 +1')
  (P/'index.html').write_text(h)

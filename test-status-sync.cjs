@@ -6,6 +6,7 @@ const w=d.window;w.fetch=()=>Promise.reject(Error('offline'));w.scrollTo=()=>{};
 for(const sc of [...w.document.scripts]){vm.runInContext(sc.src?fs.readFileSync(path.join(root,sc.getAttribute('src').split('?')[0]),'utf8'):sc.textContent,d.getInternalVMContext());}
 const q=s=>vm.runInContext(s,d.getInternalVMContext());
 q('start();');
+assert.equal(w.document.querySelectorAll('#cloudStatus').length,1);
 const dash=[...w.document.querySelector('.dashboard').children];assert(dash[0].textContent.includes('ROUND'));assert(dash[1].textContent.includes('자원'));assert(dash[2].textContent.includes('보석'));assert.equal(dash[3].id,'apHud');
 q('gems=3;apState.points=0;render();useGem();');assert.equal(q('gems'),2);assert.equal(q('apState.points'),1);assert.equal(q('tempAttack'),0);assert(w.document.querySelector('#apHud').classList.contains('balance-up'));assert(w.document.querySelector('#gem').parentElement.classList.contains('balance-down'));
 q('useGem(true)');assert.equal(q('gems'),0);assert.equal(q('apState.points'),3);
