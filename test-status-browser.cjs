@@ -1,0 +1,20 @@
+const {chromium}=require('playwright'),assert=require('assert'),fs=require('fs');
+(async()=>{
+ const b=await chromium.launch({headless:true,args:['--no-sandbox']});const page=await b.newPage({viewport:{width:390,height:844}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:8765/_site/preview/v0.3-ap-final/');await page.evaluate(()=>{document.getElementById('bgmToggle').checked=false;document.getElementById('sfxToggle').checked=false;start();Luck220.run().source='qa';});
+ await page.evaluate(()=>{gems=3;apState.points=0;render();useGem();});
+ assert.deepEqual(await page.evaluate(()=>({gems,ap:apState.points,attack:tempAttack})),{gems:2,ap:1,attack:0});
+ assert(await page.locator('#apHud').evaluate(el=>el.classList.contains('balance-up')));
+ for(const width of [360,390,430]){await page.setViewportSize({width,height:844});await page.evaluate(()=>render());assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));const boxes=await page.evaluate(()=>{const ids=['round','res','gem','apHud'];return ids.map(id=>{const r=document.getElementById(id).getBoundingClientRect();return {id,x:r.x,y:r.y,width:r.width}})});assert(boxes[0].y<=boxes[1].y);assert(boxes[1].x<boxes[2].x);if(boxes[2].y===boxes[3].y)assert(boxes[2].x<boxes[3].x);await page.screenshot({path:'status-'+width+'.png'});}
+ await page.route('https://*.supabase.co/**',r=>r.abort());await page.evaluate(async()=>{await Luck220.persist();await LuckCloud.flush().catch(()=>{});});assert((await page.locator('#cloudStatus').innerText()).includes('대기'));
+ await page.unroute('https://*.supabase.co/**');
+ await page.evaluate(async()=>{await LuckCloud.flush();});
+ assert((await page.locator('#cloudStatus').innerText()).includes('완료'));
+ const id=await page.evaluate(()=>Luck220.runId());
+ await page.evaluate(()=>{phase='battle';fullLogs.push('QA AUTOMATIC SYNC TERMINAL');Luck220.finish('gameover','qa_status_sync');});await page.evaluate(async()=>{await LuckCloud.flush();await LuckCloud.flush();});
+ const result=await page.evaluate(async()=>{const a=JSON.parse(localStorage.getItem('luck_cloud_auth_v1')),cfg=LUCK_CLOUD_CONFIG;const headers={apikey:cfg.supabaseAnonKey,Authorization:'Bearer '+a.access_token};const base=cfg.supabaseUrl+'/rest/v1/';const run=Luck220.runId();const detail=await fetch(base+'v031_run_details?run_id=eq.'+run,{headers}).then(r=>r.json());const events=await fetch(base+'v031_card_events?run_id=eq.'+run+'&select=seq,event_type',{headers}).then(r=>r.json());const manual=await fetch(base+'manual_runs?id=eq.'+run,{headers}).then(r=>r.json());return {run,detail,events,manual,seq:Luck220.snapshot().seq};});
+ assert.equal(result.detail.length,1);assert.equal(result.detail[0].source,'qa');assert.equal(result.detail[0].terminal.reason,'qa_status_sync');assert.equal(result.manual.length,1);assert.equal(new Set(result.events.map(e=>e.seq)).size,result.events.length);assert.equal(result.events.length,result.seq);assert(result.events.some(e=>e.event_type==='gem_exchanged'));
+ // A second anonymous identity cannot read the first player's private run.
+ const isolated=await b.newContext();const p2=await isolated.newPage();await p2.goto('http://127.0.0.1:8765/_site/preview/v0.3-ap-final/');const hidden=await p2.evaluate(async id=>{const cfg=LUCK_CLOUD_CONFIG;const auth=await fetch(cfg.supabaseUrl+'/auth/v1/signup',{method:'POST',headers:{apikey:cfg.supabaseAnonKey,'Content-Type':'application/json'},body:'{}'}).then(r=>r.json());return fetch(cfg.supabaseUrl+'/rest/v1/v031_run_details?run_id=eq.'+id,{headers:{apikey:cfg.supabaseAnonKey,Authorization:'Bearer '+auth.access_token}}).then(r=>r.json());},id);assert.deepEqual(hidden,[]);
+ assert.deepEqual(errors,[]);fs.writeFileSync('status-browser-results.json',JSON.stringify({pass:true,run_id:id,events:result.events.length,terminal_rows:result.manual.length,offline_retry:true,duplicate_free:true,private:true,widths:[360,390,430],errors},null,2));console.log('PASS',id,result.events.length,'events, terminal, offline retry, idempotence, private RLS, mobile');await b.close();
+})().catch(e=>{console.error(e);process.exit(1)});
