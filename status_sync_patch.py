@@ -44,6 +44,7 @@ def patch(P):
  marker='<div class="dash-item">💎 <b id="gem">0</b> <span id="gemActionBox"></span></div>'
  assert marker in h
  h=h.replace(marker,'<div class="dash-item">💎 <b id="gem">0</b></div>'+hud+'<div class="dash-item gem-actions" id="gemActionBox"></div>').replace('💰 <b id="res">','💰 자원 <b id="res">').replace('💎 <b id="gem">','💎 보석 <b id="gem">')
+ h=h.replace("connect-src 'none'","connect-src https://xkmfjutncwblfebgdmar.supabase.co")
  h=h.replace('</head>','<style>'+CSS+'</style></head>')
  h=h.replace('기기 저장 전용','서버 자동 저장').replace('게임 데이터를 자동 전송하지는 않아.','플레이 기록은 서버에 자동 저장돼.')
  h=h.replace('숙련의 손: 행동력 +1','보석 1개 → 행동력 +1 (이월 없음). 숙련의 손: 행동력 +1')
