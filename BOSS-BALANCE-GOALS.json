@@ -1,0 +1,1 @@
+{"beginner_target_median_loss_round":15,"practiced_target_clear_rate":0.70,"expert_target_clear_rate":0.95,"unlucky_tail_target":0.05,"forced_random_failure":false,"human_validation_required":true,"status":"targets_not_certified","model_mapping_warning":"The three deterministic policies are diagnostic proxies, not measured human skill groups."}

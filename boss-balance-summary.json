@@ -1,0 +1,278 @@
+{
+  "status": "targets_not_met_by_policies",
+  "goals": {
+    "beginner_target_median_loss_round": 15,
+    "practiced_target_clear_rate": 0.7,
+    "expert_target_clear_rate": 0.95,
+    "unlucky_tail_target": 0.05,
+    "forced_random_failure": false,
+    "human_validation_required": true,
+    "status": "targets_not_certified",
+    "model_mapping_warning": "The three deterministic policies are diagnostic proxies, not measured human skill groups."
+  },
+  "provenance": {
+    "policy": "boss-skill-proxy-v2",
+    "engine_sha256": "5fe20bf90c03f5c86c4eca9cbdccbfa3a44dda7dead3c72d3624a5da8338dc58",
+    "policy_sha256": "dad0c443fb25e76f924997e9a9cdbf5118b8718acc60c71f0a43463ec7c42168",
+    "build": {
+      "version": "0.3.3-boss.1",
+      "stage": "boss_encounter_validation",
+      "build_id": "033-boss-94f52cffef2ef6cf",
+      "git_sha": "d077e07314ef91bb17fc6748767c7318d104e2f4",
+      "baseline_git_sha": "110d54876a121909b9bd6074cf682b6d99944083",
+      "baseline_build_id": "030-rc3-c2b4d145a1cf38e3",
+      "score_ruleset_version": "v2-actual-strike-0220",
+      "persistent_draw": true,
+      "gameplay_changes": [
+        "draw_always_on",
+        "p1_link_conversion",
+        "p1_cards",
+        "p1_next_round_bonuses",
+        "p5_reroll_seed",
+        "p5_single_restock",
+        "p5_purchase_coupon",
+        "p5_seed_three_offer",
+        "p5_restock_experiment_flags"
+      ],
+      "comparison_contract": "P5 disabled state regression; isolated approved reward stages",
+      "cloud_mode": "isolated_local",
+      "source_tree_dirty": true,
+      "source_manifest_sha256": "bbb8a029b129a188bf8130f2087624c97149ee1a9e6068d892bd9e8fa62218d0",
+      "source_files": {
+        "optimize_v030_assets.py": "c78744088f1ef2ca7428c3fb0ac9d1addc7fe9d82fba3ebaa5a2cfc5b6aa8ab9",
+        "p5_rewards_patch.py": "70953040abf5180f2d7756c8c949784e93c3937be9139933633e6e891f5a714c",
+        "p5-rewards.js": "a938a4a46a86b6ddb9a40d91926a21d4a337d462c590b8b41c491222c86deeef",
+        "build_v030.py": "da2d59c4a8188fea9b1e6854ac587de6e5ed804f2a167a0d5b091c0d62bd7f58",
+        "v030-telemetry.js": "6766ea1fc85df5a0c7c8ef36616da245a36509268cd5ed76d2e59772f9ed122e",
+        "v030-reference-ai.js": "21547704592e343597911df7c8551f3b5019dc895eceb12c8c3db35627e63098",
+        "verify_v030.py": "fd48467a278c32ade0dffd86c1650b009a726b3d13d449906de18c278be46300",
+        "run_v030_stage0.py": "7579178226bf7c0e1cb788abe2c85537508239d6fb964eb7109e2d95efa825ca",
+        "test_v030.py": "e71e8b87c50f47a22af034fbd6e38bae3e96ec687cf8233771653a4fce55a185",
+        "v030-p1.js": "40e165bde318664969ab14b07b1cf42aeebfc41a1cf89e3dda30f8bc92c13fc2",
+        "v030_p1_patch.py": "1b8c801e1da8168a2c41b4cd389957df10306d37676ac3b2767ac6b84462943d",
+        "test_v030_p1.py": "554bf690a3c8d2f7a4a46bcb62ece00fa66b750ca903c104f6d80e4c008e9eb5",
+        "verify_v030_p1.py": "1a095566fc707d2af6f9410f544ed107020ba6607155791d12587afa4b921515",
+        "build_v030_standalone.py": "ea10b24bfcf793e6a2a82c737e08a078316f555931d2cc8133fea7a3cbc728d7",
+        "write_v030_p1_report.py": "3dfa080a215dc3d644d020dac1f04ea684f6c78752a7b61567708faaa856936f",
+        "v030-local-cloud.js": "fb8ca4ca56ac074fb5816e1967a5e959bde11f341da348c83b63dd559d61dea2",
+        "v030-tutorial.js": "bfaadd49e3218d0bbdd26eb32abd4beb0e68689901ccd007a1f389042511134c",
+        "battle-preparation.js": "c7cd78707b5f2e06eddea2fa8786f7a0f4e69e5f7c3272d1cab6068ac32e176e",
+        "battle-preparation.css": "27e25fb1b7ce91c29b8e0d06f34c3ff242fd268862cfeaaa9970621595f7b32d",
+        "luck-audio.js": "16d52b9b91425e5b3afc60cdd14510a23f6ca32785e175c99dd30d0223b0e580"
+      },
+      "default_rewards": {
+        "restock": "A",
+        "seed_choices": 3,
+        "fallbacks": [
+          "B",
+          "C",
+          "legacy"
+        ]
+      },
+      "release_status": "real_device_checks_pending",
+      "release_scope": "single_applied_play_build",
+      "record_policy": {
+        "server_upload": false,
+        "official_leaderboard": false,
+        "automatic_legacy_import": false,
+        "ranking_key": "luck_local_v030_rankings",
+        "ranking_version_filter": "exact_current_version"
+      },
+      "audio_strategy": {
+        "default": "embedded",
+        "external_role": "separate_web_artifact",
+        "approved": true
+      },
+      "asset_optimization": {
+        "max_edge": 512,
+        "card_max_edge": 384,
+        "lossless": true,
+        "assets": 39,
+        "inline": 0,
+        "manifest_sha256": "1e87725426a805a43b2c820f5f08045a6c2499d735ec7e113d37002967df4b66"
+      },
+      "ap_sources": {
+        "action-points.js": "f0d78eb0b699469a650b0899fda453a62d80ffd43dad676616a05f5f7343a13c",
+        "action_points_patch.py": "93eb52d2f50dba5d27ca8bcd157b4b2438d683028bae3c64102ff717ccd44c09",
+        "build_action_points.py": "c1a94af5499bce8d6fe18a478c554d209847963adc782d87def0e26d6db01cb0",
+        "ap-node.cjs": "6577f83b06b7d45e2df9f6881ce63e1aa972d36e8ac955ff23dfc99bd2dccdb3",
+        "test-action-points.cjs": "287d0edf03ddd260016010f84be8711273571aa5e6934f5bb9b0372455c60e07",
+        "run-action-points.cjs": "1d66d073a88ec147244841e1909ddc2a547e30bf62d11c0ecd2f2bb896eaa4d6",
+        "package_action_points.py": "8ab35fbb85a316c37113c9eef067d05b483a626e91d2d528af9d36d7669b8cd0"
+      },
+      "ap_contract": {
+        "base_per_round": 2,
+        "carry": false,
+        "shared_hand_shop": true,
+        "purchase": 1,
+        "promotion": 1,
+        "cost_scope": "explicit_active_cards_only",
+        "passive_cost": 0,
+        "refill_cap": null
+      },
+      "final_sources": {
+        "build_action_points_final.py": "aa4080b63a582485484c56270b274f13f351c8da548e9f10cd65285ca7e89002",
+        "test-ap-final.cjs": "e70b674ffe5d36aca3d9ca1e31c00ef3b226625fd55d0e69fca7794013bc8348",
+        "defeat_presentation_patch.py": "9bb6c6eeb8181dab06b220f41d2fd5025e48feb9932bdfa4fa1a88ecc8f49d8a",
+        "test-defeat-presentation.cjs": "4fc8cc376677b9fbe5a74b7d627c8614f4d8ebce6d305cbdab45e79f0843b69f",
+        "status_sync_patch.py": "606010802ee60b2010e5013db8457e9f820fd1ff9fea545af6a65d608c355c23",
+        "v031-sync.sql": "a62b52ba1d907d464d4d0d2d2342d971e2de6ed80c336de26e2ccadf5f63f804",
+        "test-status-sync.cjs": "44ec46a6b76ec5a56db213ae070823e85c06329761caf5eb18fd7c340b049b03",
+        "test-status-browser.cjs": "ceb80f48513385a3762ab3180f43a73ce9122b6fe382c63a1bf176a713b75db5",
+        "v0220-cloud.js": "b6c4a39e2765ea4968f1dd0420fcd150b1979326dbaf0db600b9058be94c46b8"
+      },
+      "ap_mode": "promo",
+      "mode_selection": false,
+      "defeat_presentation": "combat_then_gameover",
+      "v032_sources": {
+        "build_v032.py": "4edaf7694301d9f8259a840ade8a174f540259b710e88c80bf6e02704ab020d6",
+        "link-feedback-v032.js": "bf72bf70322924f12aa7c33a886810d41386cbc9e4bf27d499123fee08ab316e",
+        "link-feedback-v032.css": "7625991b9def717089ea61eaa978ef2318b891929d3ea2c5d469d0d0065971ea",
+        "test-v032.cjs": "3c6637f36a512d27b3e11005af1971fb1a024d279e879f8d249b54a53cf30af0",
+        "test-v032-browser.cjs": "995552f902a26f8fa3dc506aaac6ed101544db8fdd78640ff84df7ec7427189e"
+      },
+      "boss_sources": {
+        "build_boss.py": "f1f0482cef868db5649507fc51e3868fffe61466654995dc0b564020af9cc8fa",
+        "boss-encounter.js": "9ae512c003ee4051a7019bb80c19afa9fdc4c1e9fcbede0c7a33e232f0c806d5",
+        "boss-encounter-patch.py": "ece783309a2e1985e4e8540b08f698cce50be0fdcb94d35a805a1b4e4fedd503",
+        "boss-ai.cjs": "dad0c443fb25e76f924997e9a9cdbf5118b8718acc60c71f0a43463ec7c42168",
+        "test-boss.cjs": "1f6c35344bf26df6c22d1ad22b0507518d0e98c897e76d981cc61e6623aca61b",
+        "test-boss-browser.cjs": "b49c678f9c1397ed45cf520cfa89c58946ce348799909836aefa4e397cae2cc6",
+        "run-boss-balance.cjs": "ec973fa40380c6077211e91ecdbecab7754609126f59ec4065bb0dc895627e8b",
+        "boss-table.json": "14510303f5b873854a4113292b39451a1311cec0ff2a0f6872ee7f253896bab7"
+      },
+      "boss_table": [
+        {
+          "round": 5,
+          "shield": 6,
+          "core": 10
+        },
+        {
+          "round": 10,
+          "shield": 12,
+          "core": 22
+        },
+        {
+          "round": 15,
+          "shield": 30,
+          "core": 100
+        },
+        {
+          "round": 20,
+          "shield": 40,
+          "core": 100
+        },
+        {
+          "round": 25,
+          "shield": 60,
+          "core": 130
+        },
+        {
+          "round": 30,
+          "shield": 90,
+          "core": 185
+        }
+      ]
+    },
+    "seed_start": 101
+  },
+  "table": [
+    {
+      "round": 5,
+      "shield": 6,
+      "core": 10
+    },
+    {
+      "round": 10,
+      "shield": 12,
+      "core": 22
+    },
+    {
+      "round": 15,
+      "shield": 30,
+      "core": 100
+    },
+    {
+      "round": 20,
+      "shield": 40,
+      "core": 100
+    },
+    {
+      "round": 25,
+      "shield": 60,
+      "core": 130
+    },
+    {
+      "round": 30,
+      "shield": 90,
+      "core": 185
+    }
+  ],
+  "policies": {
+    "novice": {
+      "label": "기본 구매 정책",
+      "n": 200,
+      "clear": 0,
+      "clear_rate": 0.0,
+      "median_end_round": 20.0,
+      "median_loss_round": 20.0,
+      "boss_timeouts": 200,
+      "seed_groups": {
+        "101-200": {
+          "n": 100,
+          "clear": 0,
+          "clear_rate": 0.0
+        },
+        "201-300": {
+          "n": 100,
+          "clear": 0,
+          "clear_rate": 0.0
+        }
+      }
+    },
+    "skilled": {
+      "label": "승급·보석 활용 정책",
+      "n": 200,
+      "clear": 23,
+      "clear_rate": 0.115,
+      "median_end_round": 25.0,
+      "median_loss_round": 20,
+      "boss_timeouts": 177,
+      "seed_groups": {
+        "101-200": {
+          "n": 100,
+          "clear": 16,
+          "clear_rate": 0.16
+        },
+        "201-300": {
+          "n": 100,
+          "clear": 7,
+          "clear_rate": 0.07
+        }
+      }
+    },
+    "expert": {
+      "label": "순서 연계·광역 우선 정책",
+      "n": 200,
+      "clear": 60,
+      "clear_rate": 0.3,
+      "median_end_round": 30.0,
+      "median_loss_round": 30.0,
+      "boss_timeouts": 140,
+      "seed_groups": {
+        "101-200": {
+          "n": 100,
+          "clear": 29,
+          "clear_rate": 0.29
+        },
+        "201-300": {
+          "n": 100,
+          "clear": 31,
+          "clear_rate": 0.31
+        }
+      }
+    }
+  },
+  "pilot_runs": 1530,
+  "validation_runs": 600
+}

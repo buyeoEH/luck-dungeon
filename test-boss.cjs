@@ -1,0 +1,18 @@
+const {create,q}=require('./boss-ai.cjs'),assert=require('assert');const d=create();
+const hit=(s,c,raw,kind,p=0)=>d.window.LuckBoss.applyDamage({boss:true,hp:s+c,shield:s,coreHp:c},raw,kind,p);
+assert.equal(hit(100,100,60,'aoe').damage,60);assert.equal(hit(0,5,1,'aoe').damage,0);assert.equal(hit(0,5,2,'aoe').damage,1);assert.equal(hit(20,100,100,'aoe').damage,76);assert.equal(hit(0,200,100,'strike',3).damage,130);assert.equal(hit(20,100,100,'strike',2).damage,116);assert.equal(hit(0,100,100,'strike',2).spent,84);
+q(d,"AutoLab.begin(101);round=5;enemies=[{name:'이전 적',hp:10,id:'carry',debuffZone:1}];nextSpawn=rollSpawn(5);addEnemy();");assert.equal(q(d,'enemies.length'),2);assert.equal(q(d,'bossEncounter.turn'),1);assert(q(d,'enemies[1].shield>0'));
+q(d,"phase='battle';hand=[];deck=[];draw=[];graveyard=[];tempAttack=0;aoeAttack=0;pierce=0;linkComboAttack=0;prot={attack:0,combo:0,gem:0,resource:0,all:0};p1ResetRun();dangerActive=true;$('battleMotionSkipToggle').checked=true;battle();");assert.equal(q(d,'round'),5);assert.equal(q(d,'bossEncounter.turn'),2);assert.equal(q(d,'phase'),'hand');assert.equal(q(d,'apState.points'),2);assert.equal(q(d,'enemies.length'),2);
+q(d,"phase='battle';battle()");assert.equal(q(d,'bossEncounter.turn'),3);q(d,"phase='battle';battle()");assert.equal(q(d,'phase'),'gameover');assert(q(d,'bossFailureReason.includes("3회")'));assert.equal(q(d,'officialRecord'),null);
+q(d,"AutoLab.begin(102);round=30;bossEncounter={round:30,turn:1,cleared:false};enemies=[{hp:1}];");assert.equal(q(d,"freezeOfficialRecord('nextRound')"),false);
+q(d,"enemies=[];bossEncounter.cleared=true;bossEncounter.clearedOnTurn=2;bossEncounter.rewardOffered=false;bossReward();");assert.equal(q(d,'phase'),'reward');assert.equal(q(d,'rewards.length'),4);assert.equal(q(d,'officialRecord'),null);q(d,'nextRound()');assert(q(d,'!!officialRecord'));
+let rewardNames=null;
+for(const turn of [1,2,3]){q(d,`AutoLab.begin(700);round=5;enemies=[];bossEncounter={round:5,turn:${turn},cleared:true,rewardOffered:false,clearedOnTurn:${turn}};bossReward();`);const names=q(d,'JSON.stringify(rewards.map(r=>[r[0],r[1]]))');if(rewardNames)assert.equal(names,rewardNames);rewardNames=names;assert.equal(q(d,'bossReward()'),false);}
+const r1=d.window.BossRun({seed:777,profile:'aoe',skill:'expert',reward_policy:'random',trace:false});const r2=d.window.BossRun({seed:777,profile:'aoe',skill:'expert',reward_policy:'random',trace:false});assert.equal(JSON.stringify(r1.boss_timeline),JSON.stringify(r2.boss_timeline),'repeat seed changed boss outcomes');
+// Forecast parity uses the same integer shield/core helper as real combat.
+for(let i=0;i<60;i++){
+ q(d,`AutoLab.begin(${500+i});round=10;phase='battle';bossEncounter={round:10,turn:1,cleared:false,rewardOffered:false,spec:{shield:30,core:80}};hand=[];deck=[{id:'weapon',name:'武器',type:'attack',atk:${20+i*2}}];bonusAtk=0;tempAttack=0;aoeAttack=${i%3===0?17:0};pierce=${i%4};linkComboAttack=0;p1ResetRun();prot={attack:0,combo:0,gem:0,resource:0,all:0};enemies=[{id:'a',name:'carry',hp:${10+i%13},debuffZone:2,d:${i%2?"{k:'attack',p:2,baseP:2,pct:false}":'null'}},{id:'b',name:'boss',boss:true,hp:110,shield:30,coreHp:80,shieldMax:30,coreMax:80,debuffZone:2}];activeDebuffZone=2;$('battleMotionSkipToggle').checked=true;`);
+ const expected=q(d,"battlePreparationPlan().rows.filter(e=>e.hp>0).map(e=>({name:e.name,hp:e.hp}))");
+ q(d,'battle()');assert.equal(q(d,'JSON.stringify(enemies.map(e=>({name:e.name,hp:e.hp})))'),JSON.stringify(expected),'forecast mismatch '+i);
+}
+d.window.close();console.log('PASS shield/core, raw overflow, pierce multiplier, carry/no spawns, 3 turns/AP reset, timeout, R30 all-clear/reward gate');

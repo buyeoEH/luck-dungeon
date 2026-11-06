@@ -1,0 +1,21 @@
+from pathlib import Path
+import hashlib,json,re,subprocess,importlib.util
+import build_v032
+R=Path(__file__).resolve().parent;P=build_v032.P
+spec=importlib.util.spec_from_file_location('boss_patch',R/'boss-encounter-patch.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+def build():
+ meta=build_v032.build();(P/'game.js').write_text(mod.patch((P/'game.js').read_text()))
+ files=['build_boss.py','boss-encounter.js','boss-encounter-patch.py','boss-ai.cjs','test-boss.cjs','test-boss-browser.cjs','run-boss-balance.cjs','boss-table.json','BOSS-BALANCE-GOALS.json']
+ hashes={n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in files}
+ meta.update(version='0.3.3-boss.1',stage='boss_encounter_validation',build_id='033-boss-'+hashlib.sha256((meta['build_id']+json.dumps(hashes,sort_keys=True)).encode()).hexdigest()[:16],boss_sources=hashes,boss_table=json.loads((R/'boss-table.json').read_text()))
+ # The checked table is injected once; no candidate chooser in the player build.
+ game=(P/'game.js').read_text();(P/'game.js').write_text('window.LUCK_BOSS_TABLE='+json.dumps(meta['boss_table'])+';\n'+game)
+ meta['source_tree_dirty']=meta['source_tree_dirty'] or bool(subprocess.check_output(['git','status','--porcelain','--',*files,'boss-table.json','BOSS-BALANCE-GOALS.json'],text=True).strip())
+ h=(P/'index.html').read_text();h=re.sub(r'window.LUCK_BUILD=\{[^<]+?\};',lambda _:'window.LUCK_BUILD='+json.dumps(meta)+';',h,count=1)
+ h=h.replace('<section id="enemySection"','<section id="bossStagePanel" class="hide"></section><section id="enemySection"',1)
+ css='#bossStagePanel{border:1px solid #ad7b31;border-radius:9px;padding:9px;background:#272012;font-size:12px}#bossStagePanel header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}#bossStagePanel p{margin:6px 0;line-height:1.5}.boss-health{display:grid;gap:4px;margin-top:8px}.boss-health>div{height:8px;background:#172535;border-radius:5px;overflow:hidden}.boss-health i{display:block;height:100%;background:#60a5fa;transition:width .3s}.boss-health .boss-core i{background:#f87171}.boss-rule-note{padding:8px;border:1px solid #9a7237;border-radius:7px;font-size:12px}'
+ h=h.replace('</head>','<style>'+css+'</style></head>')
+ h=h.replace('<section class="ap-rules">','<section class="ap-rules"><p><b>👑 보스전 검증판</b> R5·10·15·20·25·30마다 최대 3회 전투. 이전 적과 보스를 모두 처치해야 다음 구간으로 갑니다. 보호막·진체력을 나눠 표시하며 보스전 수치는 검증 중입니다.</p>',1)
+ h=h.replace('v0.3.2 연계 공격','v0.3.3 보스전 검증').replace('보석을 사용하면 다시 계산합니다.','보석을 사용하면 다시 계산합니다.')
+ (P/'index.html').write_text(h);(P/'build.json').write_text(json.dumps(meta,indent=2));print(json.dumps({'build_id':meta['build_id'],'version':meta['version'],'dirty':meta['source_tree_dirty']}));return meta
+if __name__=='__main__':build()

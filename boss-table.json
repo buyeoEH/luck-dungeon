@@ -1,0 +1,32 @@
+[
+  {
+    "round": 5,
+    "shield": 6,
+    "core": 10
+  },
+  {
+    "round": 10,
+    "shield": 12,
+    "core": 22
+  },
+  {
+    "round": 15,
+    "shield": 30,
+    "core": 100
+  },
+  {
+    "round": 20,
+    "shield": 40,
+    "core": 100
+  },
+  {
+    "round": 25,
+    "shield": 60,
+    "core": 130
+  },
+  {
+    "round": 30,
+    "shield": 90,
+    "core": 185
+  }
+]
