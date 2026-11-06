@@ -256,11 +256,6 @@ jobs:
       - name: Install deterministic asset builder
         run: |
           python -m pip install --timeout 30 --retries 2 pillow==12.3.0
-          if ! command -v ffmpeg >/dev/null 2>&1; then
-            sudo timeout 180 apt-get update -qq
-            sudo timeout 180 apt-get install -y ffmpeg
-          fi
-          ffmpeg -version | head -1
       - name: Download the currently deployed complete Pages artifact
         env:
           GH_TOKEN: ${{ github.token }}
@@ -293,7 +288,7 @@ jobs:
               assert hashlib.sha256(raw).hexdigest()==old[name],name
           with ThreadPoolExecutor(max_workers=6) as ex:list(ex.map(check,protected))
           assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='d5f063ca1e318ad8d21952b0d36a992e0dd6cd9e'
-          for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','build_action_points_final.py','prepare_release_audio.py']:
+          for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','build_action_points_final.py']:
               subprocess.run(['python',script],check=True)
           shutil.copytree('_site/preview/v0.3-ap-final','../ap-before-v032')
           subprocess.run(['python','build_boss.py'],check=True)
@@ -313,6 +308,24 @@ jobs:
               subprocess.run(['node','test-status-browser.cjs'],check=True,env=env,timeout=180)
               subprocess.run(['node','test-boss-browser.cjs'],check=True,env=env,timeout=180)
           finally:server.terminate()
+          # Audio is unchanged. Reuse the checked, currently published MP3 bytes
+          # rather than re-encoding and downloading OS codec dependencies.
+          import base64
+          previous_html=(rollback/'preview/v0.3-ap/index.html').read_text()
+          media=json.loads(re.search(r'window.LUCK_RELEASE_MEDIA=(\{.*?\});',previous_html)[1])
+          assert media['mode']=='embedded'
+          source_audio=json.loads(Path('assets/audio/manifest.json').read_text())
+          audio_dir=Path('release-audio-candidates');audio_dir.mkdir(exist_ok=True)
+          tracks=[]
+          for track in source_audio['tracks']:
+              key='assets/'+track['file'];index=media['aliases'][key];uri=media['assets'][index]
+              assert uri.startswith('data:audio/mpeg;base64,')
+              raw=base64.b64decode(uri.split(',',1)[1],validate=True)
+              assert raw.startswith(b'ID3') or raw[:1]==b'\\xff'
+              name=track['id']+'.mp3';(audio_dir/name).write_bytes(raw)
+              tracks.append({'id':track['id'],'file':name,'sha256':hashlib.sha256(raw).hexdigest(),'aliases':[k for k,v in media['aliases'].items() if v==index]})
+          assert len(tracks)==17 and len(media['assets'])==17
+          (audio_dir/'manifest.json').write_text(json.dumps({'tracks':tracks}))
           import build_v030_standalone as standalone
           root=Path.cwd();work=root/'_ap-package';work.mkdir();(work/'release-audio-candidates').symlink_to(root/'release-audio-candidates',target_is_directory=True)
           standalone.R=work;standalone.P=root/'_site/preview/v0.3-ap-final';standalone.D=root/'_ap-downloads';standalone.D.mkdir()
