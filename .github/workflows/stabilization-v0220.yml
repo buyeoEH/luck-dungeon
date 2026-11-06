@@ -321,9 +321,9 @@ jobs:
               key='assets/'+track['file'];index=media['aliases'][key];uri=media['assets'][index]
               assert uri.startswith('data:audio/mpeg;base64,')
               raw=base64.b64decode(uri.split(',',1)[1],validate=True)
-              assert raw.startswith(b'ID3') or raw[:1]==b'\\xff'
+              assert raw.startswith(b'ID3') or (bool(raw) and raw[0]==255)
               name=track['id']+'.mp3';(audio_dir/name).write_bytes(raw)
-              tracks.append({'id':track['id'],'file':name,'sha256':hashlib.sha256(raw).hexdigest(),'aliases':[k for k,v in media['aliases'].items() if v==index]})
+              tracks.append({'id':track['id'],'file':name,'sha256':hashlib.sha256(raw).hexdigest(),'aliases':[k.removeprefix('assets/') for k,v in media['aliases'].items() if v==index]})
           assert len(tracks)==17 and len(media['assets'])==17
           (audio_dir/'manifest.json').write_text(json.dumps({'tracks':tracks}))
           import build_v030_standalone as standalone
