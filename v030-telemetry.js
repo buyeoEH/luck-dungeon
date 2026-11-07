@@ -1,0 +1,17 @@
+/* v0.3 stage 0. Observation only: no random calls or game-state writes. */
+(function(){'use strict';
+const B=window.LUCK_BUILD;let records=[],metadata=null;
+const clone=x=>JSON.parse(JSON.stringify(x));
+function emit(type,payload){const e={type,round,mode:endlessMode?'endless':'official',payload:clone(payload)};records.push(e);window.Luck220?.emit('v030_'+type,payload);return e;}
+function basics(){return deck.filter(c=>['sword','dagger','smash'].includes(cardKey(c))).reduce((n,c)=>n+(c.atk||0),0);}
+function identity(){const c=window.LUCK_BATCH_CONTEXT||{};return {git_sha:B.git_sha,source_tree_dirty:B.source_tree_dirty,source_manifest_sha256:B.source_manifest_sha256,build_id:B.build_id,baseline_git_sha:B.baseline_git_sha||B.git_sha,baseline_build_id:B.baseline_build_id||B.build_id,ai_policy:c.ai_policy||'human',policy_sha256:c.policy_sha256||null,reward_policy:c.reward_policy||'user_choice',seed:c.seed??null,persistent_draw:persistentDraw,stage:B.stage||'baseline',p1_enabled:P1_ENABLED,p1_cards:P1_CARDS,p1_extras:P1_EXTRAS,ruleset:SCORE_RULE_VERSION,source:window.__luckAutoLabBotActive?'bot':'manual'};}
+const start0=start;start=function(){records=[];const r=start0.apply(this,arguments);metadata=Object.freeze(identity());emit('run_metadata',metadata);return r;};
+function recordBattle(scene){
+ const ap=scene.measuredAttackParts||{},raw=scene.p1?.gaugeRaw??scene.linkBonus??0,net=scene.p1?.gaugeNet??(ap.comboRaw>0?Math.floor(raw*ap.comboNet/ap.comboRaw):0);
+ const pierceHits=(scene.events||[]).filter(e=>e.type==='pierce'),remaining=scene.remaining;
+ emit('battle_metrics',{link_gauge_before_debuff:raw,link_gauge_after_debuff:net,gauge_measurement:scene.p1?'P1 pooled post-debuff allocation; gauge-only card bonuses excluded from combo score':'floor(link_raw * combo_net / combo_raw); observation only; not new score',combo_before_debuff:ap.comboRaw||0,combo_after_debuff:ap.comboNet||0,combo_loss:ap.comboLoss||0,attack_before_debuff:ap.pre||0,attack_final:scene.attackFinal,attack_loss:ap.atkLoss||0,p1:scene.p1||null,pierce_prepared:scene.pierce,pierce_actual_damage:pierceHits.reduce((n,e)=>n+e.damage,0),pierce_kills:pierceHits.filter(e=>e.killed).length,pure_strike_eligible:scene.aoe===0&&scene.pierce===0&&scene.attackFinal>=55&&deckAtk()>=35,enemy_count:remaining.length,enemy_hp:remaining.reduce((n,e)=>n+e.hp,0),enemy_limit:gameOverEnemyLimit(round),hp_limit:gameOverHpLimit(round),within_limits:remaining.length<=gameOverEnemyLimit(round)&&remaining.reduce((n,e)=>n+e.hp,0)<=gameOverHpLimit(round),danger_active:dangerActive,resource_balance:resource,gems_balance:gems,deck_attack:deckAtk(),basic_weapon_attack:basics(),cards_bought:stats.cardsBought,promotions:stats.promotions,first_shop:window.Luck220?.run()?.initial_shop||null});
+}
+const buy0=buy;buy=function(){const n=stats.cardsBought,r=buy0.apply(this,arguments);if(stats.cardsBought!==n)emit('purchase_metrics',{round_purchases:records.filter(x=>x.type==='purchase_metrics'&&x.round===round).length+1,resource_balance:resource,gems_balance:gems});return r;};
+const promote0=promote;promote=function(id){const n=stats.promotions,a=deckAtk(),b=basics(),p=PROMOS.find(x=>x.id===id),r=promote0.apply(this,arguments);if(stats.promotions!==n)emit('promotion_metrics',{recipe_id:id,tier:p.tier||1,deck_attack_before:a,deck_attack_after:deckAtk(),basic_weapon_attack_before:b,basic_weapon_attack_after:basics(),resource_balance:resource,cost:p.cost});return r;};
+window.Luck030={recordBattle,records:()=>clone(records),metadata:()=>clone(metadata)};
+})();
