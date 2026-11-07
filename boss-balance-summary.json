@@ -1,24 +1,81 @@
 {
-  "status": "targets_not_met_by_policies",
-  "goals": {
-    "beginner_target_median_loss_round": 15,
-    "practiced_target_clear_rate": 0.7,
-    "expert_target_clear_rate": 0.95,
-    "unlucky_tail_target": 0.05,
-    "forced_random_failure": false,
-    "human_validation_required": true,
-    "status": "targets_not_certified",
-    "model_mapping_warning": "The three deterministic policies are diagnostic proxies, not measured human skill groups."
-  },
+  "version": "0.3.3-boss.2",
+  "carry_damage_multiplier": 3,
+  "free_overflow_after_normal_kill": true,
+  "target_clear_rates_not_certified": true,
+  "before_table": [
+    {
+      "round": 5,
+      "shield": 6,
+      "core": 10
+    },
+    {
+      "round": 10,
+      "shield": 12,
+      "core": 22
+    },
+    {
+      "round": 15,
+      "shield": 30,
+      "core": 100
+    },
+    {
+      "round": 20,
+      "shield": 40,
+      "core": 100
+    },
+    {
+      "round": 25,
+      "shield": 60,
+      "core": 130
+    },
+    {
+      "round": 30,
+      "shield": 90,
+      "core": 185
+    }
+  ],
+  "after_table": [
+    {
+      "round": 5,
+      "shield": 12,
+      "core": 40
+    },
+    {
+      "round": 10,
+      "shield": 24,
+      "core": 80
+    },
+    {
+      "round": 15,
+      "shield": 50,
+      "core": 160
+    },
+    {
+      "round": 20,
+      "shield": 80,
+      "core": 240
+    },
+    {
+      "round": 25,
+      "shield": 120,
+      "core": 340
+    },
+    {
+      "round": 30,
+      "shield": 180,
+      "core": 480
+    }
+  ],
   "provenance": {
     "policy": "boss-skill-proxy-v2",
-    "engine_sha256": "5fe20bf90c03f5c86c4eca9cbdccbfa3a44dda7dead3c72d3624a5da8338dc58",
+    "engine_sha256": "d0cb631162cf964774560e78e73998a90f1302a038c849f6c2e673635b8f1e31",
     "policy_sha256": "dad0c443fb25e76f924997e9a9cdbf5118b8718acc60c71f0a43463ec7c42168",
     "build": {
-      "version": "0.3.3-boss.1",
+      "version": "0.3.3-boss.2",
       "stage": "boss_encounter_validation",
-      "build_id": "033-boss-94f52cffef2ef6cf",
-      "git_sha": "d077e07314ef91bb17fc6748767c7318d104e2f4",
+      "build_id": "033-boss-034eb96de07c5a5f",
+      "git_sha": "ee447deed8ba8e6b2ed522b2767dc950943f9113",
       "baseline_git_sha": "110d54876a121909b9bd6074cf682b6d99944083",
       "baseline_build_id": "030-rc3-c2b4d145a1cf38e3",
       "score_ruleset_version": "v2-actual-strike-0220",
@@ -132,147 +189,86 @@
         "test-v032-browser.cjs": "995552f902a26f8fa3dc506aaac6ed101544db8fdd78640ff84df7ec7427189e"
       },
       "boss_sources": {
-        "build_boss.py": "f1f0482cef868db5649507fc51e3868fffe61466654995dc0b564020af9cc8fa",
-        "boss-encounter.js": "9ae512c003ee4051a7019bb80c19afa9fdc4c1e9fcbede0c7a33e232f0c806d5",
+        "build_boss.py": "bb4fad7455717ef271c2314bd8bffe4156d64f6549add2bd660dab78257a7c64",
+        "boss-encounter.js": "c949cc5d96beec2a7ffc4612f076896379271d0e7b58fc5d9ba5225417ad6f52",
         "boss-encounter-patch.py": "ece783309a2e1985e4e8540b08f698cce50be0fdcb94d35a805a1b4e4fedd503",
         "boss-ai.cjs": "dad0c443fb25e76f924997e9a9cdbf5118b8718acc60c71f0a43463ec7c42168",
-        "test-boss.cjs": "1f6c35344bf26df6c22d1ad22b0507518d0e98c897e76d981cc61e6623aca61b",
-        "test-boss-browser.cjs": "b49c678f9c1397ed45cf520cfa89c58946ce348799909836aefa4e397cae2cc6",
+        "test-boss.cjs": "5be5677a7d6cdfe0fc165b2ccbc5b981913f19fe5dd171dccd58425934665f8c",
+        "test-boss-browser.cjs": "a6679256fa35632343757bc0352052b20d5195356c4f7186eaaaa1181683eeac",
         "run-boss-balance.cjs": "ec973fa40380c6077211e91ecdbecab7754609126f59ec4065bb0dc895627e8b",
-        "boss-table.json": "14510303f5b873854a4113292b39451a1311cec0ff2a0f6872ee7f253896bab7"
+        "boss-table.json": "cf058e843604841172728d5c0fecf0b1dfbf67d7f3db1f4e7de18c0bf5549e98",
+        "BOSS-BALANCE-GOALS.json": "9064cab288146fdd492817490e1333c043e4f5f5462d739baf47fd5b54f608de",
+        "boss-presence.js": "49e7b2cf0db30884e221a8bb573e28944792f1fea57056e26070c571e71b91a4",
+        "boss-presence.css": "59dc0fddc4a45167ec844e975151e9bbea6f097a946a3ce7839f25d007f0cf40",
+        "boss-presence-patch.py": "36f5530f9c8be9630aed1811551a07c29ee482340c1e236edeed98a64837bab2"
       },
       "boss_table": [
         {
           "round": 5,
-          "shield": 6,
-          "core": 10
+          "shield": 12,
+          "core": 40
         },
         {
           "round": 10,
-          "shield": 12,
-          "core": 22
+          "shield": 24,
+          "core": 80
         },
         {
           "round": 15,
-          "shield": 30,
-          "core": 100
+          "shield": 50,
+          "core": 160
         },
         {
           "round": 20,
-          "shield": 40,
-          "core": 100
+          "shield": 80,
+          "core": 240
         },
         {
           "round": 25,
-          "shield": 60,
-          "core": 130
+          "shield": 120,
+          "core": 340
         },
         {
           "round": 30,
-          "shield": 90,
-          "core": 185
+          "shield": 180,
+          "core": 480
         }
       ]
     },
     "seed_start": 101
   },
-  "table": [
-    {
-      "round": 5,
-      "shield": 6,
-      "core": 10
-    },
-    {
-      "round": 10,
-      "shield": 12,
-      "core": 22
-    },
-    {
-      "round": 15,
-      "shield": 30,
-      "core": 100
-    },
-    {
-      "round": 20,
-      "shield": 40,
-      "core": 100
-    },
-    {
-      "round": 25,
-      "shield": 60,
-      "core": 130
-    },
-    {
-      "round": 30,
-      "shield": 90,
-      "core": 185
-    }
-  ],
+  "candidate_runs": 450,
+  "paired_runs_per_version": 600,
   "policies": {
     "novice": {
-      "label": "기본 구매 정책",
+      "label": "기본 구매",
       "n": 200,
-      "clear": 0,
-      "clear_rate": 0.0,
-      "median_end_round": 20.0,
-      "median_loss_round": 20.0,
-      "boss_timeouts": 200,
-      "seed_groups": {
-        "101-200": {
-          "n": 100,
-          "clear": 0,
-          "clear_rate": 0.0
-        },
-        "201-300": {
-          "n": 100,
-          "clear": 0,
-          "clear_rate": 0.0
-        }
-      }
+      "before_clear": 0,
+      "after_clear": 0,
+      "before_median_round": 20.0,
+      "after_median_round": 15.0,
+      "gained": 0,
+      "lost": 0
     },
     "skilled": {
-      "label": "승급·보석 활용 정책",
+      "label": "승급·보석 활용",
       "n": 200,
-      "clear": 23,
-      "clear_rate": 0.115,
-      "median_end_round": 25.0,
-      "median_loss_round": 20,
-      "boss_timeouts": 177,
-      "seed_groups": {
-        "101-200": {
-          "n": 100,
-          "clear": 16,
-          "clear_rate": 0.16
-        },
-        "201-300": {
-          "n": 100,
-          "clear": 7,
-          "clear_rate": 0.07
-        }
-      }
+      "before_clear": 23,
+      "after_clear": 23,
+      "before_median_round": 25.0,
+      "after_median_round": 15.0,
+      "gained": 20,
+      "lost": 20
     },
     "expert": {
-      "label": "순서 연계·광역 우선 정책",
+      "label": "순서 연계·광역 우선",
       "n": 200,
-      "clear": 60,
-      "clear_rate": 0.3,
-      "median_end_round": 30.0,
-      "median_loss_round": 30.0,
-      "boss_timeouts": 140,
-      "seed_groups": {
-        "101-200": {
-          "n": 100,
-          "clear": 29,
-          "clear_rate": 0.29
-        },
-        "201-300": {
-          "n": 100,
-          "clear": 31,
-          "clear_rate": 0.31
-        }
-      }
+      "before_clear": 60,
+      "after_clear": 62,
+      "before_median_round": 30.0,
+      "after_median_round": 30.0,
+      "gained": 37,
+      "lost": 35
     }
-  },
-  "pilot_runs": 1530,
-  "validation_runs": 600
+  }
 }

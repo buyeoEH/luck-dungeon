@@ -19,7 +19,7 @@ function bossApplyDamage(e,raw,kind='strike',count=0){
 function bossEmit(type,payload){window.Luck220?.emit(type,{stage_round:round,boss_turn:bossEncounter?.turn||null,combat_no:bossCombatNo,...payload});}
 function bossAfterBattle(scene){
  if(!bossStageActive())return false;
- const boss=enemies.find(e=>e.boss),row={round,turn:bossEncounter.turn,remaining_count:enemies.length,remaining_hp:total(),boss_shield:boss?.shield||0,boss_core:boss?.coreHp||0,attack:scene.attackFinal,aoe:scene.aoe,pierce:scene.pierce,damage:scene.events.reduce((n,e)=>n+(e.damage||0)+(e.hits||[]).reduce((a,h)=>a+h.damage,0),0),clear:enemies.length===0};
+ const boss=enemies.find(e=>e.boss),row={round,turn:bossEncounter.turn,remaining_count:enemies.length,remaining_hp:total(),boss_shield:boss?.shield||0,boss_core:boss?.coreHp||0,attack:scene.attackFinal,aoe:scene.aoe,pierce:scene.pierce,damage:scene.events.reduce((n,e)=>n+(e.damage||0)+(e.hits||[]).reduce((a,h)=>a+h.damage,0),0),sweep_hits:scene.events.filter(e=>e.type==='sweep').length,sweep_damage:scene.events.filter(e=>e.type==='sweep').reduce((n,e)=>n+e.damage,0),clear:enemies.length===0};
  bossTimeline.push(row);scene.bossEncounter={...bossEncounter,result:row};bossEmit('boss_turn_result',row);
  let cont;
  if(!enemies.length){bossEncounter.cleared=true;bossEncounter.clearedOnTurn=bossEncounter.turn;dangerActive=false;activeDebuffZone=Math.max(activeDebuffZone,Math.floor(round/5)+1);log('👑 보스전 완전 격파! R'+round+' · '+bossEncounter.turn+'/3전투 · 이전 적과 보스 모두 처치','good');cont='bossReward';}
@@ -33,7 +33,7 @@ function bossAfterBattle(scene){
  const roll=rollSpawn;rollSpawn=function(r){return r<=30&&r%5===0?[bossFor(r)]:roll.apply(this,arguments);};
  const make=makeEnemy;makeEnemy=function(t,r){const e=make.apply(this,arguments);if(e.boss&&r<=30){const spec=bossSpec(r);e.shield=e.shieldMax=spec.shield;e.coreHp=e.coreMax=spec.core;e.hp=e.shield+e.coreHp;}return e;};
  const start0=start;start=function(){bossEncounter=null;bossTimeline=[];bossCombatNo=0;bossFailureReason='';return start0.apply(this,arguments);};
- const add=addEnemy;addEnemy=function(){const out=add.apply(this,arguments);if(round<=30&&round%5===0){bossEncounter={round,turn:1,cleared:false,rewardOffered:false,clearedOnTurn:null,initialCarry:enemies.filter(e=>!e.boss).length,spec:bossSpec(round)};dangerActive=false;bossEmit('boss_encounter_started',{...bossEncounter,enemies:enemies.map(e=>({id:e.id,name:e.name,hp:e.hp,shield:e.shield,core:e.coreHp}))});}return out;};
+ const add=addEnemy;addEnemy=function(){const out=add.apply(this,arguments);if(round<=30&&round%5===0){bossEncounter={round,turn:1,cleared:false,rewardOffered:false,clearedOnTurn:null,initialCarry:enemies.filter(e=>!e.boss).length,spec:bossSpec(round),arenaCarryRate:Number(window.LUCK_BOSS_CARRY_RATE??3)};dangerActive=false;bossEmit('boss_encounter_started',{...bossEncounter,enemies:enemies.map(e=>({id:e.id,name:e.name,hp:e.hp,shield:e.shield,core:e.coreHp}))});}return out;};
  const draw0=drawStart;drawStart=function(){if(bossStageActive()){apState.round=0;p1RewardRound=0;}bossCombatNo++;const out=draw0.apply(this,arguments);bossEmit('combat_turn_started',{base_ap:2,actual_ap:apState.points,base_draw:5,hand_size:hand.length,deck_size:deck.length});return out;};
  const next0=nextRound;nextRound=function(){
   if(bossStageActive()){
