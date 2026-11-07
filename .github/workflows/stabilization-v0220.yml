@@ -16,7 +16,7 @@ concurrency:
 jobs:
   validate:
     if: ${{ github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && !contains(github.event.head_commit.message, '[deploy-v030]') && !contains(github.event.head_commit.message, '[deploy-ap]') && !(github.event_name == 'workflow_dispatch' && inputs.deploy_web) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
           path: _site
   deploy:
     needs: validate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pages: write
       id-token: write
@@ -75,7 +75,7 @@ jobs:
           timeout: '1200000'
   deploy_verified_release:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.deploy_web) || (github.event_name == 'push' && github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && contains(github.event.head_commit.message, '[deploy-v030]')) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:
       contents: read
@@ -235,7 +235,7 @@ jobs:
 
   deploy_action_points:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && contains(github.event.head_commit.message, '[deploy-ap]') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:
       contents: read
