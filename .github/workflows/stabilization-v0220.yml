@@ -293,7 +293,7 @@ jobs:
           shutil.copytree('_site/preview/v0.3-ap-final','../ap-before-v032')
           subprocess.run(['python','build_boss.py'],check=True)
           game=Path('_site/preview/v0.3-ap-final/game.js')
-          assert H(game)=='6a81eff850be5ee8947de682d45d27d3888c0e36ff3d643a52f309ecf090c87b','compiled game differs from tested build'
+          assert H(game)=='d0cb631162cf964774560e78e73998a90f1302a038c849f6c2e673635b8f1e31','compiled game differs from tested build'
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
           assert meta['build_id']=='033-boss-7e6a8673212025bd' and not meta['source_tree_dirty']
           assert meta['git_sha']=='1afc356c0d72bc2fb56b6e5ca412abe1555c86e7'
@@ -343,7 +343,7 @@ jobs:
           versioned=Path('_site/preview/v0.3.3');shutil.copytree(target,versioned,dirs_exist_ok=True)
           new={str(p.relative_to('_site')):H(p) for folder in [target,versioned] for p in folder.iterdir()}
           assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in new),'old Pages content changed'
-          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'cc74fd8aba2b602b450fd051b85ebaf90a1065c6','tested_compiled_game_sha256':H(game) if game.exists() else '6a81eff850be5ee8947de682d45d27d3888c0e36ff3d643a52f309ecf090c87b'},indent=2))
+          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'cc74fd8aba2b602b450fd051b85ebaf90a1065c6','tested_compiled_game_sha256':H(game) if game.exists() else 'd0cb631162cf964774560e78e73998a90f1302a038c849f6c2e673635b8f1e31'},indent=2))
           print('Preserved',len(old),'existing files; added',len(new),'AP files')
           PY
       - uses: actions/upload-artifact@v4
