@@ -1,16 +1,16 @@
 /* Boss encounter contract v1. No random forced losses; shared pure damage helper. */
 const BOSS_DEFAULT_TABLE=Object.freeze([
- {round:5,shield:0,core:36},{round:10,shield:40,core:70},
+ {round:5,shield:0,core:24},{round:10,shield:40,core:70},
  {round:15,shield:70,core:120},{round:20,shield:110,core:180},
  {round:25,shield:160,core:260},{round:30,shield:220,core:360}
 ]);
 let bossGrowth={hand:0,ap:0};
 function bossBaseHand(){return 5+bossGrowth.hand;}
 function bossBaseAP(){return 2+bossGrowth.ap;}
-function bossGainGrowth(kind){
- bossGrowth[kind]++;
- bossEmit('boss_growth_reward',{kind,amount:1,totals:{...bossGrowth},start_hand:bossBaseHand(),start_ap:bossBaseAP()});
- log('👑 보스 성장 보상 ➜ '+(kind==='hand'?'매 전투 시작 손패 +1장':'매 전투 시작 행동력 +1')+' · 이번 플레이 동안 누적 (손패 '+bossBaseHand()+'장 / 행동력 '+bossBaseAP()+')','good');
+function bossGainGrowth(){
+ bossGrowth.hand=3;bossGrowth.ap++;
+ bossEmit('boss_growth_reward',{kind:'hand8_ap1',start_hand:8,ap_gain:1,totals:{...bossGrowth},start_ap:bossBaseAP()});
+ log('👑 전술 확장 ➜ 매 전투 시작 손패 8장 / 시작 행동력 +1 · 이번 플레이 동안 적용 (행동력 '+bossBaseAP()+')','good');
  nextRound();
 }
 let bossEncounter=null,bossTimeline=[],bossCombatNo=0,bossFailureReason='';
@@ -57,7 +57,7 @@ function bossAfterBattle(scene){
   if(bossEncounter?.cleared&&round===30&&!officialRecord){return freezeOfficialRecord('nextRound');}
   return next0.apply(this,arguments);
  };
- const reward0=bossReward;bossReward=function(){if(round===30){if(!bossEncounter?.cleared||enemies.length)return false;rewards=[];return officialRecord?false:freezeOfficialRecord('nextRound');}if(round<30){if(!bossEncounter?.cleared||enemies.length)return false;if(bossEncounter.rewardOffered)return false;bossEncounter.rewardOffered=true;bossEmit('boss_reward_offered',{cleared_on_turn:bossEncounter.clearedOnTurn,options:'six_options_with_growth',reward_scaling:'none'});}const out=reward0.apply(this,arguments);rewards.push(['🃏 시작 손패 +1장','다음 전투부터 매 전투 시작 손패가 1장 늘어납니다. 이번 플레이 동안 누적 · 보스전 각 턴에도 적용 · 현재 '+bossBaseHand()+'장 → '+(bossBaseHand()+1)+'장',()=>bossGainGrowth('hand')],['⚡ 시작 행동력 +1','다음 전투부터 시작 행동력이 1 늘어납니다. 이번 플레이 동안 누적 · 보스전 각 턴에도 적용 · 현재 '+bossBaseAP()+' → '+(bossBaseAP()+1),()=>bossGainGrowth('ap')]);render();return out;};
+ const reward0=bossReward;bossReward=function(){if(round===30){if(!bossEncounter?.cleared||enemies.length)return false;rewards=[];return officialRecord?false:freezeOfficialRecord('nextRound');}if(round<30){if(!bossEncounter?.cleared||enemies.length)return false;if(bossEncounter.rewardOffered)return false;bossEncounter.rewardOffered=true;bossEmit('boss_reward_offered',{cleared_on_turn:bossEncounter.clearedOnTurn,options:'five_options_with_combined_growth',reward_scaling:'none'});}const out=reward0.apply(this,arguments);rewards.push(['🃏⚡ 전술 확장 · 손패 8장 + 행동력 1','두 효과를 함께 받습니다. 다음 전투부터 시작 손패를 8장으로 설정하고 시작 행동력 +1. 이번 플레이 동안 보스전 각 턴에도 적용됩니다. 다시 선택하면 손패는 8장을 유지하고 행동력만 +1 누적됩니다. 현재 행동력 '+bossBaseAP()+' → '+(bossBaseAP()+1),bossGainGrowth]);render();return out;};
  const freeze0=freezeOfficialRecord;freezeOfficialRecord=function(){if(round===30&&(!bossEncounter?.cleared||enemies.length))return false;return freeze0.apply(this,arguments);};
  const show=showRoundStartModal;showRoundStartModal=function(){const r=show.apply(this,arguments);if(bossStageActive()){
   if($('modalTitle'))$('modalTitle').textContent='👑 R'+round+' 보스전 · 전투 '+bossEncounter.turn+'/3';
@@ -79,7 +79,7 @@ function renderBossPanel(){
  const sh=b?.shield||0,hp=b?.coreHp||0,shMax=b?.shieldMax||spec.shield,hpMax=b?.coreMax||spec.core;
  el.innerHTML='<header><b>👑 R'+round+' 보스전 · '+bossEncounter.turn+'/3 전투</b><span>'+ (bossEncounter.cleared?'전원 격파 완료':bossFailureReason?'시간 초과':(3-bossEncounter.turn)+'회 추가 기회')+'</span></header>'+
  '<div class="boss-health">'+(shMax?'<label>🛡 보호막 '+sh+' / '+shMax+'</label><div><i style="width:'+100*sh/shMax+'%"></i></div>':'<label>🛡 보호막 없음</label>')+'<label>❤️ 진체력 '+hp+' / '+hpMax+'</label><div class="boss-core"><i style="width:'+(hpMax?100*hp/hpMax:0)+'%"></i></div></div>'+
- '<p>남은 일반 적 '+enemies.filter(e=>!e.boss).length+'마리 · '+(round===30?'모든 적을 처치하면 공식전 완료':'모든 적을 처치해야 보상 획득')+'</p><details><summary>보스전 피해·진행 규칙</summary><p>보호막: 모든 공격 100%. 진체력: 광역 70%, 일반·연계 100%. 관통 1당 일반 공격의 10%를 진체력에 직접 추가합니다. 보호막 초과 피해는 관통 없이 진체력으로 이어집니다. 보스전 일반 적 피해는 100%이며 적 사이 초과 피해 전달은 없습니다. 순수 연속타는 별개의 55% 공격입니다. 매 전투 시작 행동력 '+bossBaseAP()+'·손패 '+bossBaseHand()+'장, 상점·승급 유지. 보상 6종 중 하나를 선택하며 성장 보상은 이번 플레이 동안 누적됩니다. 추가 전투에는 적이 새로 나오지 않으며 R5~25 보상은 클리어 횟수와 무관하게 같으며, R30은 보상 없이 공식전이 종료됩니다.</p></details>';
+ '<p>남은 일반 적 '+enemies.filter(e=>!e.boss).length+'마리 · '+(round===30?'모든 적을 처치하면 공식전 완료':'모든 적을 처치해야 보상 획득')+'</p><details><summary>보스전 피해·진행 규칙</summary><p>보호막: 모든 공격 100%. 진체력: 광역 70%, 일반·연계 100%. 관통 1당 일반 공격의 10%를 진체력에 직접 추가합니다. 보호막 초과 피해는 관통 없이 진체력으로 이어집니다. 보스전 일반 적 피해는 100%이며 적 사이 초과 피해 전달은 없습니다. 순수 연속타는 별개의 55% 공격입니다. 매 전투 시작 행동력 '+bossBaseAP()+'·손패 '+bossBaseHand()+'장, 상점·승급 유지. 보상 5종 중 하나를 선택하며 성장 보상은 이번 플레이 동안 누적됩니다. 추가 전투에는 적이 새로 나오지 않으며 R5~25 보상은 클리어 횟수와 무관하게 같으며, R30은 보상 없이 공식전이 종료됩니다.</p></details>';
  const forecast=$('debuffForecast');if(forecast)forecast.innerHTML=forecast.innerHTML.replace('처치 후 초과 피해 전달','진체력 직격 · 1당 공격의 10%');
  const r=$('round');if(r)r.textContent=round+' · 보스 '+bossEncounter.turn+'/3';
 }
