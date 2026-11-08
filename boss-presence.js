@@ -17,6 +17,7 @@ function bossCinematicVitals(e){if(!e.boss||e.shield===undefined)return '';
  const showCin=showBattleCinematic;showBattleCinematic=function(cont){const b=pendingBattleScene;bossCinemaState=new Map((b?.enemyStart||[]).filter(e=>e.boss&&e.shield!==undefined).map(e=>[e.id,{shield:e.shield,core:e.core,maxShield:e.shieldMax,maxCore:e.coreMax}]));const r=showCin.apply(this,arguments);if(b?.bossEncounter||bossStageActive())$('modalContent')?.querySelector('.combat-cinematic')?.classList.add('boss-cinematic');return r;};
  const oldHit=cinHit;cinHit=async function(hit,kind,delay){const st=bossCinemaState.get(hit.id);if(!st)return oldHit.apply(this,arguments);const el=cinFoe(hit.id);if(!el)return;
  const shieldLoss=Math.min(st.shield,hit.shieldDamage??hit.damage),coreLoss=Math.min(st.core,hit.coreDamage??Math.max(0,hit.damage-shieldLoss)),broken=st.shield>0&&shieldLoss===st.shield;
+ window.LuckGameAudio?.bossImpact({...hit,shieldDamage:shieldLoss,coreDamage:coreLoss},kind,broken);
  const playback=oldHit.apply(this,arguments);const impact=el.querySelector('.cin-boss-impact');
  if(shieldLoss){st.shield-=shieldLoss;el.querySelector('.cin-shield-num').textContent=st.shield;el.querySelector('.cin-shield-track i').style.width=st.shield/st.maxShield*100+'%';el.classList.add('boss-shield-hit');if(impact)impact.textContent='🛡 보호막 −'+shieldLoss;}
  if(broken){el.classList.add('boss-shattered');cinBanner('🛡 보호막 파괴! 진체력 노출','shield-break');cinFeed(hit.name+' · 보호막 파괴');if(impact)impact.textContent='SHIELD BREAK';await cinWait(240);}

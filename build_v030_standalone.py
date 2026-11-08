@@ -2,7 +2,7 @@
 import argparse,base64,hashlib,json,mimetypes,re,shutil,zipfile,os
 from pathlib import Path
 R=Path(__file__).resolve().parent;P=R/'_site/preview/v0.3.0';D=R/'_site/downloads'
-def build(mode='embedded'):
+def build(mode='embedded',max_package_bytes=15_000_000):
  assert mode in ['embedded','external'];audio=R/'release-audio-candidates';manifest=json.loads((audio/'manifest.json').read_text());D.mkdir(exist_ok=True)
  version=json.loads((P/'build.json').read_text())['version'];folder=D/('LUCK-v'+version+'-'+mode)
  if folder.exists():shutil.rmtree(folder)
@@ -34,7 +34,7 @@ def build(mode='embedded'):
  if 'media-src' not in html:html=html.replace("connect-src 'none'", "connect-src 'none'; media-src 'self' data: blob:")
  out=folder/'index.html';out.write_text(html)
  with out.open('rb') as f:os.fsync(f.fileno())
- total=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file());assert total<=15_000_000,(mode,total,'15MB budget exceeded')
+ total=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file());assert total<=max_package_bytes,(mode,total,'package budget exceeded')
  zip_path=D/(folder.name+'.zip')
  with zipfile.ZipFile(zip_path,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
   for p in sorted(folder.rglob('*')):

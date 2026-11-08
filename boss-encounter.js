@@ -25,7 +25,7 @@ function bossAfterBattle(scene){
  if(!enemies.length){bossEncounter.cleared=true;bossEncounter.clearedOnTurn=bossEncounter.turn;dangerActive=false;activeDebuffZone=Math.max(activeDebuffZone,Math.floor(round/5)+1);log('👑 보스전 완전 격파! R'+round+' · '+bossEncounter.turn+'/3전투 · 이전 적과 보스 모두 처치','good');cont='bossReward';}
  else if(bossEncounter.turn>=3){bossFailureReason='R'+round+' 보스전 3회 제한: 이전 적과 보스를 모두 처치하지 못했습니다.';log('⌛ '+bossFailureReason,true);cont='gameOver';}
  else{log('👑 보스전 '+bossEncounter.turn+'/3 종료 · 남은 적 HP 유지 · 다음 전투에서 행동력 2 / 기본 손패 5','good');cont='nextRound';}
- window.LuckGameAudio?.roundFinished(round,shouldPlayBattleMotion());
+ window.LuckGameAudio?.bossResult(row,shouldPlayBattleMotion());
  if(shouldPlayBattleMotion())showBattleCinematic(cont);else if(cont==='gameOver')gameOver();else if(cont==='bossReward')bossReward();else nextRound();
  return true;
 }
@@ -49,6 +49,7 @@ function bossAfterBattle(scene){
  const show=showRoundStartModal;showRoundStartModal=function(){const r=show.apply(this,arguments);if(bossStageActive()){
   if($('modalTitle'))$('modalTitle').textContent='👑 R'+round+' 보스전 · 전투 '+bossEncounter.turn+'/3';
   $('modalContent')?.insertAdjacentHTML('afterbegin','<p class="boss-rule-note">이전 적과 보스를 모두 처치하세요. 남은 HP는 유지됩니다. 매 전투 행동력 2 · 기본 손패 5 · 상점/승급 가능 · 보상 동일.</p>');
+  window.LuckGameAudio?.sync();
  }return r;};
  const render0=render;render=function(){const r=render0.apply(this,arguments);renderBossPanel();return r;};
  function installTelemetry(){if(!window.Luck220||window.Luck220.bossContextInstalled)return;const emit=Luck220.emit;Luck220.emit=function(t,p={},ctx){return emit.call(this,t,{...p,boss_turn:bossEncounter?.round===round?bossEncounter.turn:null,combat_no:bossCombatNo},ctx);};Luck220.bossContextInstalled=true;}

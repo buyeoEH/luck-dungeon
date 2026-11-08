@@ -1,0 +1,156 @@
+{
+  "version": "1.0",
+  "sampleRate": 44100,
+  "tracks": [
+    {
+      "id": "boss_bgm_prepare",
+      "title": "보스전 준비 · 문 너머의 압박",
+      "file": "audio/boss_bgm_prepare.ogg",
+      "mp3": "audio/boss_bgm_prepare.mp3",
+      "loop": true,
+      "bpm": 92,
+      "duration": 41.739,
+      "trigger": "보스전 손패·상점·승급 단계"
+    },
+    {
+      "id": "boss_bgm_battle",
+      "title": "보스전 전투 · 푸른 장벽의 군주",
+      "file": "audio/boss_bgm_battle.ogg",
+      "mp3": "audio/boss_bgm_battle.mp3",
+      "loop": true,
+      "bpm": 124,
+      "duration": 46.452,
+      "trigger": "보스전 전투준비·전투 모션"
+    },
+    {
+      "id": "boss_bgm_final_turn",
+      "title": "보스전 마지막 턴 · 세 번째 결단",
+      "file": "audio/boss_bgm_final_turn.ogg",
+      "mp3": "audio/boss_bgm_final_turn.mp3",
+      "loop": true,
+      "bpm": 148,
+      "duration": 38.919,
+      "trigger": "보스전 3번째 턴"
+    },
+    {
+      "id": "boss_cue_enter",
+      "title": "보스 등장 · 닫히는 문",
+      "file": "audio/boss_cue_enter.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 3.1,
+      "trigger": "보스라운드 진입 연출 1회"
+    },
+    {
+      "id": "boss_sfx_shield_hit_01",
+      "title": "보호막 피격 · 공명 1",
+      "file": "audio/boss_sfx_shield_hit_01.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 0.65,
+      "trigger": "보호막에 피해가 실제 적용될 때"
+    },
+    {
+      "id": "boss_sfx_shield_hit_02",
+      "title": "보호막 피격 · 공명 2",
+      "file": "audio/boss_sfx_shield_hit_02.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 0.65,
+      "trigger": "보호막 피격 변형"
+    },
+    {
+      "id": "boss_sfx_shield_break",
+      "title": "보호막 파괴 · 장벽 붕괴",
+      "file": "audio/boss_sfx_shield_break.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 1.8,
+      "trigger": "보호막 HP가 양수에서 0으로 바뀔 때 1회"
+    },
+    {
+      "id": "boss_sfx_body_hit_01",
+      "title": "진체력 타격 · 묵직한 일격 1",
+      "file": "audio/boss_sfx_body_hit_01.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 0.55,
+      "trigger": "진체력에 피해가 실제 적용될 때"
+    },
+    {
+      "id": "boss_sfx_body_hit_02",
+      "title": "진체력 타격 · 묵직한 일격 2",
+      "file": "audio/boss_sfx_body_hit_02.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 0.55,
+      "trigger": "진체력 타격 변형"
+    },
+    {
+      "id": "boss_sfx_pierce",
+      "title": "관통 추가타 · 장벽 너머",
+      "file": "audio/boss_sfx_pierce.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 0.85,
+      "trigger": "관통 추가 피해가 판정된 타격 프레임"
+    },
+    {
+      "id": "boss_sfx_attack_charge",
+      "title": "보스 공격 예고 · 압축되는 위협",
+      "file": "audio/boss_sfx_attack_charge.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 1.6,
+      "trigger": "실제 보스 공격 예고 연출이 있는 경우에만"
+    },
+    {
+      "id": "boss_sfx_attack_impact",
+      "title": "보스 공격 충격 · 무거운 파동",
+      "file": "audio/boss_sfx_attack_impact.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 1.45,
+      "trigger": "실제 보스 공격의 타격 프레임이 있는 경우에만"
+    },
+    {
+      "id": "boss_cue_last_turn",
+      "title": "마지막 턴 진입 · 세 번의 경고",
+      "file": "audio/boss_cue_last_turn.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 1.8,
+      "trigger": "보스전 3번째 턴 시작에 1회"
+    },
+    {
+      "id": "boss_cue_victory",
+      "title": "보스 처치 · 장벽을 넘어서",
+      "file": "audio/boss_cue_victory.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 3.9,
+      "trigger": "보스 처치 및 승리 확정 후 1회"
+    },
+    {
+      "id": "boss_cue_timeout",
+      "title": "3턴 종료 · 닫힌 기회",
+      "file": "audio/boss_cue_timeout.wav",
+      "mp3": null,
+      "loop": false,
+      "bpm": null,
+      "duration": 3.1,
+      "trigger": "실제 실패 판정이 확정되었을 때만"
+    }
+  ]
+}
