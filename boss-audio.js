@@ -26,7 +26,7 @@ function bossImpact(hit,kind,broken){
   const variant=1+(bossHitVariant++%2);
   if(hit.shieldDamage>0)play('boss_sfx_shield_hit_0'+variant);
   if(hit.coreDamage>0)play('boss_sfx_body_hit_0'+variant);
-  if(kind==='pierce')play('boss_sfx_pierce');
+  if(kind==='pierce'||hit.corePierceDamage>0)play('boss_sfx_pierce');
 }
 function bossSkippedHits(b){
   const states=new Map((b.enemyStart||[]).filter(e=>e.boss&&e.shield!==undefined).map(e=>[e.id,{shield:e.shield}]));
