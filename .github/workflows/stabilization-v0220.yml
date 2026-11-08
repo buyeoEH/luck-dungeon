@@ -248,7 +248,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 686f3cdc8da5ce3697193f6ab8a5549d1b6c5a2a
+          ref: a58768677bfbd5626edbcec8c3a04e9dcec9eb5c
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -261,7 +261,7 @@ jobs:
       - name: Download the currently deployed complete Pages artifact
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/13612366530/zip > baseline-pages.zip
+        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/13614946463/zip > baseline-pages.zip
       - name: Verify backup, reproduce tested game and add only the AP preview
         id: prepare
         run: |
@@ -270,7 +270,7 @@ jobs:
           import hashlib,zipfile,tarfile,json,shutil,subprocess,re,urllib.request
           from concurrent.futures import ThreadPoolExecutor
           H=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-          assert H(Path('baseline-pages.zip'))=='a8f21a2e362ba5aebede3994684a271fe02a5d8b1ac748ce8d9f768bc8d0e97b'
+          assert H(Path('baseline-pages.zip'))=='aa3ec1e95b98d217d46a82a27874f606e048b127bc482b862bb0d58b79303fa9'
           with zipfile.ZipFile('baseline-pages.zip') as z:
               assert z.testzip() is None and z.namelist()==['artifact.tar'],z.namelist()
               z.extract('artifact.tar','_archive')
@@ -284,21 +284,21 @@ jobs:
           assert 'preview/v0.3.0/index.html' in old
           assert old['preview/v0.3.0/index.html']=='69749fba476f62f6db4c2ba18e070941a82fbfe5eb8ba8f2757371acb4532e8e'
           base='https://buyeoeh.github.io/luck-dungeon/'
-          protected=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js','preview/v0.2.20/luck-audio.js','preview/v0.3.0/index.html','preview/v0.3-ap/index.html','preview/v0.3-boss/index.html','preview/v0.3.3/index.html','preview/v0.3.4/index.html','preview/v0.3.5/index.html']
+          protected=['index.html','preview/v0.2.19/index.html','preview/v0.2.20/index.html','preview/v0.2.20/game.js','preview/v0.2.20/luck-audio.js','preview/v0.3.0/index.html','preview/v0.3-ap/index.html','preview/v0.3-boss/index.html','preview/v0.3.3/index.html','preview/v0.3.4/index.html','preview/v0.3.5/index.html','preview/v0.3.6/index.html']
           def check(name):
               with urllib.request.urlopen(urllib.request.Request(base+name,headers={'Cache-Control':'no-cache'}),timeout=60) as r:raw=r.read();assert r.status==200
               assert hashlib.sha256(raw).hexdigest()==old[name],name
           with ThreadPoolExecutor(max_workers=6) as ex:list(ex.map(check,protected))
-          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='fd22d2caecdd6d2beb755f833073b1065f4adaec'
+          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='fd2e36459f890c72897086c322e299a799b728dc'
           for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','build_action_points_final.py']:
               subprocess.run(['python',script],check=True)
           shutil.copytree('_site/preview/v0.3-ap-final','../ap-before-v032')
           subprocess.run(['python','build_boss.py'],check=True)
           game=Path('_site/preview/v0.3-ap-final/game.js')
-          assert H(game)=='b7abae79adde8039c3a6ec2268c15a1effeb785fcee047450a5dd4ab3384e6d6','compiled game differs from tested build'
+          assert H(game)=='cce5010012f76db4675a2430cd3084f431d7336a63497ee95940f2eb6b995cfa','compiled game differs from tested build'
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
-          assert meta['build_id']=='033-boss-48f47f40ba70c773' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='686f3cdc8da5ce3697193f6ab8a5549d1b6c5a2a'
+          assert meta['build_id']=='033-boss-5befa717a9c20a61' and not meta['source_tree_dirty']
+          assert meta['git_sha']=='a58768677bfbd5626edbcec8c3a04e9dcec9eb5c'
           import os,time
           subprocess.run(['npm','install','--prefix','../status-runtime','playwright@1.51.1','jsdom@26.1.0'],check=True)
           env={**os.environ,'NODE_PATH':str(Path('../status-runtime/node_modules').resolve()),'P5_JSDOM_PATH':str(Path('../status-runtime/node_modules/jsdom').resolve())}
@@ -335,18 +335,18 @@ jobs:
           assert len(tracks)==17 and len(media['assets'])==17
           (audio_dir/'manifest.json').write_text(json.dumps({'tracks':tracks}))
           subprocess.run(['python','package_boss_audio.py'],check=True)
-          html=Path('boss-delivery/LUCK-v0.3.6-boss.2-embedded/index.html')
+          html=Path('boss-delivery/LUCK-v0.3.7-boss.1-embedded/index.html')
           raw=html.read_bytes();assert len(raw)<25_000_000
           # Only commit metadata differs from the tested local source; game bytes
           # and the complete source tree above are identical to the tested build.
           shutil.rmtree('_site');shutil.copytree(rollback,'_site')
           target=Path('_site/preview/v0.3-boss');target.mkdir(parents=True,exist_ok=True)
           shutil.copyfile(html,target/'index.html');(target/'build.json').write_text(json.dumps(meta,indent=2))
-          for name in ['BOSS-BALANCE-REPORT.md','V036-BOSS-CHANGES.md']:shutil.copyfile(name,target/name)
-          versioned=Path('_site/preview/v0.3.6');shutil.copytree(target,versioned,dirs_exist_ok=True)
+          for name in ['BOSS-BALANCE-REPORT.md','V037-BOSS-CHANGES.md']:shutil.copyfile(name,target/name)
+          versioned=Path('_site/preview/v0.3.7');shutil.copytree(target,versioned,dirs_exist_ok=True)
           new={str(p.relative_to('_site')):H(p) for folder in [target,versioned] for p in folder.iterdir()}
           assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in new),'old Pages content changed'
-          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'fd22d2caecdd6d2beb755f833073b1065f4adaec','tested_compiled_game_sha256':H(game) if game.exists() else 'b7abae79adde8039c3a6ec2268c15a1effeb785fcee047450a5dd4ab3384e6d6'},indent=2))
+          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'fd2e36459f890c72897086c322e299a799b728dc','tested_compiled_game_sha256':H(game) if game.exists() else 'cce5010012f76db4675a2430cd3084f431d7336a63497ee95940f2eb6b995cfa'},indent=2))
           print('Preserved',len(old),'existing files; added',len(new),'AP files')
           PY
       - uses: actions/upload-artifact@v4
