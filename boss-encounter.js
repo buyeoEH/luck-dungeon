@@ -1,6 +1,6 @@
 /* Boss encounter contract v1. No random forced losses; shared pure damage helper. */
 const BOSS_DEFAULT_TABLE=Object.freeze([
- {round:5,shield:0,core:24},{round:10,shield:40,core:70},
+ {round:5,shield:0,core:36},{round:10,shield:40,core:70},
  {round:15,shield:70,core:120},{round:20,shield:110,core:180},
  {round:25,shield:160,core:260},{round:30,shield:220,core:360}
 ]);
@@ -44,7 +44,7 @@ function bossAfterBattle(scene){
 }
 (function(){
  const roll=rollSpawn;rollSpawn=function(r){return r<=30&&r%5===0?[bossFor(r)]:roll.apply(this,arguments);};
- const make=makeEnemy;makeEnemy=function(t,r){const e=make.apply(this,arguments);if(e.boss&&r<=30){const spec=bossSpec(r);e.shield=e.shieldMax=spec.shield;e.coreHp=e.coreMax=spec.core;e.hp=e.shield+e.coreHp;if(r===5&&e.d){e.d.p=e.d.baseP=(e.d.baseP??e.d.p)+1;}}return e;};
+ const make=makeEnemy;makeEnemy=function(t,r){const e=make.apply(this,arguments);if(!e.boss&&r>=1&&r<=4)e.hp=Math.max(1,Math.round(e.hp*.75));if(e.boss&&r<=30){const spec=bossSpec(r);e.shield=e.shieldMax=spec.shield;e.coreHp=e.coreMax=spec.core;e.hp=e.shield+e.coreHp;if(r===5&&e.d){e.d.p=e.d.baseP=(e.d.baseP??e.d.p)+1;}}return e;};
  const start0=start;start=function(){bossGrowth={hand:0,ap:0};bossEncounter=null;bossTimeline=[];bossCombatNo=0;bossFailureReason='';return start0.apply(this,arguments);};
  const add=addEnemy;addEnemy=function(){const out=add.apply(this,arguments);if(round<=30&&round%5===0){bossEncounter={round,turn:1,cleared:false,rewardOffered:false,clearedOnTurn:null,initialCarry:enemies.filter(e=>!e.boss).length,spec:bossSpec(round)};dangerActive=false;bossEmit('boss_encounter_started',{...bossEncounter,enemies:enemies.map(e=>({id:e.id,name:e.name,hp:e.hp,shield:e.shield,core:e.coreHp}))});}return out;};
  const draw0=drawStart;drawStart=function(){if(bossStageActive()){apState.round=0;p1RewardRound=0;}bossCombatNo++;const out=draw0.apply(this,arguments);bossEmit('combat_turn_started',{base_ap:bossBaseAP(),actual_ap:apState.points,base_draw:bossBaseHand(),growth:{...bossGrowth},hand_size:hand.length,deck_size:deck.length});return out;};

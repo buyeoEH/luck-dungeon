@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm');const {create,q}=require('./boss-ai.cjs');
-const rows=[];const core=Number(process.argv[2]||24),runs=Number(process.argv[3]||200);let d;
+const rows=[];const core=Number(process.argv[2]||36),runs=Number(process.argv[3]||200);let d;
 for(const policy of ['attack','mixed','draw_first'])for(let seed=101;seed<101+runs;seed++){
  if(!d||(seed-101)%25===0){d?.window.close();global.gc?.();d=create();}
  q(d,`window.LUCK_BOSS_TABLE[0].core=${core};AutoLab.begin(${seed});`);
