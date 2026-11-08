@@ -11,7 +11,7 @@ def build():
  files=['build_boss.py','boss-encounter.js','boss-encounter-patch.py','boss-ai.cjs','test-boss.cjs','test-boss-browser.cjs','run-boss-balance.cjs','boss-table.json','BOSS-BALANCE-GOALS.json','boss-presence.js','boss-presence.css','boss-presence-patch.py','boss_audio_patch.py','boss-audio.js','test-boss-audio.cjs','package_boss_audio.py']
  hashes={n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in files}
  audio_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (R/'assets/boss-audio').glob('*') if p.is_file()}
- meta.update(version='0.3.3-boss.3',stage='boss_audio_playable',build_id='033-boss-'+hashlib.sha256((meta['build_id']+json.dumps(hashes,sort_keys=True)+json.dumps(audio_hashes,sort_keys=True)).encode()).hexdigest()[:16],boss_sources=hashes,boss_audio=audio_hashes,boss_table=json.loads((R/'boss-table.json').read_text()))
+ meta.update(version='0.3.3-boss.3-ui.1',stage='boss_audio_playable',build_id='033-boss-'+hashlib.sha256((meta['build_id']+json.dumps(hashes,sort_keys=True)+json.dumps(audio_hashes,sort_keys=True)).encode()).hexdigest()[:16],boss_sources=hashes,boss_audio=audio_hashes,boss_table=json.loads((R/'boss-table.json').read_text()))
  # The checked table is injected once; no candidate chooser in the player build.
  game=(P/'game.js').read_text();(P/'game.js').write_text('window.LUCK_BOSS_CARRY_RATE=3;\nwindow.LUCK_BOSS_TABLE='+json.dumps(meta['boss_table'])+';\n'+game)
  meta['source_tree_dirty']=meta['source_tree_dirty'] or bool(subprocess.check_output(['git','status','--porcelain','--',*files,'boss-table.json','BOSS-BALANCE-GOALS.json','boss-presence.js','boss-presence.css','boss-presence-patch.py'],text=True).strip())
