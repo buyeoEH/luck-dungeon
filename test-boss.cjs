@@ -18,7 +18,16 @@ parallel=hit(10,100,30,'strike',2);assert.equal(parallel.coreOverflowDamage,20);
 assert.equal(hit(100,100,40,'aoe',9).coreDamage,0);assert.equal(hit(0,100,40,'aoe',9).coreDamage,28);
 assert.equal(hit(100,100,1,'strike',1).coreDamage,0);
 function setup(atk,p=0,r=5,turn=1){q(d,`AutoLab.begin(900);round=${r};phase='battle';bossEncounter={round:${r},turn:${turn},cleared:false,rewardOffered:false,spec:{shield:12,core:40}};hand=[];deck=[{id:'q',name:'검',type:'attack',atk:${atk}}];bonusAtk=0;tempAttack=0;aoeAttack=0;pierce=${p};linkComboAttack=0;p1ResetRun();prot={attack:0,combo:0,gem:0,resource:0,all:0};activeDebuffZone=1;$('battleMotionSkipToggle').checked=true;`);}
-for(const p of [0,3]){setup(40,p);q(d,"enemies=[{id:'a',name:'잔적',hp:5,debuffZone:1},{id:'c',name:'보스',boss:true,hp:52,shield:12,coreHp:40,shieldMax:12,coreMax:40,debuffZone:1}];battle();");assert.equal(q(d,'enemies.length'),1);assert.equal(q(d,'enemies[0].hp'),52,'boss received transferred overkill');assert.equal(q(d,'pendingBattleScene.events.length'),1);}
+for(const p of [0,3]){setup(40,p);q(d,"enemies=[{id:'a',name:'잔적',hp:5,debuffZone:1},{id:'c',name:'보스',boss:true,hp:52,shield:12,coreHp:40,shieldMax:12,coreMax:40,debuffZone:1}];battle();");assert.equal(q(d,'enemies.length'),1);assert.equal(q(d,'enemies[0].hp'),p?7:52,'pierce transfer mismatch');assert.equal(q(d,'pendingBattleScene.events.length'),p?2:1);if(p)assert.equal(q(d,'stats.pierceDamage'),45,'core pierce counted twice');}
+// Actual lance use: 20 base +4 temp, carry HP5 consumes5, remaining19 hits shield and 1 core.
+setup(20,0,10);q(d,"phase='hand';const qaLance=cp(RANDOM_POOL.find(c=>c.id==='lance'));deck.push(qaLance);hand=[qaLance];apState.points=2;enemies=[{id:'a',name:'잔적',hp:5,debuffZone:2},{id:'b',name:'보스',boss:true,hp:300,shield:100,coreHp:200,shieldMax:100,coreMax:200,debuffZone:2}];use(0);phase='battle';");
+assert.equal(q(d,'pierce'),1);assert.equal(q(d,'tempAttack'),4);
+const lancePlan=q(d,'JSON.stringify(battlePreparationPlan().rows.filter(e=>e.hp>0).map(e=>({name:e.name,hp:e.hp})))');q(d,'battle()');
+assert.equal(q(d,'enemies[0].shield'),81);assert.equal(q(d,'enemies[0].coreHp'),199);assert.equal(q(d,'enemies[0].hp'),280);
+assert.equal(q(d,'stats.pierceDamage'),20);assert.equal(q(d,'JSON.stringify(enemies.map(e=>({name:e.name,hp:e.hp})))'),lancePlan);
+// One pierce crosses only one enemy boundary, and cannot skip an un-killed enemy.
+setup(40,1);q(d,"enemies=[{id:'a',name:'앞',hp:5,debuffZone:1},{id:'b',name:'중간',hp:5,debuffZone:1},{id:'c',name:'보스',boss:true,hp:52,shield:12,coreHp:40,shieldMax:12,coreMax:40,debuffZone:1}];battle()");assert.equal(q(d,'enemies[0].hp'),52);
+setup(20,2);q(d,"enemies=[{id:'a',name:'잔적',hp:30,debuffZone:1},{id:'c',name:'보스',boss:true,hp:52,shield:12,coreHp:40,shieldMax:12,coreMax:40,debuffZone:1}];battle()");assert.equal(q(d,'enemies[1].hp'),52);
 setup(100);q(d,"enemies=[{id:'c',name:'보스',boss:true,hp:700,shield:200,coreHp:500,shieldMax:200,coreMax:500,debuffZone:1}];battle();");
 assert.equal(q(d,'pendingBattleScene.events.length'),3);assert.equal(q(d,'pendingBattleScene.events.filter(e=>e.pure).length'),2);assert.equal(q(d,'pendingBattleScene.events.reduce((n,e)=>n+e.damage,0)'),210);assert.equal(q(d,'enemies[0].hp'),490);assert.equal(q(d,'pendingBattleScene.events[2].shieldDamage'),45);assert.equal(q(d,'pendingBattleScene.events[2].coreDamage'),10);assert(q(d,"pendingBattleScene.events[1].label.includes('55%')"));
 setup(40,1,4);q(d,"bossEncounter=null;enemies=[{id:'a',name:'앞 적',hp:10,debuffZone:1},{id:'b',name:'뒤 적',hp:100,debuffZone:1}];battle();");assert.equal(q(d,'enemies[0].hp'),70,'normal-round pierce changed');
@@ -29,4 +38,4 @@ for(let i=0;i<60;i++){
  const expected=q(d,"battlePreparationPlan().rows.filter(e=>e.hp>0).map(e=>({name:e.name,hp:e.hp}))");
  q(d,'battle()');assert.equal(q(d,'JSON.stringify(enemies.map(e=>({name:e.name,hp:e.hp})))'),JSON.stringify(expected),'forecast mismatch '+i);
 }
-d.window.close();console.log('PASS parallel core pierce, shield overflow, no triple damage/overkill transfer, 3-hit 55% route, normal pierce, forecast parity, 3-turn/AP rules and R30 no reward');
+d.window.close();console.log('PASS parallel core pierce, shield overflow, no triple damage, conditional pierce transfer, 3-hit 55% route, normal pierce, forecast parity, 3-turn/AP rules and R30 no reward');

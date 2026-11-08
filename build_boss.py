@@ -11,7 +11,7 @@ def build():
  files=['build_boss.py','boss-encounter.js','boss-encounter-patch.py','boss-ai.cjs','test-boss.cjs','test-boss-growth.cjs','test-boss-browser.cjs','run-boss-balance.cjs','boss-table.json','BOSS-BALANCE-GOALS.json','boss-presence.js','boss-presence.css','boss-presence-patch.py','boss_audio_patch.py','boss-audio.js','test-boss-audio.cjs','package_boss_audio.py']
  hashes={n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in files}
  audio_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (R/'assets/boss-audio').glob('*') if p.is_file()}
- meta.update(version='0.3.6-boss.2',stage='boss_audio_playable',build_id='033-boss-'+hashlib.sha256((meta['build_id']+json.dumps(hashes,sort_keys=True)+json.dumps(audio_hashes,sort_keys=True)).encode()).hexdigest()[:16],boss_sources=hashes,boss_audio=audio_hashes,boss_table=json.loads((R/'boss-table.json').read_text()))
+ meta.update(version='0.3.7-boss.1',stage='boss_audio_playable',build_id='033-boss-'+hashlib.sha256((meta['build_id']+json.dumps(hashes,sort_keys=True)+json.dumps(audio_hashes,sort_keys=True)).encode()).hexdigest()[:16],boss_sources=hashes,boss_audio=audio_hashes,boss_table=json.loads((R/'boss-table.json').read_text()))
  # The checked table is injected once; no candidate chooser in the player build.
  game=(P/'game.js').read_text();(P/'game.js').write_text('window.LUCK_BOSS_TABLE='+json.dumps(meta['boss_table'])+';\n'+game)
  meta['source_tree_dirty']=meta['source_tree_dirty'] or bool(subprocess.check_output(['git','status','--porcelain','--',*files,'boss-table.json','BOSS-BALANCE-GOALS.json','boss-presence.js','boss-presence.css','boss-presence-patch.py'],text=True).strip())
@@ -23,9 +23,9 @@ def build():
  import shutil
  shutil.copytree(R/'assets/boss-audio',P/'assets/boss-audio',dirs_exist_ok=True)
  h=h.replace('<section class="ap-rules">','<section class="ap-rules"><p>첫 관문: R1~4 일반 적 HP 25% 완화. R5 보스: 보호막 없음 · 진체력 36 유지 · 연계 디버프 6. 보스 보상 1종 추가: 시작 손패 8장 + 시작 행동력 1 증가를 함께 적용. 손패는 8장으로 고정되며 재선택 시 행동력만 누적.</p><p><b>👑 보스전 검증판</b> R5·10·15·20·25·30마다 최대 3회 전투. R30은 보상 없이 공식전 완료. 이전 적과 보스를 모두 처치해야 다음 구간으로 갑니다. 보호막·진체력을 나눠 표시하며 보스전 수치는 검증 중입니다.</p>',1)
- h=h.replace('v0.3.2 연계 공격','v0.3.6 첫 보스 난이도 조정').replace('보석을 사용하면 다시 계산합니다.','보석을 사용하면 다시 계산합니다.')
+ h=h.replace('v0.3.2 연계 공격','v0.3.7 보스전 관통 수정').replace('보석을 사용하면 다시 계산합니다.','보석을 사용하면 다시 계산합니다.')
  h=h.replace('<section class="ap-rules">','<section class="ap-rules"><p>🎵 보스 전용 음원 적용 · 준비/전투/마지막 턴 BGM 및 보호막·진체력 효과음. 시작 설정에서 BGM을 켜 주세요.</p>',1)
  for name in ['preview-ui.js','history.js','rankings.js']:
-  p=P/name;p.write_text(p.read_text().replace('v0.3.2 연계 공격','v0.3.6 첫 보스 난이도 조정'))
+  p=P/name;p.write_text(p.read_text().replace('v0.3.2 연계 공격','v0.3.7 보스전 관통 수정'))
  (P/'index.html').write_text(h);(P/'build.json').write_text(json.dumps(meta,indent=2));print(json.dumps({'build_id':meta['build_id'],'version':meta['version'],'dirty':meta['source_tree_dirty']}));return meta
 if __name__=='__main__':build()
