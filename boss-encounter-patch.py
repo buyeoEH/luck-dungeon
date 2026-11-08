@@ -23,6 +23,9 @@ def patch(g):
  change("  const reason = enemies.length > gameOverEnemyLimit(round)", "  const reason = bossFailureReason || (enemies.length > gameOverEnemyLimit(round)")
  change("    : '누적 적 HP가 ' + total() + '입니다. (한계 ' + gameOverHpLimit(round) + ')';", "    : '누적 적 HP가 ' + total() + '입니다. (한계 ' + gameOverHpLimit(round) + ')');")
  change("  const suggestion=countFail?","  const suggestion=bossFailureReason?'보호막과 진체력을 깎고 이전 적까지 3회 안에 처치해야 합니다. 상점 구매·승급과 관통·연계를 활용해 보세요.':countFail?")
+ change('let n = 5 + nextDraw;', 'let n = bossBaseHand() + nextDraw;')
+ change('apState.points=2;apState.round=round;', 'apState.points=bossBaseAP();apState.round=round;')
+ change("apEvent('round_start',2,{unused});", "apEvent('round_start',bossBaseAP(),{unused});")
  # Forecast and real combat share exactly the same shield/core arithmetic.
  change('e.aoeDamage=Math.min(e.hp,aoe);e.hp-=e.aoeDamage;', "e.aoeDamage=bossApplyDamage(e,aoe,'aoe',0).damage;")
  change("const e=enemies[0],damage=Math.min(e.hp,remaining);\n      e[index?'pierceDamage':'strikeDamage']+=damage;e.hp-=damage;remaining-=damage;", "const e=enemies[0],dealt=bossApplyDamage(e,remaining,'strike',piercing),damage=dealt.damage;\n      e.coreDirectDamage=(e.coreDirectDamage||0)+(dealt.corePierceDamage||0);e[index?'pierceDamage':'strikeDamage']+=damage;remaining-=dealt.spent;")
