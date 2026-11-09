@@ -2,7 +2,7 @@
 (function(){'use strict';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let feedback={round:0,entries:[],settled:null},last=null,timer=null;
-function reset(){feedback={round,entries:[],settled:null};last=null;}
+function reset(){feedback={round,entries:[],settled:null};last=null;clearTimeout(timer);timer=null;document.getElementById('linkMeter')?.classList.remove('link-gained','link-lost');}
 function record(source,amount,kind,id){if(amount<=0)return;if(feedback.round!==round)reset();const e={round,source,amount,kind,id,raw:linkComboAttack+p1Round.gaugeBonus};feedback.entries.push(e);if(!window.__luckAutoLabBotActive)window.Luck220?.emit('link_feedback',e);}
 const resetRun=p1ResetRun;p1ResetRun=function(){const r=resetRun.apply(this,arguments);reset();return r;};
 const roundStart=p1RoundStart;p1RoundStart=function(){const r=roundStart.apply(this,arguments);reset();return r;};
@@ -52,5 +52,5 @@ function draw(){const el=document.getElementById('linkMeter'),detail=document.ge
  const changed=last&&last.round===round&&!v.fixed&&(last.raw!==v.raw||last.net!==v.m.gaugeNet);if(changed){el.classList.remove('link-gained','link-lost');void el.offsetWidth;el.classList.add(v.m.gaugeNet<last.net?'link-lost':'link-gained');clearTimeout(timer);timer=setTimeout(()=>el.classList.remove('link-gained','link-lost'),950);}last={round,raw:v.raw,net:v.m.gaugeNet};}
 
 const renderOriginal=render;render=function(){const r=renderOriginal.apply(this,arguments);draw();return r;};
-window.LuckLinkView={snapshot:()=>JSON.parse(JSON.stringify(feedback)),model:()=>model(),draw};
+window.LuckLinkView={beginCombat(){reset();draw();},snapshot:()=>JSON.parse(JSON.stringify(feedback)),model:()=>model(),draw};
 })();

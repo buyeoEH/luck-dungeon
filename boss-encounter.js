@@ -5,6 +5,10 @@ const BOSS_DEFAULT_TABLE=Object.freeze([
  {round:25,shield:160,core:260},{round:30,shield:220,core:360}
 ]);
 let bossGrowth={hand:0,ap:0};
+function bossPrepareNextCombat(){
+ p1ResetRound();linkComboAttack=0;roundActionHistory=[];roundLinkDone={};
+ window.LuckLinkView?.beginCombat();
+}
 function bossBaseHand(){return 5+bossGrowth.hand;}
 function bossBaseAP(){return 2+bossGrowth.ap;}
 function bossGainGrowth(){
@@ -51,10 +55,12 @@ function bossAfterBattle(scene){
  const next0=nextRound;nextRound=function(){
   if(bossStageActive()){
    if(bossEncounter.turn>=3){if(!bossFailureReason)bossFailureReason='보스전 3회 제한';return gameOver();}
+   bossPrepareNextCombat();
    bossEncounter.turn++;resource=0;phase='battle';dangerActive=false;spawnedIds=[];tempAttack=0;aoeAttack=0;pierce=0;linkComboAttack=0;roundActionHistory=[];roundLinkDone={};
    if(isVisualMode()||!window.__luckAutoLabBotActive)showRoundStartModal();else drawStart();return;
   }
   if(bossEncounter?.cleared&&round===30&&!officialRecord){return freezeOfficialRecord('nextRound');}
+  bossPrepareNextCombat();
   return next0.apply(this,arguments);
  };
  const reward0=bossReward;bossReward=function(){if(round===30){if(!bossEncounter?.cleared||enemies.length)return false;rewards=[];return officialRecord?false:freezeOfficialRecord('nextRound');}if(round<30){if(!bossEncounter?.cleared||enemies.length)return false;if(bossEncounter.rewardOffered)return false;bossEncounter.rewardOffered=true;bossEmit('boss_reward_offered',{cleared_on_turn:bossEncounter.clearedOnTurn,options:'five_options_with_combined_growth',reward_scaling:'none'});}const out=reward0.apply(this,arguments);rewards.push(['🃏⚡ 전술 확장 · 손패 8장 + 행동력 1','두 효과를 함께 받습니다. 다음 전투부터 시작 손패를 8장으로 설정하고 시작 행동력 +1. 이번 플레이 동안 보스전 각 턴에도 적용됩니다. 다시 선택하면 손패는 8장을 유지하고 행동력만 +1 누적됩니다. 현재 행동력 '+bossBaseAP()+' → '+(bossBaseAP()+1),bossGainGrowth]);render();return out;};
