@@ -248,7 +248,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: a62d271869f0ac6fcf04a05404fc531dbaf07974
+          ref: f060d0442df8df5a8fae6a88fa61bfdfe36c6aff
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -289,16 +289,16 @@ jobs:
               with urllib.request.urlopen(urllib.request.Request(base+name,headers={'Cache-Control':'no-cache'}),timeout=60) as r:raw=r.read();assert r.status==200
               assert hashlib.sha256(raw).hexdigest()==old[name],name
           with ThreadPoolExecutor(max_workers=6) as ex:list(ex.map(check,protected))
-          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='693194042c2a2a1aef9a83b9a19f97caf2778366'
+          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()=='9016a9e846861bf0bd7bcbe9d76312ad7d9dbbb9'
           for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','build_action_points_final.py']:
               subprocess.run(['python',script],check=True)
           shutil.copytree('_site/preview/v0.3-ap-final','../ap-before-v032')
           subprocess.run(['python','build_boss.py'],check=True)
           game=Path('_site/preview/v0.3-ap-final/game.js')
-          assert H(game)=='c4f04df7c489e7f31210b1387a366805f23a12bb91430d5f5176545e479416da','compiled game differs from tested build'
+          assert H(game)=='d13f682c860e7f2d03a447f6cf22f9c35d9be00cf6f1f4bf3b1f74346649b5df','compiled game differs from tested build'
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
-          assert meta['build_id']=='033-boss-49438536e536755d' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='a62d271869f0ac6fcf04a05404fc531dbaf07974'
+          assert meta['build_id']=='033-boss-7556bde6b17d33f9' and not meta['source_tree_dirty']
+          assert meta['git_sha']=='f060d0442df8df5a8fae6a88fa61bfdfe36c6aff'
           import os,time
           subprocess.run(['npm','install','--prefix','../status-runtime','playwright@1.51.1','jsdom@26.1.0'],check=True)
           env={**os.environ,'NODE_PATH':str(Path('../status-runtime/node_modules').resolve()),'P5_JSDOM_PATH':str(Path('../status-runtime/node_modules/jsdom').resolve())}
@@ -349,7 +349,7 @@ jobs:
           versioned=Path('_site/preview/v0.3.9');shutil.copytree(target,versioned,dirs_exist_ok=True)
           new={str(p.relative_to('_site')):H(p) for folder in [target,versioned] for p in folder.iterdir()}
           assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in new),'old Pages content changed'
-          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'693194042c2a2a1aef9a83b9a19f97caf2778366','tested_compiled_game_sha256':H(game) if game.exists() else 'c4f04df7c489e7f31210b1387a366805f23a12bb91430d5f5176545e479416da'},indent=2))
+          Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'9016a9e846861bf0bd7bcbe9d76312ad7d9dbbb9','tested_compiled_game_sha256':H(game) if game.exists() else 'd13f682c860e7f2d03a447f6cf22f9c35d9be00cf6f1f4bf3b1f74346649b5df'},indent=2))
           print('Preserved',len(old),'existing files; added',len(new),'AP files')
           PY
       - uses: actions/upload-artifact@v4
