@@ -338,16 +338,27 @@ jobs:
           assert len(tracks)==17 and len(media['assets'])==17
           (audio_dir/'manifest.json').write_text(json.dumps({'tracks':tracks}))
           subprocess.run(['python','package_boss_audio.py'],check=True)
-          html=Path('boss-delivery/LUCK-v0.3.9-boss.1-embedded/index.html')
+          import build_v030_standalone as standalone
+          standalone.R=Path('boss-package-work').resolve()
+          standalone.P=Path('_site/preview/v0.3-ap-final').resolve()
+          standalone.D=Path('boss-delivery').resolve()
+          standalone.build('external',max_package_bytes=25_000_000)
+          html=Path('boss-delivery/LUCK-v0.3.9-boss.1-external/index.html')
+          external=json.loads(re.search(r'window.LUCK_RELEASE_MEDIA=(\{.*?\});',html.read_text())[1])
+          assert external['mode']=='external' and len(external['assets'])==32
+          manifest=json.loads(Path('boss-package-work/release-audio-candidates/manifest.json').read_text())
+          for rel,track in zip(external['assets'],manifest['tracks']):
+              asset=html.parent/rel
+              assert asset.is_file() and H(asset)==track['sha256'],rel
           raw=html.read_bytes();assert len(raw)<25_000_000
           # Only commit metadata differs from the tested local source; game bytes
           # and the complete source tree above are identical to the tested build.
           shutil.rmtree('_site');shutil.copytree(rollback,'_site')
           target=Path('_site/preview/v0.3-boss');target.mkdir(parents=True,exist_ok=True)
-          shutil.copyfile(html,target/'index.html');(target/'build.json').write_text(json.dumps(meta,indent=2))
+          shutil.copytree(html.parent,target,dirs_exist_ok=True);(target/'build.json').write_text(json.dumps(meta,indent=2))
           for name in ['BOSS-BALANCE-REPORT.md','V039-PROTECTION-RELEASE.md']:shutil.copyfile(name,target/name)
           versioned=Path('_site/preview/v0.3.9');shutil.copytree(target,versioned,dirs_exist_ok=True)
-          new={str(p.relative_to('_site')):H(p) for folder in [target,versioned] for p in folder.iterdir()}
+          new={str(p.relative_to('_site')):H(p) for folder in [target,versioned] for p in folder.rglob('*') if p.is_file()}
           assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in new),'old Pages content changed'
           Path('ap-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta,'tested_tree':'9016a9e846861bf0bd7bcbe9d76312ad7d9dbbb9','tested_compiled_game_sha256':H(game) if game.exists() else 'd13f682c860e7f2d03a447f6cf22f9c35d9be00cf6f1f4bf3b1f74346649b5df'},indent=2))
           print('Preserved',len(old),'existing files; added',len(new),'AP files')
