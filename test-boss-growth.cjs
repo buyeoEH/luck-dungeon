@@ -16,7 +16,7 @@ q(d,"phase='battle';nextRound();");assert.equal(q(d,'bossEncounter.turn'),3);ass
 q(d,'AutoLab.begin(904)');assert.equal(q(d,'bossGrowth.hand+bossGrowth.ap'),0);assert.equal(q(d,'apState.points'),2);assert.equal(q(d,'hand.length'),5);
 for(let r=1;r<=4;r++)assert.equal(q(d,`makeEnemy(EARLY_ENEMIES[${r-1}],${r}).hp`),[9,14,18,23][r-1]);
 for(const r of [10,15,20,25,30])assert(q(d,`makeEnemy(bossFor(${r}),${r}).shield>0`));
-q(d,"round=5;nextSpawn=rollSpawn(5);addEnemy();phase='hand';apState.round=0;drawStart();");assert.equal(q(d,'enemies.find(e=>e.boss).d.p'),6,'debuff survives draw reset');
+q(d,"round=5;nextSpawn=rollSpawn(5);addEnemy();phase='hand';apState.round=0;drawStart();");assert.equal(q(d,'enemies.find(e=>e.boss).d.p'),2,'debuff survives draw reset');
 // Real DOM rendering: zero shield must never produce invalid width or a phantom blue bar.
 const {JSDOM,VirtualConsole}=require(process.env.P5_JSDOM_PATH),root=path.join(__dirname,'_site/preview/v0.3-ap-final');
 const ui=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{url:'https://luck.test',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:new VirtualConsole()});

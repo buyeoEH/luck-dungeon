@@ -1,6 +1,6 @@
 const {chromium}=require('playwright'),assert=require('assert'),fs=require('fs');
 (async()=>{const browser=await chromium.launch({headless:true,args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:844}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-await page.goto('http://127.0.0.1:8765/_site/preview/v0.3-ap-final/');await page.getByRole('button',{name:/일반 게임/}).click();await page.getByRole('button',{name:'⚔ 전투 준비하기',exact:true}).click();
+await page.goto('http://127.0.0.1:8765/_site/preview/v0.3-ap-final/');await page.locator('#guardWelcomeMode').selectOption('combat');await page.getByRole('button',{name:/일반 게임/}).click();assert.equal(await page.evaluate(()=>LuckGuard.mode()),'combat');await page.locator('#modalContent select[aria-label="전체 보호 사용 범위"]').selectOption('balanced');assert.equal(await page.evaluate(()=>LuckGuard.mode()),'balanced');await page.getByRole('button',{name:'⚔ 전투 준비하기',exact:true}).click();
 async function assertRoundTogether(){
  const box=await page.locator('#round').evaluate(el=>{const text=[...el.parentElement.childNodes].find(n=>n.nodeType===Node.TEXT_NODE&&/ROUND/.test(n.textContent));if(!text)return null;const range=document.createRange();range.selectNodeContents(text);const label=range.getBoundingClientRect(),number=el.getBoundingClientRect();return {gap:number.left-label.right,line:Math.abs(number.top-label.top)};});
  assert(box&&box.gap>=0&&box.gap<=12&&box.line<=3,'ROUND label and value separated: '+JSON.stringify(box));
