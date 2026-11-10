@@ -26,11 +26,12 @@ function guardTheftGroups(rows){
   groups.push({kind,title:kind==='protected'?'보석 '+blocked+'개 약탈 차단':kind==='theft_success'?'보석 −'+stolen:kind==='theft_failed'?'약탈 실패':'보석 없음 · 보호 유지',detail:'생존 사냥꾼 '+list.length+'마리'+(spent?' · 보호 '+spent+' 소모':' · 보호 소모 0')+(kind==='theft_success'&&blocked?' · 보석 '+blocked+'개 차단':''),count:list.length,stolen,blocked,spent});
  }return groups;
 }
+function guardHeroEffect(kind){return kind==='protected'?'guard-hero-protected':['debuff','theft_success'].includes(kind)?'guard-hero-weaken':'';}
 async function guardPlaySteps(b,rows){
  for(const s of rows){if(pendingBattleScene!==b)return;
   const host=$('guardCinematicCue');if(host)host.innerHTML=guardCueHtml(s.kind,s.title,s.detail);
   cinBanner(s.title,s.kind==='protected'?'guard-protected':s.kind==='debuff'?'debuff':s.kind);cinFeed(s.detail);
-  const hero=document.querySelector('.cin-hero');if(hero){hero.classList.remove('guard-hero-protected','guard-hero-weaken');void hero.offsetWidth;hero.classList.add(s.kind==='protected'?'guard-hero-protected':'guard-hero-weaken');}
+  const hero=document.querySelector('.cin-hero');if(hero){hero.classList.remove('guard-hero-protected','guard-hero-weaken');void hero.offsetWidth;const effect=guardHeroEffect(s.kind);if(effect)hero.classList.add(effect);}
   if(s.kind!=='unnecessary')window.LuckGameAudio?.statusCue?.(s.kind);
   await cinWait(s.kind==='unnecessary'?320:1000);
  }if(pendingBattleScene===b){const hero=document.querySelector('.cin-hero');hero?.classList.remove('guard-hero-protected','guard-hero-weaken');}

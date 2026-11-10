@@ -19,4 +19,5 @@ setup();q(d,"var c=cp(GUARD_PROMOTIONS.find(p=>p.card.id==='guard_miner').card);
 setup();q(d,"phase='battle';deck=[{id:'qa',atk:1,type:'attack'}];hand=[];enemies=[{hp:100,d:{k:'combo',p:2,baseP:2,pct:false}}];p1ResetRound();p1Round.gaugeBonus=21;prot.combo=1;var plan=guardCombatPlan();guardFinishCombat(plan);");
 assert.equal(q(d,'guardLastCombat.combo.before'),0);assert.equal(q(d,'guardLastCombat.gauge.raw'),21);assert(q(d,"guardCombatSteps(guardLastCombat).some(r=>r.kind==='protected')"));assert(!q(d,'guardCombatHtml(guardLastCombat)').includes('undefined'));
 assert.equal(q(d,"guardTheftGroups([{kind:'theft_failed'},{kind:'theft_failed'}])[0].count"),2);
+assert.equal(q(d,"guardHeroEffect('unnecessary')"),'');assert.equal(q(d,"guardHeroEffect('theft_failed')"),'');
 d.window.close();console.log('PASS five real promotions, material compression, action cost, permanent sword, effects, one-action links, one-combat cap, concrete feedback and grouped theft');
