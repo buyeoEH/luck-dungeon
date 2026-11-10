@@ -6,7 +6,7 @@ def build(mode='embedded',max_package_bytes=15_000_000):
  assert mode in ['embedded','external'];audio=R/'release-audio-candidates';manifest=json.loads((audio/'manifest.json').read_text());D.mkdir(exist_ok=True)
  version=json.loads((P/'build.json').read_text())['version'];folder=D/('LUCK-v'+version+'-'+mode)
  if folder.exists():shutil.rmtree(folder)
- folder.mkdir();assets={str(p.relative_to(P)):'data:'+(mimetypes.guess_type(str(p))[0] or 'application/octet-stream')+';base64,'+base64.b64encode(p.read_bytes()).decode() for p in (P/'assets').rglob('*') if p.is_file() and p.suffix=='.webp'}
+ folder.mkdir();assets={str(p.relative_to(P)):'data:'+(mimetypes.guess_type(str(p))[0] or 'application/octet-stream')+';base64,'+base64.b64encode(p.read_bytes()).decode() for p in (P/'assets').rglob('*') if p.is_file() and p.suffix in ['.webp','.svg']}
  def embed(text):
   for path,data in assets.items():text=text.replace(path,data)
   return text

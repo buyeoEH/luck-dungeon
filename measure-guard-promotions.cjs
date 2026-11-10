@@ -1,0 +1,13 @@
+/* Controlled one-combat samples; these are not full-game or human win rates. */
+const fs=require('fs'),{create,q}=require('./boss-ai.cjs');const d=create(),rows=[];
+const cards=q(d,'GUARD_PROMOTIONS.map(p=>p.card.id)');
+for(const id of cards)for(const upgraded of [false,true])for(const protection of [true,false]){
+ const out={id,upgraded,protection,samples:40,deckSize:0,access:0,cardsDrawn:0,cardsUsed:0,firepowerPreserved:0,resourcePreserved:0,gemsPreserved:0,protectionSpent:0,ineffective:0};
+ for(let seed=101;seed<=140;seed++){
+  q(d,`AutoLab.begin(${seed});bossEncounter=null;round=16;phase='hand';guardMode='balanced';window.LUCK_GUARD_QA_NO_PROTECTION=${!protection};var rec=GUARD_PROMOTIONS.find(p=>p.card.id==='${id}');var mats=Object.entries(rec.from).flatMap(([k,n])=>Array.from({length:n},()=>cp([...BASE,...BASIC,...RANDOM_POOL,...PROMOS.map(p=>p.card)].find(c=>c.id===k))));deck=[...(${upgraded}?[cp(rec.card)]:mats),...Array.from({length:8},()=>cp(BASIC.find(c=>c.id==='hand'))),...Array.from({length:5},()=>cp(BASE.find(c=>c.id==='sword')))];draw=shuffle(deck.slice());hand=[];graveyard=[];enemies=[{id:'test-a',name:'약화',hp:110,debuffs:[{k:'attack',p:5,baseP:5,pct:false},{k:'combo',p:2,baseP:2,pct:false},{k:'resource',p:3,baseP:3,pct:false}]},{id:'test-g',name:'사냥꾼',hp:110,steal:{chance:.6,pct:.2,min:2}}];prot={attack:0,combo:0,resource:0,gem:0,all:0};apState.round=0;gems=8;nextDraw=0;stats.cardsDrawn=0;stats.cardsUsed=0;drawStart();var accessed=hand.some(c=>${upgraded}?cardKey(c)==='${id}':!!rec.from[cardKey(c)]);var size0=deck.length;`);
+  q(d,`for(let n=0;n<40;n++){const opts=hand.map((c,i)=>({c,i})).filter(x=>!['attack','specialAttack','curse'].includes(x.c.type)&&apCanUse(x.c));opts.sort((a,b)=>(b.c.guardPromo?20:b.c.type==='protection'?10:0)-(a.c.guardPromo?20:a.c.type==='protection'?10:0));if(!opts.length)break;use(opts[0].i);if(hand.some(c=>${upgraded}?cardKey(c)==='${id}':!!rec.from[cardKey(c)]))accessed=true;}phase='battle';bossAfterBattle=()=>true;battle();`);
+  const s=q(d,'({size:size0,accessed,drawn:stats.cardsDrawn,used:stats.cardsUsed,...guardStats})');out.deckSize=s.size;out.access+=Number(s.accessed);out.cardsDrawn+=s.drawn;out.cardsUsed+=s.used;out.firepowerPreserved+=s.firepower;out.resourcePreserved+=s.resource;out.gemsPreserved+=s.gems;out.protectionSpent+=s.spent;out.ineffective+=s.ineffective;
+ }
+ if(out.ineffective)throw Error('ineffective protection');if(!protection&&out.protectionSpent)throw Error('disabled protection consumed');rows.push(out);
+}
+const result={scope:'800 controlled one-combat samples; same seeds/material package; not clear rates',rows};fs.writeFileSync('guard-promotion-measurement.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));d.window.close();

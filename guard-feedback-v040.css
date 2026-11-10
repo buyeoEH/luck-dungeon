@@ -1,0 +1,14 @@
+.guard-cue{display:flex;align-items:center;gap:12px;min-width:0;margin:8px 0;padding:12px;border:2px solid #64748b;border-radius:12px;background:#172536;line-height:1.55;text-align:left;overflow-wrap:anywhere}
+.guard-cue>div{min-width:0}.guard-cue strong{display:block;font-size:15px}.guard-cue p{font-size:12px;margin:4px 0 0;color:#e2e8f0}
+.guard-shield-icon{width:46px;height:52px;flex:0 0 auto;filter:drop-shadow(0 0 8px #38bdf87a)}.guard-cue-symbol{font-size:32px;flex:0 0 auto}
+.guard-cue.protected{border-color:#6ee7b7;background:#0d3937;animation:guard-shield .65s ease}.guard-cue.debuff{border-color:#fb7185;background:#411c2b;animation:guard-weaken .65s ease}
+.guard-cue.theft_failed{border-color:#c4b5fd;background:#2d2443}.guard-cue.theft_success{border-color:#fbbf24;background:#3b2816}.guard-cue.unnecessary{border-width:1px;color:#b6c7d8}
+.guard-hero-protected{animation:guard-hero-shield .65s ease!important}.guard-hero-weaken{animation:guard-weaken .65s ease!important}.cin-banner.guard-protected{color:#a7f3d0;border:2px solid #6ee7b7;background:#10483d}
+#guardCinematicCue:empty{display:none}#guardVisibleToast{position:fixed;bottom:calc(12px + env(safe-area-inset-bottom,0px));left:12px;right:12px;max-width:520px;margin:auto;z-index:1500;pointer-events:none;filter:drop-shadow(0 5px 15px #0009)}#guardVisibleToast .guard-cue{margin:0}
+.promo-group.promo-protection{border-color:#38bdf8;background:#102d3a}.mega-active{border:2px solid #fb923c!important;background:#3c2518!important;color:#fed7aa}
+@keyframes guard-hero-shield{35%{box-shadow:0 0 0 7px #6ee7b799,0 0 35px #38bdf8;background:#155e75}80%{box-shadow:0 0 0 12px #6ee7b700}}
+@media(prefers-reduced-motion:reduce){.guard-cue,.guard-hero-protected,.guard-hero-weaken{animation:none!important}}
+
+.guard-cue.acquired{border-color:#7dd3fc;background:#123147}
+
+.combat-cinematic.live:not(.guard-outcomes-ready)>.guard-results,.combat-cinematic.live:not(.guard-outcomes-ready)>.guard-thefts{display:none}
