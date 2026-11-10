@@ -1,0 +1,32 @@
+/* Keep controls in the available width, including enlarged text. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:var(--luck-hud-clearance,12px)}
+.shop-container,.shop-group,.shop-section,.dashboard,.link-meter-heading{min-width:0;max-width:100%}
+.dashboard>*{min-width:0;max-width:100%}
+#gemActionBox{display:flex;flex-wrap:wrap;gap:4px;max-width:100%}
+#gemActionBox button{max-width:100%;white-space:normal}
+.shop-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,140px),1fr))}
+.shop-card b,.shop-card .price,.shop-card button{overflow-wrap:anywhere;white-space:normal}
+.shop-card .price{line-height:1.55}
+.link-meter-heading{height:auto;min-height:26px;flex-wrap:wrap}
+.link-meter-benefit{white-space:normal}
+.link-meter-heading button{flex:0 0 auto;max-width:100%;height:auto;min-height:26px}
+.sticky-header.luck-hud-flow{position:static}
+#attackDetailsDialog{position:fixed;inset:auto;margin:0;padding:0;border:1px solid #38bdf8;border-radius:12px;background:#0f172a;color:#f8fafc;max-width:none;overflow:hidden;box-shadow:0 12px 45px #0009}
+#attackDetailsDialog[open]{display:flex;flex-direction:column}
+#attackDetailsDialog::backdrop{background:#020617b8}
+.attack-details-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid #334155;flex:0 0 auto}
+.attack-details-heading h2{font-size:16px;min-width:0}
+.attack-details-heading button{min-height:40px;padding:7px 12px;color:#f8fafc;background:#334155;border:1px solid #64748b;border-radius:6px;font-size:12px;cursor:pointer;flex:0 0 auto}
+#attackDetailsDialog #atkTooltip{position:static;inset:auto;width:auto;min-width:0;max-width:100%;border:0;border-radius:0;box-shadow:none;padding:12px;overflow:auto;overscroll-behavior:contain;line-height:1.6}
+#atkTooltip span{min-width:0;overflow-wrap:anywhere}
+#atkTooltip b{flex:0 0 auto}
+@media(max-width:600px){
+ .dashboard{align-items:center}
+ .dashboard .action-btn{white-space:normal;max-width:100%;min-height:34px}
+ .sticky-header .mini-status{flex-wrap:wrap}
+ .sticky-header .debuff-quick{white-space:normal;text-align:left;max-width:100%}
+ .sticky-header #danger220{flex:1 1 110px}
+ .basic-section,.random-section{padding:8px}
+ .shop-card{padding:8px}
+ .shop-card button{min-height:36px;line-height:1.4}
+}

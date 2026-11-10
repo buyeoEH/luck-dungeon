@@ -2,6 +2,7 @@ from pathlib import Path
 import hashlib,json,re,subprocess,importlib.util
 import build_v032
 import protection_v039_patch as guard_patch
+import mobile_ui_patch
 from boss_audio_patch import patch as audio_patch
 R=Path(__file__).resolve().parent;P=build_v032.P
 spec=importlib.util.spec_from_file_location('boss_patch',R/'boss-encounter-patch.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
@@ -10,10 +11,12 @@ def build():
  spec2=importlib.util.spec_from_file_location('presence_patch',R/'boss-presence-patch.py');presence=importlib.util.module_from_spec(spec2);spec2.loader.exec_module(presence)
  (P/'game.js').write_text(presence.patch((P/'game.js').read_text()))
  (P/'game.js').write_text(guard_patch.patch((P/'game.js').read_text()))
+ (P/'game.js').write_text(mobile_ui_patch.patch((P/'game.js').read_text()))
  files=['protection-v039.js','protection_v039_patch.py','test-protection.cjs','build_boss.py','boss-encounter.js','boss-encounter-patch.py','boss-ai.cjs','test-boss.cjs','test-boss-growth.cjs','test-link-transition.cjs','test-boss-browser.cjs','run-boss-balance.cjs','boss-table.json','BOSS-BALANCE-GOALS.json','boss-presence.js','boss-presence.css','boss-presence-patch.py','boss_audio_patch.py','boss-audio.js','test-boss-audio.cjs','package_boss_audio.py']
+ files+=['mobile-ui.js','mobile-ui.css','mobile_ui_patch.py','test-mobile-browser.cjs']
  hashes={n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in files}
  audio_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (R/'assets/boss-audio').glob('*') if p.is_file()}
- meta.update(version='0.3.9-boss.1',stage='debuff_protection_playable',build_id='033-boss-'+hashlib.sha256((meta['build_id']+json.dumps(hashes,sort_keys=True)+json.dumps(audio_hashes,sort_keys=True)).encode()).hexdigest()[:16],boss_sources=hashes,boss_audio=audio_hashes,boss_table=json.loads((R/'boss-table.json').read_text()))
+ meta.update(version='0.3.9-boss.2',stage='debuff_protection_playable',build_id='033-boss-'+hashlib.sha256((meta['build_id']+json.dumps(hashes,sort_keys=True)+json.dumps(audio_hashes,sort_keys=True)).encode()).hexdigest()[:16],boss_sources=hashes,boss_audio=audio_hashes,boss_table=json.loads((R/'boss-table.json').read_text()))
  meta['protection_contract']={'boss_debuffs':{'5':{'combo':20},'10':{'resource':20},'15':{'attack':20},'20':{'combo':20,'resource':10},'25':{'resource':20,'attack':10},'30':{'attack':20,'combo':10,'resource':10}},'all_modes':['balanced','combat','economy'],'default_mode':'balanced','spend':'minimal_effective_only','order':['combo','attack'],'promotion_values':'deferred'}
  # The checked table is injected once; no candidate chooser in the player build.
  game=(P/'game.js').read_text();(P/'game.js').write_text('window.LUCK_BOSS_TABLE='+json.dumps(meta['boss_table'])+';\n'+game)
@@ -21,7 +24,7 @@ def build():
  h=(P/'index.html').read_text();h=re.sub(r'window.LUCK_BUILD=\{[^<]+?\};',lambda _:'window.LUCK_BUILD='+json.dumps(meta)+';',h,count=1)
  h=h.replace('<section id="enemySection"','<section id="bossStagePanel" class="hide"></section><section id="enemySection"',1)
  css='#bossStagePanel{border:1px solid #ad7b31;border-radius:9px;padding:9px;background:#272012;font-size:12px}#bossStagePanel header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}#bossStagePanel p{margin:6px 0;line-height:1.5}.boss-health{display:grid;gap:4px;margin-top:8px}.boss-health>div{height:8px;background:#172535;border-radius:5px;overflow:hidden}.boss-health i{display:block;height:100%;background:#60a5fa;transition:width .3s}.boss-health .boss-core i{background:#f87171}.boss-rule-note{padding:8px;border:1px solid #9a7237;border-radius:7px;font-size:12px}'
- h=h.replace('</head>','<style>'+css+(R/'boss-presence.css').read_text()+guard_patch.CSS+'</style></head>')
+ h=h.replace('</head>','<style>'+css+(R/'boss-presence.css').read_text()+guard_patch.CSS+(R/'mobile-ui.css').read_text()+'</style></head>')
  audio=P/'luck-audio.js';audio.write_text(audio_patch(audio.read_text()).replace('setBgmEnabled,setSfxEnabled,unlock,runStart,sync,',"statusCue(kind){sfx(({protected:'boss_sfx_shield_hit_01',debuff:'boss_sfx_attack_charge',theft_success:'boss_sfx_pierce',theft_failed:'boss_sfx_body_hit_02'})[kind]);},setBgmEnabled,setSfxEnabled,unlock,runStart,sync,"))
  import shutil
  shutil.copytree(R/'assets/boss-audio',P/'assets/boss-audio',dirs_exist_ok=True)
