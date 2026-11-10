@@ -71,7 +71,7 @@ function guardCombatHtml(report){if(!report)return '';const a=report.attack,c=re
  return '<section class="guard-results '+(report.spent?'protected':report.attack.before>report.attack.after?'debuff':'unnecessary')+'"><b>🛡 디버프·보호 결과</b><p>공격력 '+a.before+' → '+a.after+' · 실제 화력 '+a.preserved+' 보존</p><p>연계 '+c.before+' → '+c.after+' · 게이지 '+report.gauge.after+'P</p><p>보호 '+report.spent+' 소모'+(!report.spent?' · 보호 유지':'')+'</p></section>';}
 function guardPreviewHtml(ap){const r=ap.guard;if(!r)return '';return '<section class="guard-preview"><b>🛡 예상 손실·보호 소모 · '+GUARD_MODES[guardMode].name+'</b><p>보호 전 예상 공격 손실 '+(r.unaffected.final-r.unprotected.final)+' · 보호 후 공격력 '+ap.final+' (보존 '+(ap.final-r.unprotected.final)+')</p><p>연계 '+ap.comboRaw+' → '+ap.comboNet+' · 게이지 '+ap.p1.gaugeNet+'P · 보호 소모 연계 '+r.combo.absorbed+' / 공격 '+r.attack.absorbed+'</p><p>처리 후 잔량 · 연계 '+r.balances.combo+' / 공격 '+r.balances.attack+' / 전체 '+r.balances.all+'</p><small>광역 후 생존 적 기준 · 연계 → 공격 순서 · 약탈은 공격 후 생존 사냥꾼마다 성공 확률 60%</small></section>';}
 (function(){
- const make=makeEnemy;makeEnemy=function(t,r){const e=make.apply(this,arguments);if(e.boss&&GUARD_BOSS_DEBUFFS[r]){e.debuffs=GUARD_BOSS_DEBUFFS[r].map(([k,p])=>({k,p,baseP:p,pct:true}));e.d=e.debuffs[0];}return e;};
+ const make=makeEnemy;makeEnemy=function(t,r){const e=make.apply(this,arguments);if(e.boss&&GUARD_BOSS_DEBUFFS[Math.min(30,r)]){e.debuffs=GUARD_BOSS_DEBUFFS[Math.min(30,r)].map(([k,p])=>({k,p,baseP:p,pct:true}));e.d=e.debuffs[0];}return e;};
  isEnemyDebuffActive=e=>!!e&&e.hp>0;poolFor=guardPool;gain=guardGain;consume=guardConsume;
  attackParts=function(){const plan=guardCombatPlan(),ap={...plan.parts};Object.defineProperty(ap,'guard',{value:plan});return ap;};
  previewDebuffs=()=>guardCombatPlan().parts.pv;
