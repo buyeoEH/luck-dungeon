@@ -18,7 +18,7 @@ window.LuckMobileUI=(()=>{
   position();
  }
  function schedule(){if(!frame)frame=requestAnimationFrame(measure);}
- function close(){if(dialog?.open)dialog.close();}
+ function close(){if(dialog?.open){box.setAttribute('aria-expanded','false');dialog.close();}}
  function open(){
   updateAtkTooltip();tooltip.classList.remove('hide');
   if(!dialog.open)dialog.showModal();position();box.setAttribute('aria-expanded','true');
@@ -34,6 +34,7 @@ window.LuckMobileUI=(()=>{
   box.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
   dialog.querySelector('button').addEventListener('click',close);
   dialog.addEventListener('click',e=>{if(e.target===dialog)close();});
+  dialog.addEventListener('cancel',()=>{box.setAttribute('aria-expanded','false');});
   dialog.addEventListener('close',()=>{box.setAttribute('aria-expanded','false');box.focus({preventScroll:true});});
   header=document.querySelector('.sticky-header');
   if(header&&window.ResizeObserver)new ResizeObserver(schedule).observe(header);

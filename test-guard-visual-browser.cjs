@@ -26,4 +26,4 @@ const {chromium}=require('playwright'),assert=require('assert'),fs=require('fs')
  await page.evaluate(()=>{phase='battle';deck=[{id:'skip',atk:100,type:'attack'}];hand=[];tempAttack=0;bonusAtk=0;aoeAttack=0;pierce=0;linkComboAttack=0;bossEncounter=null;p1ResetRun();prot={attack:2,combo:0,resource:0,gem:0,all:0};enemies=[{id:'skip-enemy',name:'약화 적',hp:180,d:{k:'attack',p:20,baseP:20,pct:false}}];$('battleMotionSkipToggle').checked=true;battle();});
  await page.locator('#guardVisibleToast').waitFor({state:'visible'});assert((await page.locator('#guardVisibleToast').innerText()).includes('보호 2 소모'));
  assert.deepEqual(errors,[]);fs.writeFileSync('guard-visual-browser-results.json',JSON.stringify({pass:true,trace},null,2));await browser.close();console.log('PASS visible resource protection, ordered combat weaken/shield/strike/theft, grouped failure, five promotion cards/catalog, skip toast and no invalid values');
-})().catch(e=>{console.error(e);process.exitCode=1});
+})().catch(e=>{console.error(e);process.exit(1)});

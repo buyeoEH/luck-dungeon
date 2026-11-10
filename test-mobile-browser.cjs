@@ -31,4 +31,4 @@ const {chromium}=require('playwright'),assert=require('assert'),fs=require('fs')
  }
  assert.deepEqual(errors,[]);fs.writeFileSync('mobile-browser-results.json',JSON.stringify({pass:true,cases:results},null,2));
  await browser.close();console.log('PASS six mobile shop/HUD containment and attack dialog cases, enlarged text, close/keyboard/Escape');
-})().catch(e=>{console.error(e);process.exitCode=1});
+})().catch(e=>{console.error(e);process.exit(1)});

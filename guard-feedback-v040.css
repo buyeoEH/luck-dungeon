@@ -12,3 +12,5 @@
 .guard-cue.acquired{border-color:#7dd3fc;background:#123147}
 
 .combat-cinematic.live:not(.guard-outcomes-ready)>.guard-results,.combat-cinematic.live:not(.guard-outcomes-ready)>.guard-thefts{display:none}
+
+.guard-cue.unnecessary{padding:6px 10px}.guard-cue.unnecessary strong{font-size:12px}.guard-cue.unnecessary .guard-cue-symbol{font-size:18px}

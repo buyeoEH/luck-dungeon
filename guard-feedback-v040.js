@@ -11,10 +11,10 @@ function guardActionHtml(rows){return rows.map(r=>{
 function guardCombatSteps(r){
  if(!r)return [];const rows=[],a=r.attack,c=r.combo,g=r.gauge;
  if(c.active&&(c.before>c.without||g.raw>g.without))rows.push({kind:'debuff',title:'연계 약화 · 보호 전 영향',detail:'연계 '+c.before+' → '+c.without+' / 게이지 '+g.raw+' → '+g.without+'P'});
- if(c.spent)rows.push({kind:'protected',title:'연계 보호 성공 · 보호 '+c.spent+' 소모',detail:'연계 '+c.preserved+' · 게이지 '+Math.max(0,g.after-g.without)+'P 보존 / 보호 후 '+g.after+'P'});
+ if(c.spent)rows.push({kind:'protected',title:'연계 보호 성공 · 보호 '+c.spent+' 소모',detail:'연계 '+c.preserved+' · 게이지 '+Math.max(0,g.after-g.without)+'P 보존 / 보호 후 '+g.after+'P · 변환 관통 +'+g.pierceBefore+' → +'+g.pierceAfter});
  else if(c.active&&c.before===c.after&&g.raw===g.after)rows.push({kind:'unnecessary',title:'연계 실제 손실 없음 · 보호 유지',detail:'연계와 게이지 효과가 같습니다.'});
  if(a.active&&a.before>a.without)rows.push({kind:'debuff',title:'공격력 약화 · 보호 전 영향',detail:'공격력 '+a.before+' → '+a.without});
- if(r.spent)rows.push({kind:'protected',title:'화력 '+a.preserved+' 보존 · 보호 총 '+r.spent+' 소모',detail:'보호 없음 '+a.without+' → 보호 후 '+a.after+' / 실제 공격력 '+a.after});
+ if(r.spent&&(a.preserved>0||a.spent>0))rows.push({kind:'protected',title:'화력 '+a.preserved+' 보존 · 보호 총 '+r.spent+' 소모',detail:'보호 없음 '+a.without+' → 보호 후 '+a.after+' / 실제 공격력 '+a.after});
  else if(a.active&&a.before===a.after)rows.push({kind:'unnecessary',title:'공격 실제 손실 없음 · 보호 유지',detail:'실제 공격력 '+a.after+' · 보호 소모 0'});
  return rows;
 }
