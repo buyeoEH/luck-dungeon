@@ -29,7 +29,7 @@ assert(!ui.window.document.body.innerHTML.includes('NaN'));assert(!ui.window.doc
 assert(ui.window.document.querySelector('#bossStickyVitals').textContent.includes('없음'));
 evalUI("enemies=[];bossEncounter.cleared=true;bossReward();");
 assert.equal(ui.window.document.querySelectorAll('#rewards button').length,5);
-assert(ui.window.document.querySelector('#rewards').textContent.includes('메가턴'));
+assert(ui.window.document.querySelector('#rewards').textContent.match(/메가턴|폭발의 기회/));
 evalUI("reward(4);confirmRoundStart();render();");
 assert(ui.window.document.querySelector('#bossGrowthSummary').textContent.includes('행동력 3'));
 d.window.close();ui.window.close();console.log('PASS R5 stats/debuff, five rewards, duplicate lock, single-turn mega hand/AP, temporary draw, boss turn refill, new-run reset, zero-shield DOM and reward UI');

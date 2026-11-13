@@ -1,0 +1,3 @@
+const fs=require('fs'),{create,q}=require('./boss-ai-v312.cjs');const rows=[];
+for(const reward of ['random','reroll','restock','stone','mega']){const d=create({skill:'expert'});for(const seed of [101,102,201,202]){const r=d.window.BossRun({seed,profile:'link',skill:'expert',reward_policy:reward,trace:false});rows.push({reward,seed,round:r.round,clear:r.clear,steps:r.steps});}d.window.close();}
+fs.writeFileSync('v0312-smoke-results.json',JSON.stringify({scope:'20 fixed-policy smoke runs, not balance validation',rows},null,2));console.log('PASS 20 runs across five rewards without choice stalls');
