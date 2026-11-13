@@ -28,5 +28,6 @@ def patch(g):
  g=g.replace('기본 상점 +3 / 현재 랜덤 상점 +1 일괄 재입고','기본 상점 +2 / 현재 랜덤 상점 +2 일괄 재입고')
  g=g.replace('재고가 남은 비잠금 상품 중 최대 3장 교체','품절 포함 비잠금 상품 최대 3장 교체')
  g=g.replace('🔥 메가턴','🔥 폭발의 기회').replace('메가턴 예약','폭발의 기회 예약').replace('메가턴 시작','폭발의 기회 시작').replace('메가턴 보상','폭발의 기회 보상').replace('메가턴은','폭발의 기회는')
+ g=g.replace("let val = c.type==='actionPoint' ?","let val = c.tactic ? ({tutor:'🔎 카드 1장 검색',cycle:'손패 제거 → 드로우',salvage:'손패 제거 → 자원'}[c.tactic]) : c.type==='actionPoint' ?")
  g+='\nlet tacticUsed='+logic
  return g
