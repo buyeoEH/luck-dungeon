@@ -1,0 +1,90 @@
+{
+  "ap_core": {
+    "source_png_sha256": "ec9d936a509a0e9a6aeb81d6eb5fc47321029bf5a093f11afc7cb7b86800c36f",
+    "webp_sha256": "9c0fe987f2ae60cca09bc41e5e6d687994ac26907b7c2827d734fdae89807d3a",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "deck_call": {
+    "source_png_sha256": "89894437b0c1404922f289f947ddd49213585dcae500016cfffda4d3ef4cb46d",
+    "webp_sha256": "88479e5325dfc67392551cec6d0114843b6e96b0d43708199b2c8c07d5448f37",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "hand_cycle": {
+    "source_png_sha256": "f56036d1ffeaf3a3fadda2310dc71e792b745b671a98842293d56658b4e0aa98",
+    "webp_sha256": "ae618a3e1e3fddbc09dbe491e79f03b26679b2de13e3145ca8e0eff4f3c87c09",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "hand_salvage": {
+    "source_png_sha256": "cf7f838642c3f036416e6aa0fe13250f451a35c8174f491844d3c3218fcb9819",
+    "webp_sha256": "348eb879131ee8a8459caa7c358673799a4e6fb8a46d7fbfe666f708e5a672cb",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "last_reserve": {
+    "source_png_sha256": "b3ec868db4e50717bd9dfeea206366e735bff6473ded148dab517c3f6ad16060",
+    "webp_sha256": "43c358a6e89c87756561f1cc09992a94716ea3d4577965923fb383b024bfdd32",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "tactic_blade": {
+    "source_png_sha256": "29422b6b70898c0f721dcaad213243564bb9a966dc0d7f21347d89babf41d2b1",
+    "webp_sha256": "d28b557bca334660d13743c02944acc42ca7703c2fdf24972343f7c19e2f46ec",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "tactic_blade2": {
+    "source_png_sha256": "9ce659a81ada0a37d72731bd2d43b2dddaf7c55419abb7219a102d1b863bdd1c",
+    "webp_sha256": "d7f672ac34ddb69fe1e419cccfc6f40dcb3fc9a163992f10fa9ed9494923c9c1",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "tactic_drive": {
+    "source_png_sha256": "727db35d258549808fb465724ec7f26164c12cf5d7ef0ac2a1148a8bb7f3bf92",
+    "webp_sha256": "52eb7f6562c918e33f912b8619a47e635c85aaec1c1b134a6078e389d68c4e5d",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "tactic_drive2": {
+    "source_png_sha256": "1df37d53bf4e713c9a19cc495e8d003b4a1bf02c61640b58cb5e2da644f12c9d",
+    "webp_sha256": "1f098d90b19d4a0947247d37692a57e00f3302fc833a79d4620c7e65726acf5c",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "tactic_lance": {
+    "source_png_sha256": "572b92984e1c672f2e9b4007c70ac7ea11baf6308f4dd61002871350a6f6c028",
+    "webp_sha256": "fce7f132e221866da290645d7f278d0f19aea38ec870a5ad3bd259658f7d2ef2",
+    "size": [
+      384,
+      384
+    ]
+  },
+  "tactic_link": {
+    "source_png_sha256": "d7ed3d71e26e7b6df4e8a6380afe4ee0e7e4c6eb34282955da6990530502116a",
+    "webp_sha256": "17d228e0d65461a65114d15abfee8ff7c62d6ad135318c90bd2742adad37cf92",
+    "size": [
+      384,
+      384
+    ]
+  }
+}
