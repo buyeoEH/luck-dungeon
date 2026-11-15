@@ -1,0 +1,19 @@
+{
+  "pass": true,
+  "assertions": 384,
+  "browser_layout": "not verified; local Chromium launch blocked",
+  "checks": [
+    "fixed canonical refunds",
+    "pure preview/actual protection parity",
+    "real DOM detail/select/deselect/confirm/cancel",
+    "actual draw limits",
+    "one use event per action",
+    "targeted pierce and fixed boss damage budget",
+    "first beginner AP refund once per combat",
+    "luck probability floor and all result paths",
+    "temporary/run luck caps and lifetime",
+    "future effects expire after three combat turns",
+    "successful-purchase-only discount",
+    "boss HP preserved"
+  ]
+}
