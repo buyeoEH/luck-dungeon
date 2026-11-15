@@ -24,7 +24,7 @@ def build():
  g+='\n'+(R/'selection-v0313.js').read_text()+'\n'+trial
  (P/'game.js').write_text(g)
  (P/'selection-v0313.css').write_text((R/'selection-v0313.css').read_text())
- meta.update(version='0.3.13-selection.1',stage='selection_refund_trials',release_scope='private_playtest',experiments={'default':'off','pierce':'?trialPierce=1','luck':'?trialLuck=1','both':'?trialPierce=1&trialLuck=1'},refund_rules='fixed canonical values; debuff/protection applied once; actual payout logged')
+ meta.update(version='0.3.13-selection.2',stage='selection_refund_trials',release_scope='private_playtest',experiments={'default':'off','pierce':'?trialPierce=1','luck':'?trialLuck=1','both':'?trialPierce=1&trialLuck=1'},refund_rules='fixed canonical values; debuff/protection applied once; actual payout logged')
  names=['build_v0313.py','selection-v0313.js','selection-v0313.css','trials-v0313.js']
  meta['source_tree_dirty']=meta['source_tree_dirty'] or bool(subprocess.check_output(['git','status','--porcelain','--',*names],text=True).strip())
  meta['selection_sources']={n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in names}

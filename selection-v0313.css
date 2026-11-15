@@ -11,5 +11,7 @@
 .selection-details{padding:0 12px 12px;font-size:13px;overflow-wrap:anywhere}.selection-details p{margin:8px 0}
 .selection-footer{flex:0 0 auto;z-index:4;padding:12px 8px calc(12px + env(safe-area-inset-bottom));background:#0f172af5;border-top:2px solid #64748b;backdrop-filter:blur(8px);box-shadow:0 -8px 18px #0003}
 .selection-summary{font-size:14px;font-weight:600;margin:0 0 8px;line-height:1.6;color:#fef3c7}
+#modalContent .targeted-toggle{width:100%;max-width:100%;margin:0;min-height:88px;padding:14px;text-align:left;background:transparent;color:inherit;border:0;white-space:normal;overflow-wrap:anywhere}
+.targeted-toggle:focus-visible{outline:3px solid #fbbf24;outline-offset:-4px}
 #modalContent .selection-footer button{min-height:44px}.selection-confirm{background:#047857!important}.selection-toggle:focus-visible,.selection-more:focus-visible{outline:3px solid #fbbf24;outline-offset:-4px}
 @media(max-width:380px){.selection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.selection-toggle .luck-card-icon{width:58px;height:58px}#modalContent .selection-toggle{padding:8px}.selection-toggle b{font-size:14px}.selection-details{padding:8px}}

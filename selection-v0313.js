@@ -86,5 +86,6 @@ removeChoice=function(){
   if(round===10&&bossStageActive())bossEmit('r10_diagnostic',{turn:bossEncounter.turn,deck_size:deck.length,base_attack:baseAtk(),attack:scene.attackFinal,aoe:scene.aoe,pierce:scene.pierce,ap_remaining:apState.points,resource,gems,carried_enemies:bossEncounter.initialCarry,remaining:enemies.map(e=>({name:e.name,hp:e.hp,shield:e.shield||0,core:e.coreHp||0,debuffs:enemyDebuffs(e)})),trial:window.LuckTrials313?.flags||{pierce:false,luck:false}});
   return after.apply(this,arguments);
  };
- window.LuckSelection313={refund:cardRefund313,preview:selectionPreview313,resourcePreview:resourcePreview313,metadata:c=>({...CARD_META_313.get(cardKey(c)),actionPointCost:apCost(c)}),catalog:()=>[...CARD_META_313].map(([id,m])=>({id,...m}))};
+ const currentMetadata=c=>({...CARD_META_313.get(cardKey(c)),actionPointCost:apCost(c),luckTable:window.LuckTrials313?.luckTable(c)||CARD_META_313.get(cardKey(c))?.luckTable||null});
+ window.LuckSelection313={refund:cardRefund313,preview:selectionPreview313,resourcePreview:resourcePreview313,metadata:currentMetadata,catalog:()=>[...CARD_CATALOG_313].map(([id,c])=>({id,...currentMetadata(c)}))};
 })();

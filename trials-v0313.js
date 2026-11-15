@@ -8,6 +8,7 @@ if(TRIAL_FLAGS_313.luck)RANDOM_POOL.push(...LUCK_SUPPORT_313);
 LUCK_CARD_ICONS.luck_focus313=LUCK_CARD_ICONS.luckcharm;LUCK_CARD_ICONS.luck_seed313=LUCK_CARD_ICONS.coin;
 /* TRIAL_LOGIC_313 */
 const PIERCE_HIT_313=Object.freeze({lance:6,drill:12,breaker:18,linklance:16,tactic_lance:12});
+const PIERCE_TARGETS_313=Object.freeze({breaker:2,linklance:2});
 const LUCK_TABLES_313=Object.freeze({
  spark:[45,30,25],coin:[50,25,25],dice:[52,18,30],potion:[55,20,25],box:[55,15,30],
  luckcharm:[60,20,20],luckfate:[65,20,15],
@@ -56,34 +57,53 @@ function targetedResult313(enemy,damage){
  const normal=bossApplyDamage(e,damage-bypass,'strike',0);
  return {enemy:e,damage:before-e.hp,shieldDamage:normal.shieldDamage,coreDamage:normal.coreDamage+bypass,bypass,killed:e.hp===0};
 }
-function targetedShow313(c){trialChoice313={id:c.id,selected:null};pendingChoiceCardId=c.id;pendingChoiceType='pierce313';targetedRender313();}
+function targetedPlan313(c,selected){
+ const targets=[...selected],budget=PIERCE_HIT_313[cardKey(c)];
+ if(!targets.length)return [];
+ // Divide the existing total budget; choosing two enemies must not double damage.
+ return targets.map((enemy,i)=>({target:enemy,budget:Math.floor(budget/targets.length)+(i<budget%targets.length?1:0),...targetedResult313(enemy,Math.floor(budget/targets.length)+(i<budget%targets.length?1:0))}));
+}
+function targetedShow313(c){trialChoice313={id:c.id,selected:new Set()};pendingChoiceCardId=c.id;pendingChoiceType='pierce313';targetedRender313();}
 function targetedRender313(){
  const c=hand.find(x=>x.id===trialChoice313?.id);if(!c)return;
- const host=tacticModal(c.name+' · 먼저 타격할 적 선택');const n=PIERCE_HIT_313[cardKey(c)];
- host.append(node313('p','지정 피해 '+n+' (보스는 그 예산의 25% 올림을 진체력에 우선 적용). 기존 공격·관통 효과도 유지합니다.'));
- for(const e of enemies){const p=targetedResult313(e,n);tacticButton(host,(trialChoice313.selected===e?'✓ ':'')+e.name+' · HP '+e.hp+' → '+p.enemy.hp+' · 보호막 −'+p.shieldDamage+' / 진체력 −'+p.coreDamage,()=>{trialChoice313.selected=trialChoice313.selected===e?null:e;targetedRender313();});}
- const ok=tacticButton(host,'지정 타격 확정',()=>targetedConfirm313());ok.disabled=!trialChoice313.selected;tacticButton(host,'취소',handleModalClose);
+ const host=tacticModal(c.name+' · 먼저 타격할 적 선택'),limit=PIERCE_TARGETS_313[cardKey(c)]||1,n=PIERCE_HIT_313[cardKey(c)];
+ trialChoice313.selected=new Set([...trialChoice313.selected].filter(e=>enemies.includes(e)));
+ const selected=trialChoice313.selected,plan=targetedPlan313(c,selected);
+ host.classList.add('selection-surface');
+ host.append(node313('p','최대 '+limit+'명 · 총 지정 피해 '+n+'을 선택한 적에게 나눕니다. 보스는 배정 피해의 25% 올림을 진체력에 우선 적용합니다. 기존 공격·관통 효과도 유지합니다.'));
+ const grid=node313('div',undefined,'selection-grid');
+ for(const e of enemies){
+  const row=node313('article',undefined,'selection-card'+(selected.has(e)?' is-selected':'')),p=plan.find(x=>x.target===e);
+  const button=tacticButton(row,(selected.has(e)?'✓ ':'')+e.name+' · HP '+e.hp+(p?' → '+p.enemy.hp+' · 보호막 −'+p.shieldDamage+' / 진체력 −'+p.coreDamage:''),()=>{
+   if(selected.has(e))selected.delete(e);else if(limit===1){selected.clear();selected.add(e);}else if(selected.size<limit)selected.add(e);
+   targetedRender313();
+  });button.classList.add('targeted-toggle');button.setAttribute('aria-pressed',String(selected.has(e)));button.disabled=!selected.has(e)&&selected.size>=limit&&limit>1;grid.append(row);
+ }host.append(grid);
+ const footer=node313('footer',undefined,'selection-footer'),summary=node313('p',plan.length?plan.map(p=>p.target.name+' '+p.damage+' 피해').join(' / ')+' · 실제 총 피해 '+plan.reduce((sum,p)=>sum+p.damage,0):'먼저 타격할 적을 선택하세요. 확정 전에는 소모하지 않습니다.','selection-summary');summary.setAttribute('aria-live','polite');footer.append(summary);
+ const ok=tacticButton(footer,'지정 타격 확정',()=>targetedConfirm313());ok.classList.add('selection-confirm');ok.disabled=!selected.size;tacticButton(footer,'취소',handleModalClose);host.append(footer);
 }
 function targetedConfirm313(){
- const state=trialChoice313,c=hand.find(x=>x.id===state?.id),enemy=state?.selected;
- if(!TRIAL_FLAGS_313.pierce||phase!=='hand'||!c||!enemies.includes(enemy)||!apCanUse(c)||tacticUsed.has(c.id))return false;
- const p=targetedResult313(enemy,PIERCE_HIT_313[cardKey(c)]);
+ const state=trialChoice313,c=hand.find(x=>x.id===state?.id),targets=state?.selected;
+ if(!TRIAL_FLAGS_313.pierce||phase!=='hand'||!c||!(targets instanceof Set)||!targets.size||targets.size>(PIERCE_TARGETS_313[cardKey(c)]||1)||[...targets].some(e=>!enemies.includes(e))||!apCanUse(c)||tacticUsed.has(c.id))return false;
+ const plan=targetedPlan313(c,targets);
  if(!apSpend(apCost(c),'card',cardKey(c))||!commitChoiceCard(c.id,false))return false;
  trialChoice313=null;pendingChoiceCardId=null;pendingChoiceType=null;
  tempAttack+=c.atkTemp||0;pierce+=c.pierce||0;apUsed(c);
  if(cardKey(c)==='lance'&&!trialPierceRefund313&&apEnabled()){trialPierceRefund313=true;apState.points++;apEvent('pierce_first_refund',1,{id:cardKey(c)});}
+ for(const p of plan){const enemy=p.target;
  Object.assign(enemy,p.enemy);stats.damageDealt+=p.damage;stats.pierceDamage+=p.damage;stats.targetedPierceDamage=(stats.targetedPierceDamage||0)+p.damage;
  trialState313.targetedDamage+=p.damage;trialState313.targetedCombatDamage+=p.damage;
  if(p.killed){enemies=enemies.filter(x=>x!==enemy);stats.enemiesKilled++;stats.pierceKills++;if(enemy.boss){stats.bossesKilled++;if(stats.firstBossKillRound==null)stats.firstBossKillRound=round;}}
- const changes=[];registerActionLink(c,changes);changes.forEach(x=>log(typeof x==='string'?x:x.text,'good'));updateEnemyStatus();
  log('🗡 '+c.name+' → '+enemy.name+' 지정 피해 '+p.damage+' · 보호막 '+p.shieldDamage+' / 진체력 '+p.coreDamage+' (직접 우회 '+p.bypass+')','good');
- window.Luck220?.emit('targeted_pierce',{card_id:cardKey(c),instance_id:c.id,target:enemy.name,damage:p.damage,shield_damage:p.shieldDamage,core_damage:p.coreDamage,bypass:p.bypass,killed:p.killed,scope:'hand_before_battle',counted_in_damage_dealt:true});
+ window.Luck220?.emit('targeted_pierce',{card_id:cardKey(c),instance_id:c.id,target:enemy.name,target_count:plan.length,allocated_budget:p.budget,total_budget:PIERCE_HIT_313[cardKey(c)],damage:p.damage,shield_damage:p.shieldDamage,core_damage:p.coreDamage,bypass:p.bypass,killed:p.killed,scope:'hand_before_battle',counted_in_damage_dealt:true});
+ }
+ const changes=[];registerActionLink(c,changes);changes.forEach(x=>log(typeof x==='string'?x:x.text,'good'));updateEnemyStatus();
  $('modal')?.classList.add('hide');render();return true;
 }
 (function(){
  const cost=apCost;apCost=function(c){if(TRIAL_FLAGS_313.luck&&c?.type==='random')return apEnabled()?cardKey(c)==='spark'?0:cardKey(c)==='luckfate'?2:1:0;return cost(c);};
  if(TRIAL_FLAGS_313.luck)for(const c of CARD_CATALOG_313.values())if(c.type==='random')c.text=trialLuckText313(c);
- if(TRIAL_FLAGS_313.pierce)for(const c of CARD_CATALOG_313.values())if(PIERCE_HIT_313[c.id])c.text+=' / [검증] 지정 적 먼저 '+PIERCE_HIT_313[c.id]+' 피해'+(c.id==='lance'?' / 전투 첫 관통창만 행동력 1 회복':'');
+ if(TRIAL_FLAGS_313.pierce)for(const c of CARD_CATALOG_313.values())if(PIERCE_HIT_313[c.id])c.text+=' / [검증] 최대 '+(PIERCE_TARGETS_313[c.id]||1)+'명에게 총 '+PIERCE_HIT_313[c.id]+' 지정 피해 분배'+(c.id==='lance'?' / 전투 첫 관통창만 행동력 1 회복':'');
  for(const [id,c]of CARD_CATALOG_313)CARD_META_313.set(id,Object.freeze({...CARD_META_313.get(id),selectionDescription:c.text||'기본 공격 +'+(c.atk||0),actionPointCost:apCost(c)}));
  const oldUse=use;use=function(i){
   if(trialChoice313)return;const c=hand[i];if(phase!=='hand'||!c)return oldUse.apply(this,arguments);

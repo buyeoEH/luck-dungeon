@@ -31,9 +31,35 @@ stable.window.close();
 const trial=create({trialPierce:true,trialLuck:true});init(trial);
 q(trial,"var a=cp(RANDOM_POOL.find(c=>c.id==='lance')),b=cp(RANDOM_POOL.find(c=>c.id==='lance'));deck=[a,b];hand=[a,b];enemies=[{name:'前衛',hp:1000},{name:'자원도둑',hp:6,debuffs:[{k:'resource',p:3,baseP:3,pct:false}]}];apState.points=2;use(0)");
 const ps=q(trial,'JSON.stringify({apState,stats,hand,enemies})');q(trial,'handleModalClose()');ok(q(trial,'JSON.stringify({apState,stats,hand,enemies})')===ps,'pierce cancel preserves state');
-q(trial,'use(0);trialChoice313.selected=enemies[1];targetedConfirm313()');ok(q(trial,'enemies.length')===1&&q(trial,'enemies[0].hp')===1000,'target back enemy directly');ok(q(trial,'apState.points')===2,'first beginner refund');ok(q(trial,"gain('resource',6)")===6,'killed thief no longer debuffs');ok(q(trial,'stats.damageDealt')===6&&q(trial,'stats.targetedPierceDamage')===6,'targeted damage counted once');q(trial,'use(0);trialChoice313.selected=enemies[0];targetedConfirm313()');ok(q(trial,'apState.points')===1,'second beginner no refund');ok(q(trial,'targetedConfirm313()')===false,'pierce duplicate confirm');
+q(trial,'use(0);trialChoice313.selected=new Set([enemies[1]]);targetedConfirm313()');ok(q(trial,'enemies.length')===1&&q(trial,'enemies[0].hp')===1000,'target back enemy directly');ok(q(trial,'apState.points')===2,'first beginner refund');ok(q(trial,"gain('resource',6)")===6,'killed thief no longer debuffs');ok(q(trial,'stats.damageDealt')===6&&q(trial,'stats.targetedPierceDamage')===6,'targeted damage counted once');q(trial,'use(0);trialChoice313.selected=new Set([enemies[0]]);targetedConfirm313()');ok(q(trial,'apState.points')===1,'second beginner no refund');ok(q(trial,'targetedConfirm313()')===false,'pierce duplicate confirm');
 ok(q(trial,'JSON.stringify(targetedResult313({boss:true,hp:110,shield:40,coreHp:70},6))')===JSON.stringify({enemy:{boss:true,hp:104,shield:36,coreHp:68},damage:6,shieldDamage:4,coreDamage:2,bypass:2,killed:false}),'boss fixed total budget and direct core');
-init(trial);q(trial,"var c=cp(RANDOM_POOL.find(c=>c.id==='drill'));deck=[c];hand=[c];enemies=[{hp:100,name:'QA'}];apState.points=2;use(0);trialChoice313.selected=enemies[0];targetedConfirm313()");ok(q(trial,'apState.points')===1,'upper pierce costs AP without first refund');
+init(trial);q(trial,"var c=cp(RANDOM_POOL.find(c=>c.id==='drill'));deck=[c];hand=[c];enemies=[{hp:100,name:'QA'}];apState.points=2;use(0);trialChoice313.selected=new Set([enemies[0]]);targetedConfirm313()");ok(q(trial,'apState.points')===1,'upper pierce costs AP without first refund');
+// Promotion targeting: selection is reversible; the existing total damage is split.
+for(const id of ['breaker','linklance']){
+ init(trial);q(trial,`var c=cp(CARD_CATALOG_313.get('${id}'));deck=[c];hand=[c];enemies=[{name:'앞',hp:100},{name:'보스',boss:true,hp:140,shield:40,coreHp:100},{name:'뒤',hp:100}];apState.points=2;use(0)`);
+ host=trial.window.document.getElementById('modalContent');host.querySelectorAll('.targeted-toggle')[0].click();host.querySelectorAll('.targeted-toggle')[1].click();
+ ok(q(trial,'trialChoice313.selected.size')===2,'promotion two target selection '+id);
+ ok(host.querySelectorAll('.targeted-toggle')[2].disabled,'third target disabled '+id);
+ const budget=q(trial,'PIERCE_HIT_313[cardKey(c)]'),before=q(trial,'stats.cardsUsed'),cost=q(trial,'apCost(c)'),preview=q(trial,'targetedPlan313(c,trialChoice313.selected).reduce((n,p)=>n+p.damage,0)');
+ ok(preview===budget,'split total budget '+id);ok(host.querySelector('.selection-summary').textContent.includes('실제 총 피해 '+budget),'split preview displayed '+id);
+ host.querySelector('.selection-confirm').click();ok(q(trial,'stats.targetedPierceDamage')===preview,'split preview equals damage '+id);
+ ok(q(trial,'stats.cardsUsed')===before+1,'split card use once '+id);ok(q(trial,'apState.points')===2-cost,'split AP once '+id);
+ ok(q(trial,"Luck220.events().filter(e=>e.event_type==='targeted_pierce').reduce((n,e)=>n+e.payload.damage,0)")===budget,'split damage telemetry once '+id);
+ ok(q(trial,"Luck220.events().filter(e=>e.event_type==='card_used'&&e.payload.instance_id===c.id).length")===1,'split card telemetry once '+id);
+ ok(q(trial,'enemies[1].coreHp')<100,'split boss bypass '+id);
+}
+init(trial);q(trial,"var c=cp(CARD_CATALOG_313.get('breaker'));deck=[c];hand=[c];enemies=[{name:'약한 적',hp:1},{name:'다른 적',hp:100}];use(0);trialChoice313.selected=new Set(enemies)");
+ok(q(trial,'targetedPlan313(c,trialChoice313.selected).reduce((n,p)=>n+p.damage,0)')===10,'overkill not counted or redistributed');
+q(trial,'var beforeState313=JSON.stringify({hand,enemies,stats,apState});enemies.push({hp:100});trialChoice313.selected=new Set(enemies)');
+ok(q(trial,'targetedConfirm313()')===false,'too many injected targets rejected');
+q(trial,'trialChoice313.selected=new Set([{}])');ok(q(trial,'targetedConfirm313()')===false,'stale enemy rejected');
+q(trial,'trialChoice313.selected=new Set([enemies[0]]);apState.points=0');ok(q(trial,'targetedConfirm313()')===false,'no AP rejects target commit');
+init(trial);q(trial,"var c=cp(CARD_CATALOG_313.get('breaker'));deck=[c];hand=[c];enemies=[{name:'약한 적1',hp:1},{name:'약한 적2',hp:1}];use(0);trialChoice313.selected=new Set(enemies);targetedConfirm313()");
+ok(q(trial,'enemies.length')===0&&q(trial,'stats.enemiesKilled')===2,'multi-target kills counted once');
+ok(q(trial,'stats.targetedPierceDamage')===2,'multi-target overkill actual damage');
+q(trial,"trialState313.tempLuck=3;trialState313.runLuck=3");
+ok(q(trial,"LuckSelection313.metadata(CARD_CATALOG_313.get('coin')).luckTable.bad")===15,'common metadata exposes effective probability');
+ok(q(trial,"LuckSelection313.catalog().find(c=>c.id==='coin').luckTable.bad")===15,'catalog exposes effective probability');
 for(const strength of [0,1,3,6,999])for(const id of q(trial,'Object.keys(LUCK_TABLES_313)')){
  q(trial,`trialState313.tempLuck=${strength};trialState313.runLuck=${strength}`);const t=q(trial,`luckTable313(CARD_CATALOG_313.get('${id}'))`);ok(t.good+t.neutral+t.bad===100&&t.bad>=15,'probability sum and bad floor '+id);
 }
@@ -49,5 +75,5 @@ for(let i=1;i<=4;i++){q(trial,'drawStart()');ok(q(trial,'trialState313.tempLuck'
 q(trial,"phase='shop';resource=100;apState.points=3;trialState313.runBoon=1;trialState313.runCurse=0;trialState313.shopUsed=false;var c=BASIC.find(x=>x.id==='hand');buyCount[c.id]=0;var basePrice=c.price;var offered=p5Price(c);buyBasic(c.id)");ok(q(trial,'offered')===q(trial,'basePrice')-1,'run boon first purchase discount');ok(q(trial,'p5Price(c)')===q(trial,'basePrice'),'discount consumed on successful purchase');
 ok(q(trial,'JSON.stringify(LUCK_BOSS_TABLE)')===JSON.stringify(JSON.parse(fs.readFileSync('boss-table.json','utf8'))),'actual boss HP table unchanged');
 trial.window.close();
-fs.writeFileSync('v0313-test-results.json',JSON.stringify({pass:true,assertions:checks,browser_layout:'not verified; local Chromium launch blocked',checks:['fixed canonical refunds','pure preview/actual protection parity','real DOM detail/select/deselect/confirm/cancel','actual draw limits','one use event per action','targeted pierce and fixed boss damage budget','first beginner AP refund once per combat','luck probability floor and all result paths','temporary/run luck caps and lifetime','future effects expire after three combat turns','successful-purchase-only discount','boss HP preserved']},null,2));
+fs.writeFileSync('v0313-test-results.json',JSON.stringify({pass:true,assertions:checks,browser_layout:'not verified; local Chromium launch blocked',checks:['fixed canonical refunds','pure preview/actual protection parity','real DOM detail/select/deselect/confirm/cancel','actual draw limits','one use event per action','targeted pierce and fixed boss damage budget','promotion multi-target split budget, AP once, stale/overlimit guards','first beginner AP refund once per combat','luck probability floor and all result paths','temporary/run luck caps and lifetime','future effects expire after three combat turns','successful-purchase-only discount','boss HP preserved']},null,2));
 console.log('PASS '+checks+' assertions');

@@ -1,6 +1,6 @@
 {
   "pass": true,
-  "assertions": 384,
+  "assertions": 412,
   "browser_layout": "not verified; local Chromium launch blocked",
   "checks": [
     "fixed canonical refunds",
@@ -9,6 +9,7 @@
     "actual draw limits",
     "one use event per action",
     "targeted pierce and fixed boss damage budget",
+    "promotion multi-target split budget, AP once, stale/overlimit guards",
     "first beginner AP refund once per combat",
     "luck probability floor and all result paths",
     "temporary/run luck caps and lifetime",
