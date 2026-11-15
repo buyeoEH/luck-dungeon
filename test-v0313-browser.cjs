@@ -1,8 +1,9 @@
 /* Run after build_v0313.py with Playwright Chromium available. No server required. */
 const {chromium}=require('playwright'),fs=require('fs'),path=require('path'),assert=require('assert');
 const root=path.join(__dirname,'_site/preview/v0.3-ap-final');
+let browser;
 (async()=>{
- const browser=await chromium.launch({headless:true,...(process.env.LUCK_CHROMIUM?{executablePath:process.env.LUCK_CHROMIUM}:{})});
+ browser=await chromium.launch({headless:true,...(process.env.LUCK_CHROMIUM?{executablePath:process.env.LUCK_CHROMIUM}:{})});
  const page=await browser.newPage(),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',async route=>{const url=new URL(route.request().url());if(url.hostname!=='luck.test')return route.abort();const f=path.join(root,decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname));if(!f.startsWith(root+path.sep)||!fs.existsSync(f))return route.abort();await route.fulfill({path:f,contentType:({'.html':'text/html','.js':'application/javascript','.css':'text/css','.webp':'image/webp','.png':'image/png'})[path.extname(f)]||'application/octet-stream'});});
  await page.goto('https://luck.test/');await page.getByRole('button',{name:/일반 게임/}).click();
@@ -17,4 +18,4 @@ const root=path.join(__dirname,'_site/preview/v0.3-ap-final');
   await content.getByRole('button',{name:'취소',exact:true}).click();checks.push({width,footer_fixed:true,details_separate:true,no_overflow:true});
  }
  assert.deepEqual(errors,[]);fs.writeFileSync('v0313-browser-results.json',JSON.stringify({pass:true,checks,errors},null,2));await browser.close();console.log('PASS browser selection and responsive layout');
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(async e=>{console.error(e);await browser?.close();process.exitCode=1;});
