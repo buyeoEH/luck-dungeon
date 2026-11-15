@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 7c5d4255957cf1ba9ffdf5cb8fe06fc5f12a7e0d
+          ref: 0cbcb211c15e54f2f83ebf1dca5ee28bb692abea
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -73,9 +73,9 @@ jobs:
               subprocess.run(['python',script],check=True)
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
           assert meta['version']=='0.3.13-selection.2' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='7c5d4255957cf1ba9ffdf5cb8fe06fc5f12a7e0d'
+          assert meta['git_sha']=='0cbcb211c15e54f2f83ebf1dca5ee28bb692abea'
           for test in ['test-v0313.cjs','test-boss.cjs','test-v0312.cjs','test-v0313-browser.cjs']:
-              subprocess.run(['node',test],check=True)
+              subprocess.run(['node',test],check=True,timeout=180)
           subprocess.run(['python','prepare_release_audio.py'],check=True)
           subprocess.run(['python','package_boss_audio.py'],check=True)
           import build_v030_standalone as standalone
