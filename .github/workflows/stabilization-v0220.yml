@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: ${{ contains(github.event.head_commit.message, '[restart-preflight]') }}
 jobs:
   validate:
-    if: ${{ github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && !contains(github.event.head_commit.message, '[deploy-v030]') && !contains(github.event.head_commit.message, '[deploy-ap]') && !(github.event_name == 'workflow_dispatch' && inputs.deploy_web) }}
+    if: ${{ github.ref == 'refs/heads/feature/game-v0.2.20-stabilization' && !contains(github.event.head_commit.message, '[deploy-v030]') && !contains(github.event.head_commit.message, '[deploy-ap]') && !contains(github.event.head_commit.message, '[deploy-v0313]') && !(github.event_name == 'workflow_dispatch' && inputs.deploy_web) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
