@@ -8,12 +8,12 @@ const root=path.join(__dirname,'_site/preview/v0.3-ap-final');let browser;
  for(const width of [320,390,430,960]){
   await page.setViewportSize({width,height:844});
   await page.evaluate(()=>{phase='hand';round=20;bossEncounter={round:20,turn:1,cleared:false,spec:bossSpec(20)};tacticUsed=new Set();apState.points=2;enemies=[{id:'boss314',name:'운명의 수호자',boss:true,hp:320,shield:80,coreHp:240,shieldMax:80,coreMax:240}];var a=cp(CARD_CATALOG_313.get('breaker')),b=cp(CARD_CATALOG_313.get('d5'));hand=[a,b];deck=[...hand];draw=[];graveyard=[];pendingChoiceCardId=null;pendingChoiceType=null;trialChoice313=null;tacticChoice=null;apWarning314=null;$('modal').classList.add('hide');render();});
-  await page.locator('#hand button').nth(1).click();
+  await page.locator('#hand button[onclick="use(1)"]').click();
   assert((await page.locator('#modalTitle').innerText()).includes('파쇄창'));assert.equal(await page.evaluate(()=>apState.points),2);
   await page.getByRole('button',{name:'돌아가기',exact:true}).click();assert.equal(await page.evaluate(()=>hand.length),2);
-  await page.locator('#hand button').nth(1).click();await page.getByRole('button',{name:'행동력을 소모하고 계속',exact:true}).click();assert.equal(await page.evaluate(()=>apState.points),1);
+  await page.locator('#hand button[onclick="use(1)"]').click();await page.getByRole('button',{name:'행동력을 소모하고 계속',exact:true}).click();assert.equal(await page.evaluate(()=>apState.points),1);
   await page.evaluate(()=>{handleModalClose();phase='hand';apState.points=2;tacticUsed=new Set();var c=cp(CARD_CATALOG_313.get('lance'));hand=[c];deck=[c];render();});
-  await page.locator('#hand button').first().click();await page.locator('.targeted-toggle').click();await page.getByRole('button',{name:'지정 타격 확정',exact:true}).click();
+  await page.locator('#hand button[onclick="use(0)"]').click();await page.locator('.targeted-toggle').click();await page.getByRole('button',{name:'지정 타격 확정',exact:true}).click();
   assert((await page.locator('.pierce-target314').innerText()).includes('320 → 314'));assert((await page.locator('.pierce-target314').innerText()).includes('80 → 76'));
   assert.equal(await page.evaluate(()=>enemies[0].coreHp),238);assert.equal(await page.locator('[data-enemy-id="boss314"]').getAttribute('class').then(c=>c.includes('pierce-flash314')),true);
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no horizontal overflow');
