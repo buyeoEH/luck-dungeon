@@ -61,7 +61,7 @@ function apWarningShow314(action,resume,leave=false){
   if(apWarning314)return;const c=hand[i],r=breakerReadiness314();
   if(c&&r&&phase==='hand'&&r.ready&&c.id!==r.card.id&&!apBypass314&&!window.__luckAutoLabBotActive&&!pendingChoiceCardId){
    const cost=apCost(c),refill=(c.apGain||0)+(TRIAL_FLAGS_313.pierce&&cardKey(c)==='lance'&&!trialPierceRefund313?1:0);
-   if(cost>0&&apCanUse(c)&&apState.points-cost+refill<r.cost){const id=c.id;return apWarningShow314(c.name+' 사용',()=>{const j=hand.findIndex(x=>x.id===id);if(j>=0)use(j);});}
+   if(cost>0&&tacticAvailable(c)&&apState.points-cost+refill<r.cost){const id=c.id;return apWarningShow314(c.name+' 사용',()=>{const j=hand.findIndex(x=>x.id===id);if(j>=0)use(j);});}
   }return use0.apply(this,arguments);
  };
  const next0=next;next=function(){if(apWarning314)return;const r=breakerReadiness314();if(phase==='hand'&&r&&enemies.length&&(r.ready||r.canRefill)&&!apBypass314&&!window.__luckAutoLabBotActive&&!pendingChoiceCardId)return apWarningShow314('상점으로 이동',()=>next(),true);return next0.apply(this,arguments);};

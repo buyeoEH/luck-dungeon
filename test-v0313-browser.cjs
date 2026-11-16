@@ -9,7 +9,8 @@ let browser;
  await page.goto('https://luck.test/');await page.getByRole('button',{name:/일반 게임/}).click();
  for(const width of [320,390,430,960]){
   await page.setViewportSize({width,height:844});
-  await page.evaluate(()=>{phase='hand';apState.points=2;tacticUsed=new Set();var source=cp(TACTIC_CARDS.find(c=>c.id==='hand_cycle'));hand=[source,...PROMOS.slice(0,25).map(p=>cp(p.card))];deck=[...hand];draw=[];graveyard=[];use(0);});
+  // Leave two AP for the breaker in this fixture; its new warning is tested separately.
+  await page.evaluate(()=>{phase='hand';apState.points=3;tacticUsed=new Set();var source=cp(TACTIC_CARDS.find(c=>c.id==='hand_cycle'));hand=[source,...PROMOS.slice(0,25).map(p=>cp(p.card))];deck=[...hand];draw=[];graveyard=[];use(0);});
   const content=page.locator('#modalContent');await content.locator('.selection-more').first().click();assert.equal(await page.evaluate(()=>tacticChoice.selected.size),0);
   await content.locator('.selection-toggle').first().click();assert.equal(await page.evaluate(()=>tacticChoice.selected.size),1);assert((await content.locator('.selection-summary').innerText()).includes('최대 0장 드로우'));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow');

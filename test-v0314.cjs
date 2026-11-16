@@ -26,6 +26,7 @@ warningFixture();q(d,"hand[1]=cp(CARD_CATALOG_313.get('mine'));use(1)");ok(q(d,'
 warningFixture();q(d,"hand[1]=cp(CARD_CATALOG_313.get('lance'));use(1)");ok(q(d,'apWarning314')===null&&!!q(d,'trialChoice313'),'guaranteed first refund avoids false warning');q(d,'handleModalClose()');
 warningFixture();q(d,'apState.points=1;gems=1;LuckCombatFeedback314.render()');ok(d.window.document.getElementById('breakerReadiness314').textContent.includes('보석 1개로 보충 가능'),'refill readiness');
 warningFixture();q(d,'enemies=[];use(1)');ok(q(d,'apWarning314')===null,'no target no warning');
+warningFixture();q(d,"hand[1]=cp(LUCK_SUPPORT_313[1]);trialState313.runLuck=3;use(1)");ok(q(d,'apWarning314')===null&&q(d,'apState.points')===2,'unusable capped card does not warn or spend');
 warningFixture();q(d,'window.__luckAutoLabBotActive=true;use(1)');ok(q(d,'apWarning314')===null&&q(d,'stats.cardsUsed')===1,'AI policy unchanged');
 ok(q(d,'JSON.stringify(LUCK_BOSS_TABLE)')===JSON.stringify(JSON.parse(fs.readFileSync('boss-table.json','utf8'))),'boss HP unchanged');
 init();q(d,"round=20;phase='battle';bossEncounter={round:20,turn:1,cleared:false,spec:bossSpec(20)};enemies=[{id:'b314',name:'QA 보스',boss:true,hp:226,shield:0,coreHp:226}];deck=[{id:'q314',name:'QA 검',type:'attack',atk:100}];hand=[];draw=[];graveyard=[];bonusAtk=0;tempAttack=0;aoeAttack=0;pierce=2;linkComboAttack=0;p1ResetRun();prot={attack:0,combo:0,gem:0,resource:0,all:0};dangerActive=true;$('battleMotionSkipToggle').checked=true;battle()");
