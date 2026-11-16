@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "assertions": 39,
+  "checks": [
+    "actual target HP and split unchanged",
+    "persistent feedback and before/after telemetry",
+    "exclusive transfer/direct/targeted totals",
+    "idempotent settlement",
+    "cancel preserves AP and cards",
+    "AP warning continue/cancel/use breaker first",
+    "phase-exit warning",
+    "free/refund actions and AI unaffected",
+    "boss HP preserved"
+  ]
+}

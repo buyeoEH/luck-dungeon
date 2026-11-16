@@ -1,0 +1,38 @@
+const assert=require('assert'),fs=require('fs'),{create,q}=require('./boss-ai-v313.cjs');
+const d=create({trialPierce:true,trialLuck:true});let count=0;const ok=(x,label)=>{assert(x,label);count++;};
+function init(){q(d,"AutoLab.begin(314);phase='hand';hand=[];deck=[];draw=[];graveyard=[];tacticUsed=new Set();enemies=[{id:'boss314',name:'운명의 수호자',boss:true,hp:320,shield:80,coreHp:240}];resource=0;gems=0;apState.points=2;pendingChoiceCardId=null;pendingChoiceType=null;tacticChoice=null;apWarning314=null;window.__luckAutoLabBotActive=true;");}
+init();q(d,"var c=cp(CARD_CATALOG_313.get('lance'));hand=[c];deck=[c];use(0);trialChoice313.selected=new Set(enemies);targetedConfirm313()");
+ok(q(d,'enemies[0].hp')===314,'damage unchanged');ok(q(d,'enemies[0].shield')===76&&q(d,'enemies[0].coreHp')===238,'boss split unchanged');
+const event=q(d,"Luck220.events().filter(e=>e.event_type==='targeted_pierce').at(-1).payload");
+ok(event.hp_before===320&&event.hp_after===314&&event.shield_before===80&&event.core_after===238,'target event before/after');
+ok(d.window.document.querySelector('.pierce-target314').textContent.includes('320 → 314'),'persistent HP feedback');
+ok(d.window.document.querySelector('.pierce-target314').textContent.includes('80 → 76'),'persistent shield feedback');
+ok(q(d,'stats.pierceBreakdown314.targeted_damage')===6,'targeted counted once');
+const last=q(d,'feedback314.serial');q(d,'LuckCombatFeedback314.render();LuckCombatFeedback314.render()');ok(q(d,'feedback314.serial')===last,'render does not repeat hit');
+q(d,"var scene314={events:[{type:'pierce',damage:52,corePierceDamage:4},{type:'strike',damage:128,corePierceDamage:21},{type:'aoe',hits:[{damage:20}]}]};var split314=LuckCombatFeedback314.settle(scene314)");
+ok(q(d,'split314.transfer_damage')===48,'direct removed from transfer');ok(q(d,'split314.boss_direct_damage')===25,'direct all strikes');ok(q(d,'split314.targeted_damage')===6,'targeted retained');ok(q(d,'split314.total_damage')===79,'exclusive total');
+const stats=q(d,'JSON.stringify(stats)');q(d,'LuckCombatFeedback314.settle(scene314)');ok(q(d,'JSON.stringify(stats)')===stats,'settle idempotent');
+ok(q(d,"LuckCombatFeedback314.classify([{type:'strike',damage:128,corePierceDamage:21}],0).total_damage")===21,'boss-only direct not zero');
+init();q(d,"var c=cp(CARD_CATALOG_313.get('lance'));deck=[c];hand=[c];use(0)");const before=q(d,'JSON.stringify({stats,hand,enemies,apState})');q(d,'handleModalClose()');ok(q(d,'JSON.stringify({stats,hand,enemies,apState})')===before,'target cancel pure');ok(q(d,'feedback314.hit')===null,'cancel no hit feedback');
+function warningFixture(){init();q(d,"var breaker314=cp(CARD_CATALOG_313.get('breaker')),draw314=cp(CARD_CATALOG_313.get('d5'));hand=[breaker314,draw314];deck=[...hand];draw=[];window.__luckAutoLabBotActive=false;");}
+warningFixture();const state=q(d,'JSON.stringify({apState,stats,hand,draw,graveyard,resource,gems})');q(d,'use(1)');
+ok(!!q(d,'apWarning314'),'warning before spend');ok(q(d,'JSON.stringify({apState,stats,hand,draw,graveyard,resource,gems})')===state,'warning preserves resources/card/AP');
+let host=d.window.document.getElementById('modalContent');const button=t=>[...host.querySelectorAll('button')].find(x=>x.textContent===t);
+button('돌아가기').click();ok(q(d,'apWarning314')===null,'warning cancels');ok(q(d,'apState.points')===2,'cancel no AP');
+q(d,'use(1)');button('행동력을 소모하고 계속').click();ok(q(d,'apState.points')===1,'continue spends once');ok(q(d,'stats.cardsUsed')===1&&q(d,'hand.length')===1,'continue uses one card');ok(q(d,'apWarning314')===null,'no warning recursion');
+warningFixture();q(d,'use(1)');button('파쇄창 먼저 사용').click();ok(q(d,"trialChoice313.id===breaker314.id"),'can choose breaker first');ok(q(d,'apState.points')===2&&q(d,'stats.cardsUsed')===0,'target choice still no spend');q(d,'handleModalClose()');
+warningFixture();q(d,'next()');ok(!!q(d,'apWarning314'),'leaving hand warns');ok(q(d,'phase')==='hand','phase unchanged before choice');button('그대로 상점으로 이동').click();ok(q(d,'phase')==='shop','leave explicitly proceeds');
+warningFixture();q(d,"hand[1]=cp(CARD_CATALOG_313.get('mine'));use(1)");ok(q(d,'apWarning314')===null&&q(d,'apState.points')===2,'free action no warning');
+warningFixture();q(d,"hand[1]=cp(CARD_CATALOG_313.get('lance'));use(1)");ok(q(d,'apWarning314')===null&&!!q(d,'trialChoice313'),'guaranteed first refund avoids false warning');q(d,'handleModalClose()');
+warningFixture();q(d,'apState.points=1;gems=1;LuckCombatFeedback314.render()');ok(d.window.document.getElementById('breakerReadiness314').textContent.includes('보석 1개로 보충 가능'),'refill readiness');
+warningFixture();q(d,'enemies=[];use(1)');ok(q(d,'apWarning314')===null,'no target no warning');
+warningFixture();q(d,'window.__luckAutoLabBotActive=true;use(1)');ok(q(d,'apWarning314')===null&&q(d,'stats.cardsUsed')===1,'AI policy unchanged');
+ok(q(d,'JSON.stringify(LUCK_BOSS_TABLE)')===JSON.stringify(JSON.parse(fs.readFileSync('boss-table.json','utf8'))),'boss HP unchanged');
+init();q(d,"round=20;phase='battle';bossEncounter={round:20,turn:1,cleared:false,spec:bossSpec(20)};enemies=[{id:'b314',name:'QA 보스',boss:true,hp:226,shield:0,coreHp:226}];deck=[{id:'q314',name:'QA 검',type:'attack',atk:100}];hand=[];draw=[];graveyard=[];bonusAtk=0;tempAttack=0;aoeAttack=0;pierce=2;linkComboAttack=0;p1ResetRun();prot={attack:0,combo:0,gem:0,resource:0,all:0};dangerActive=true;$('battleMotionSkipToggle').checked=true;battle()");
+ok(q(d,"Luck220.events().filter(e=>e.event_type==='battle_resolved').at(-1).payload.pierce_breakdown.boss_direct_damage")===20,'real battle direct telemetry');
+ok(q(d,'Luck220.snapshot().live.combat_summary.official.boss_direct_pierce_damage')===20,'archive direct sum');
+ok(q(d,'Luck220.snapshot().live.combat_summary.official.transfer_pierce_damage')===0,'archive transfer excludes direct');
+ok(q(d,'Luck220.snapshot().live.combat_summary.official.exclusive_pierce_total')===20,'archive exclusive total');
+ok(q(d,"LuckHistory.exportText(Luck220.snapshot()).includes('PIERCE_SPLIT=')"),'TXT split export');
+ok(q(d,'stats.pierceBreakdown314.boss_direct_damage')===20,'real battle stats persisted');
+d.window.close();fs.writeFileSync('v0314-test-results.json',JSON.stringify({pass:true,assertions:count,checks:['actual target HP and split unchanged','persistent feedback and before/after telemetry','exclusive transfer/direct/targeted totals','idempotent settlement','cancel preserves AP and cards','AP warning continue/cancel/use breaker first','phase-exit warning','free/refund actions and AI unaffected','boss HP preserved']},null,2));console.log('PASS '+count+' feedback assertions');

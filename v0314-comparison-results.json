@@ -1,0 +1,52 @@
+{
+  "scope": "192 fixed-policy seeded simulations; starting balance proposal, not player validation or causal win-rate evidence. Luck mode adds two shop cards, changing shop composition/RNG paths. Same seeds do not imply identical encounters after divergent decisions.",
+  "policy": "expert v0313 greedy target: debuff enemy first then lowest HP; random boss rewards; 4 archetypes × 12 seeds × 4 modes",
+  "summary": [
+    {
+      "mode": "baseline",
+      "runs": 48,
+      "r10_reached": 48,
+      "r10_clears": 40,
+      "r10_failures": 8,
+      "r30_clears": 0,
+      "mean_final_round": 20.208333333333332,
+      "targeted_damage": 0,
+      "luck_events": 0
+    },
+    {
+      "mode": "pierce",
+      "runs": 48,
+      "r10_reached": 48,
+      "r10_clears": 41,
+      "r10_failures": 7,
+      "r30_clears": 1,
+      "mean_final_round": 20.416666666666668,
+      "targeted_damage": 745,
+      "luck_events": 0
+    },
+    {
+      "mode": "luck",
+      "runs": 48,
+      "r10_reached": 44,
+      "r10_clears": 41,
+      "r10_failures": 3,
+      "r30_clears": 2,
+      "mean_final_round": 19.791666666666668,
+      "targeted_damage": 0,
+      "luck_events": 465
+    },
+    {
+      "mode": "both",
+      "runs": 48,
+      "r10_reached": 44,
+      "r10_clears": 43,
+      "r10_failures": 1,
+      "r30_clears": 2,
+      "mean_final_round": 20.3125,
+      "targeted_damage": 842,
+      "luck_events": 477
+    }
+  ],
+  "runs_checked": 192,
+  "scope_note": "UI-only regression: same R10/R30 summary as v0313-comparison-results.json; source policies and seed ranges unchanged."
+}
