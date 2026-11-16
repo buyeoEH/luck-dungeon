@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 768cb66b83df0f1de5be4eb0adf78f9e9bb8f3ee
+          ref: 5aef19bcc4899336b0ba7a17e284a0b3e9809f45
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -73,7 +73,7 @@ jobs:
               subprocess.run(['python',script],check=True)
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
           assert meta['version']=='0.3.14-feedback.1' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='768cb66b83df0f1de5be4eb0adf78f9e9bb8f3ee'
+          assert meta['git_sha']=='5aef19bcc4899336b0ba7a17e284a0b3e9809f45'
           for test in ['test-v0313.cjs','test-v0314.cjs','test-boss.cjs','test-v0312.cjs','test-v0313-browser.cjs','test-v0314-browser.cjs']:
               subprocess.run(['node',test],check=True,timeout=180)
           subprocess.run(['python','prepare_release_audio.py'],check=True)
