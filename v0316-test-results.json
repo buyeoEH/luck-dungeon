@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "assertions": 286,
+  "checks": [
+    "100/70/50 rear hits without first kill",
+    "one/two-target redistribution and rounding",
+    "active and passive boundaries; AP spend/refund/warning",
+    "shared forecast/actual boss HP parity and preview purity",
+    "link carry only base; boss direct link only",
+    "exclusive card/link/direct totals and archive",
+    "legacy luck and boss HP retained"
+  ],
+  "tail_rates": "4+ are provisional 35/25/17..."
+}
