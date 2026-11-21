@@ -62,6 +62,7 @@ function mutate315(spec,changes){const candidates=mutationTargets315(spec.family
  if(key==='sam'){c.combo={...c.combo,bonus:(c.combo?.bonus||0)+10*s};boost.combo=10*s;}
  const extra=high?({mine:{gem:1},chain:{guard:1},gem:{guard:1},sam:{link:8},gold:{gem:1},hand:{guard:1}}[key]):{};
  c.mutation315={original:key,tier:spec.tier,boost:{...boost},extra:{...extra},combat:bossCombatNo};c.text=(c.text||'')+' / 🧬 변이: '+Object.entries(boost).map(([k,v])=>({res:'자원',draw:'드로우',gem:'보석',atk:'덱 공격',combo:'3장 연격 보너스'}[k]||k)+' +'+v).join(' · ')+(Object.keys(extra).length?' / 전투당 첫 손패 등장 시 '+effectText315(extra):'');
+ if(hand.some(h=>h.id===c.id))applyMutationHand315(changes);
  luckState315.mutations++;changes.push('🧬 ['+c.name+'] 변이 · 원본 '+(CARD_NAME[key]||c.name)+' 유지 · '+c.text);return {instance_id:c.id,card_id:key,mutation:structuredClone(c.mutation315),fallback:false};}
 function major315(spec,changes){const good=Math.random()<.7,s=LUCK_TIERS_315[spec.tier].scale,f=spec.family;
  const goodEffects={attack:{attack:15*s,pierce:1},resource:{resource:8*s,gem:s},draw:{draw:2+s,ap:1},guard:{guard:2+s,attack:5*s},link:{link:16*s,pierce:1},all:{attack:10*s,resource:5*s,guard:s}};
@@ -112,6 +113,7 @@ function applyMutationHand315(changes){for(const c of hand)if(c.mutation315&&!mu
  const strategy=strategyText;strategyText=function(c){return LUCK_CARDS_315[cardKey(c)]?luckText315(c):strategy(c);};
  const metadata=metadataText313;metadataText313=function(c){const s=LUCK_CARDS_315[cardKey(c)];return metadata(c)+(s?' · '+luckText315(c):'')+(c.mutation315?' · 🧬 원본 유지 / 이번 런 1회 변이 / 승급 시 미계승 · '+c.text:'');};
  const detail=detail313;detail313=function(c,host){const box=detail(c,host),s=LUCK_CARDS_315[cardKey(c)];if(s){if(!s.family){for(const [label,good]of [['행운 목록',true],['불운 목록',false]])box.append(node313('p',label+': '+usagePool315(s.tier,good).map(e=>e.curse?'불운 카드 1장 획득':effectText315(e)).join(' / ')));}box.append(node313('p','파괴된 경우에만: '+LUCK_DESTROY_315.map((label,i)=>label+' '+LUCK_TIERS_315[s.tier].destroy[i]+'%').join(' / ')));box.append(node313('p','레전드·일반 카드·큰 영향·변이는 '+LUCK_FAMILY_315[s.family||'all']+' 계열. 변이 대상이 없으면 같은 계열 일반 카드로 대체합니다. 큰 영향: 혜택 70% / 위험 30%.'));}return box;};
+ const tutor0=tacticConfirm;tacticConfirm=function(){const out=tutor0.apply(this,arguments);if(out){const changes=[];applyMutationHand315(changes);if(changes.length){log('🧬 검색한 카드 변이 효과 · '+changes.join(' / '),'good');render();}}return out;};
  const draw0=drawCards;drawCards=function(){const out=draw0.apply(this,arguments);if(phase==='hand'){const changes=[];applyMutationHand315(changes);if(changes.length)log('🧬 변이 손패 효과 · '+changes.join(' / '),'good');}return out;};
  const oldCost=apCost;apCost=function(c){if(c?.type==='luckLegend315')return apEnabled()?1:0;if(LUCK_CARDS_315[cardKey(c||{})])return apEnabled()?cardKey(c)==='spark'?0:cardKey(c)==='luckfate'?2:1:0;return oldCost(c);};
  const start0=start;start=function(){resetLuck315();const out=start0.apply(this,arguments);stats.luck315=luckState315;return out;};

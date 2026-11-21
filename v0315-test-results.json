@@ -1,6 +1,6 @@
 {
   "pass": true,
-  "assertions": 227,
+  "assertions": 230,
   "scope": "deterministic contract tests; draft balance not player validation",
   "checks": [
     "13 cards exact tiers/destruction and floor",
