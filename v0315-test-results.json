@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "assertions": 227,
+  "scope": "deterministic contract tests; draft balance not player validation",
+  "checks": [
+    "13 cards exact tiers/destruction and floor",
+    "six independent destruction branches",
+    "specialized effects and fixed stat removal",
+    "six mutation candidates and fallback by family",
+    "combat serial lifetimes",
+    "mega first draw reshuffle normal/boss/small deck",
+    "legend AP and effects",
+    "unchanged boss HP and feedback"
+  ]
+}
