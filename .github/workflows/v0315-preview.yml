@@ -7,7 +7,7 @@ permissions:
   contents: read
 concurrency:
   group: luck-pages-v0315
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   publish:
     if: contains(github.event.head_commit.message, '[deploy-v0315]')
@@ -84,7 +84,7 @@ jobs:
           standalone.P=Path('_site/preview/v0.3-ap-final').resolve()
           standalone.D=Path('boss-delivery').resolve()
           standalone.build('external',max_package_bytes=25_000_000)
-          web=Path('boss-delivery/LUCK-v0.3.15-feedback.1-external')
+          web=Path('boss-delivery/LUCK-v0.3.15-luck.1-external')
           assert (web/'index.html').is_file()
           shutil.rmtree('_site');shutil.copytree(rollback,'_site')
           target=Path('_site/preview/v0.3.15');assert not target.exists(),'preview already exists; inspect before overwriting'
