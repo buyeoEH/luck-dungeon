@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "assertions": 617,
+  "checks": [
+    "210/210/280/330 examples",
+    "fixed targets and no skipped-hit overflow",
+    "pooled base/card overflow after all card strikes",
+    "followups ignore pierce and never carry overflow",
+    "thresholds and AoE exclusion",
+    "preview purity and boss actual HP parity",
+    "exclusive stats, AP guidance, refunds, history and R10 diagnostics",
+    "unchanged boss HP"
+  ]
+}
