@@ -26,6 +26,8 @@ def build():
  g=once(g,'pierce_rules316:scene.pierce316||null,','pierce_rules316:scene.pierce316||null,followups317:scene.followups317||null,')
  g=g.replace('순수 연속타는 별개의 55% 공격입니다.','연속타는 최종 공격55·덱 공격35 이상, 광역0일 때 관통과 함께 발동하는 별개의 55% 후속 공격입니다.')
  g=g.replace('관통 N은 초과 피해 전달입니다. 관통·광역이 없어도 일정 공격력 이상이면 독립 연속타가 발동합니다.','카드 관통은 100%·70%·50% 타격 후 초과 피해를 모아 연계로 전달합니다. 광역0·공격55·덱 공격35 이상이면 관통과 연속타가 함께 발동합니다.')
+ g=once(g,"cinBanner(ev.pure?'⚔️ '+ev.label:ev.corePierceDamage>0?'🗡 일반 공격 + 진체력 관통 직격':ev.pierce_source==='card'?'🗡 카드 관통 '+ev.rate_percent+'%'+(ev.redistributed?' · 재분배':''):ev.type==='pierce'?'🔗 연계 관통 · 남은 피해 전달':'⚔️ 기본 공격 '+b.attackFinal,' '+kind);","cinBanner(ev.pure?'⚔️ '+ev.label:ev.pierce_source==='link'?'🔗 '+ev.label+(ev.corePierceDamage?' · 진체력 직격 '+ev.corePierceDamage:''):ev.pierce_source==='card'?'🗡 '+ev.label:ev.corePierceDamage>0?'⚔️ 기본 100% · 진체력 직격 '+ev.corePierceDamage:'⚔️ 기본 공격 '+b.attackFinal,' '+kind);")
+ g=once(g,"cinFeed((ev.pure?ev.label:ev.corePierceDamage>0?'관통 직격 '+ev.corePierceDamage+' 포함':ev.type==='pierce'?'관통 피해':'기본 피해')+' → '+ev.name+' -'+ev.damage);","cinFeed((ev.label||'기본 공격')+(ev.corePierceDamage>0?' · 진체력 직격 '+ev.corePierceDamage:'')+' → '+ev.name+' -'+ev.damage);")
  g+='\n'+(R/'pierce-v0317.js').read_text();p.write_text(g)
  core=P/'v0220-core.js';s=core.read_text()
  s=once(s,'pierce_rules:scene.pierce316||null,','pierce_rules:scene.pierce316||null,followups:scene.followups317||null,')
