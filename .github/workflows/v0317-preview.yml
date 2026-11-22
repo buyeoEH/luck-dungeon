@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: d975d3e9fc369443d1307bdaa6d5970563f1dbbf
+          ref: 778ba307fa986ae22cf1c7a15a9c35730e989806
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -75,7 +75,7 @@ jobs:
           subprocess.run(['python','build_v0317.py'],check=True)
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
           assert meta['version']=='0.3.17-coexist.1' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='d975d3e9fc369443d1307bdaa6d5970563f1dbbf'
+          assert meta['git_sha']=='778ba307fa986ae22cf1c7a15a9c35730e989806'
           for test in ['test-v0315.cjs','test-v0317.cjs','test-v0312.cjs','test-v0315-browser.cjs','test-v0317-browser.cjs']:
               subprocess.run(['node',test],check=True,timeout=180)
           subprocess.run(['node','compare-v0317.cjs'],check=True,timeout=240)
