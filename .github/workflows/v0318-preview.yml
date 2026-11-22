@@ -104,6 +104,22 @@ jobs:
           name: v0318-candidate-pages
           path: _site
           retention-days: 30
+      - name: Wait for candidate artifact metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess,time
+          for attempt in range(24):
+              result=subprocess.run(['gh','api',f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}/artifacts?name=v0318-candidate-pages"],capture_output=True,text=True)
+              if result.returncode==0 and any(a['name']=='v0318-candidate-pages' and not a['expired'] for a in json.loads(result.stdout).get('artifacts',[])):
+                  print('Candidate artifact metadata is available')
+                  break
+              time.sleep(5)
+          else:
+              raise RuntimeError('Candidate artifact metadata did not become available')
+          time.sleep(10)
+          PY
       - uses: actions/deploy-pages@v4
         id: deploy
         continue-on-error: true
