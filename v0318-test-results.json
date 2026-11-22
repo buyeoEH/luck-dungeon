@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "assertions": 348,
+  "checks": [
+    "three seed outcomes, timing and exactly once",
+    "direct removal transaction and cancellation",
+    "10 draft cards, 5 recipes and fixed refunds",
+    "neutral halves, luck floor and independent mutation",
+    "all targets removed first, six candidates and no new-route fallback",
+    "AoE/card/link/followups coexist, contribution parity",
+    "paired shop access without free cards",
+    "unchanged boss HP"
+  ]
+}

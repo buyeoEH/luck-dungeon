@@ -32,6 +32,7 @@ function create({root=path.join(__dirname,'_site/preview/v0.3-ap-final'),skill='
  if(!selected&&window.BOSS_AI_SKILL==='expert'&&gems>0&&options.length){const c=options[0].c;while(!apCanUse(c)&&gems>0)useGem(false);if(apCanUse(c))selected=options[0];}
  const i=selected?.i??-1;`;
  if(!ai.includes(from))throw Error('hand policy anchor');ai=ai.replace(from,to);
+ ai=ai.replace('let selected=options.find',"options=options.filter(({c})=>c.type!=='breakReward318');let selected=options.find");
  // Use the current discounted prices and reserve one gem when a purchase needs AP.
  ai=ai.replace("...BASIC.map(c=>({...c,group:'basic'})),...randomShop.map(c=>({...c,group:'random'}))","...BASIC.map(c=>({...c,price:p5Price(c),group:'basic'})),...randomShop.map(c=>({...c,price:p5Price(c),group:'random'}))");
  ai=ai.replace('.filter(c=>c.price<=resource+2*gems',".filter(c=>(apState.points>0||(window.BOSS_AI_SKILL!=='novice'&&gems>0))&&c.price<=resource+(window.BOSS_AI_SKILL==='novice'?0:2*Math.max(0,gems-(apState.points>0?0:1)))");
