@@ -1,0 +1,263 @@
+{
+  "pass": true,
+  "paired_runs": 32,
+  "scope": "v0.3.18 vs v0.3.19 media-only: same seeded choices/RNG/rounds/boss outcomes/numeric stats/card definitions",
+  "rows": [
+    {
+      "profile": "balanced",
+      "seed": 101,
+      "round": 20,
+      "clear": false,
+      "random_calls": 281,
+      "matched": true
+    },
+    {
+      "profile": "balanced",
+      "seed": 102,
+      "round": 15,
+      "clear": false,
+      "random_calls": 156,
+      "matched": true
+    },
+    {
+      "profile": "balanced",
+      "seed": 103,
+      "round": 20,
+      "clear": false,
+      "random_calls": 218,
+      "matched": true
+    },
+    {
+      "profile": "balanced",
+      "seed": 104,
+      "round": 10,
+      "clear": false,
+      "random_calls": 87,
+      "matched": true
+    },
+    {
+      "profile": "balanced",
+      "seed": 201,
+      "round": 15,
+      "clear": false,
+      "random_calls": 145,
+      "matched": true
+    },
+    {
+      "profile": "balanced",
+      "seed": 202,
+      "round": 20,
+      "clear": false,
+      "random_calls": 228,
+      "matched": true
+    },
+    {
+      "profile": "balanced",
+      "seed": 203,
+      "round": 15,
+      "clear": false,
+      "random_calls": 149,
+      "matched": true
+    },
+    {
+      "profile": "balanced",
+      "seed": 204,
+      "round": 20,
+      "clear": false,
+      "random_calls": 211,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 101,
+      "round": 20,
+      "clear": false,
+      "random_calls": 258,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 102,
+      "round": 15,
+      "clear": false,
+      "random_calls": 157,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 103,
+      "round": 20,
+      "clear": false,
+      "random_calls": 218,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 104,
+      "round": 10,
+      "clear": false,
+      "random_calls": 87,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 201,
+      "round": 15,
+      "clear": false,
+      "random_calls": 145,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 202,
+      "round": 20,
+      "clear": false,
+      "random_calls": 247,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 203,
+      "round": 20,
+      "clear": false,
+      "random_calls": 211,
+      "matched": true
+    },
+    {
+      "profile": "pierce",
+      "seed": 204,
+      "round": 20,
+      "clear": false,
+      "random_calls": 211,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 101,
+      "round": 15,
+      "clear": false,
+      "random_calls": 219,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 102,
+      "round": 25,
+      "clear": false,
+      "random_calls": 369,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 103,
+      "round": 20,
+      "clear": false,
+      "random_calls": 307,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 104,
+      "round": 5,
+      "clear": false,
+      "random_calls": 37,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 201,
+      "round": 30,
+      "clear": true,
+      "random_calls": 533,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 202,
+      "round": 10,
+      "clear": false,
+      "random_calls": 156,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 203,
+      "round": 15,
+      "clear": false,
+      "random_calls": 207,
+      "matched": true
+    },
+    {
+      "profile": "luck",
+      "seed": 204,
+      "round": 15,
+      "clear": false,
+      "random_calls": 207,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 101,
+      "round": 20,
+      "clear": false,
+      "random_calls": 392,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 102,
+      "round": 30,
+      "clear": false,
+      "random_calls": 548,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 103,
+      "round": 15,
+      "clear": false,
+      "random_calls": 296,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 104,
+      "round": 5,
+      "clear": false,
+      "random_calls": 37,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 201,
+      "round": 20,
+      "clear": false,
+      "random_calls": 360,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 202,
+      "round": 10,
+      "clear": false,
+      "random_calls": 162,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 203,
+      "round": 10,
+      "clear": false,
+      "random_calls": 116,
+      "matched": true
+    },
+    {
+      "profile": "link",
+      "seed": 204,
+      "round": 30,
+      "clear": false,
+      "random_calls": 540,
+      "matched": true
+    }
+  ]
+}

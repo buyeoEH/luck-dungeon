@@ -1,0 +1,13 @@
+{
+  "pass": true,
+  "assertions": 75,
+  "browser": "not run: Chromium binary missing in execution environment",
+  "checks": [
+    "actual event ordering and no fallback DNA",
+    "no skipped/zero damage FX",
+    "all sprite/card paths",
+    "read-only and RNG-free presentation",
+    "dedup and skip cancellation",
+    "existing unlock/SFX controls and four-voice budget"
+  ]
+}
