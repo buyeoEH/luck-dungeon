@@ -10,6 +10,13 @@ def build():
  for name in ['game.js','index.html','v0220-core.js','luck-audio.js']:shutil.copyfile(P/name,baseline/name)
  with zipfile.ZipFile(R/'main-media319.zip') as z:z.extractall(P/'assets/main-media319')
  manifest=json.loads((P/'assets/main-media319/manifest.json').read_text())
+ with zipfile.ZipFile(R/'powder-art319.zip') as z:
+  addon=json.loads(z.read('manifest.json'))
+  for path,sha in addon['hashes'].items():
+   raw=z.read(path);assert hashlib.sha256(raw).hexdigest()==sha,path
+   target=P/'assets/main-media319'/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw)
+ manifest['icons'].update(addon['icons']);manifest['hashes'].update(addon['hashes']);manifest['provenance'].extend(addon['provenance'])
+ (P/'assets/main-media319/manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
  for path,sha in manifest['hashes'].items():assert hashlib.sha256((P/'assets/main-media319'/path).read_bytes()).hexdigest()==sha,path
  game=(P/'game.js').read_text()
  game=once(game,"if(s.kind!=='unnecessary')window.LuckGameAudio?.statusCue?.(s.kind);","window.LuckMainMedia319?.status(s);if(s.kind!=='unnecessary')window.LuckGameAudio?.statusCue?.(s.kind);")
@@ -23,8 +30,8 @@ def build():
  methods="motionCue(id){if(!tracks.some(t=>t.id===id&&id.startsWith('motion319_')))return;if(sound.voices.size>=4){const old=[...sound.voices].find(a=>a.dataset.id.startsWith('motion319_'));if(old){old.pause();old._release();}else return;}sfx(id);},motionStop(){for(const a of [...sound.voices])if(a.dataset.id.startsWith('motion319_')){a.pause();a._release();}},"
  s=once(s,marker,marker+methods);audio.write_text(s)
  (P/'main-media319.css').write_text((R/'main-media319.css').read_text())
- names=['build_v0319.py','main-media319.js','main-media319.css','main-media319.zip'];sources={n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in names}
- meta.update(version='0.3.19-main-media.1',stage='main_screen_media_update',media319_sources=sources,media319={'effects':len(manifest['effects']),'icons':len(manifest['icons']),'new_sfx':len(manifest['audio']),'rules':'v0.3.18 unchanged','powder_art':'existing meteor icon retained; no matching powder card concept in supplied pack'})
+ names=['build_v0319.py','main-media319.js','main-media319.css','main-media319.zip','powder-art319.zip'];sources={n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in names}
+ meta.update(version='0.3.19-main-media.1',stage='main_screen_media_update',media319_sources=sources,media319={'effects':len(manifest['effects']),'icons':len(manifest['icons']),'new_sfx':len(manifest['audio']),'rules':'v0.3.18 unchanged','powder_art':'dedicated powder318 and powder318_up artwork applied; icons only'})
  meta['source_tree_dirty']=meta['source_tree_dirty'] or bool(subprocess.check_output(['git','status','--porcelain','--',*names],text=True).strip())
  meta['build_id']='0319-'+hashlib.sha256((game+json.dumps(sources,sort_keys=True)).encode()).hexdigest()[:16];(P/'build.json').write_text(json.dumps(meta,indent=2))
  h=(P/'index.html').read_text();h=re.sub(r'window.LUCK_BUILD=\{[^<]+?\};',lambda _:'window.LUCK_BUILD='+json.dumps(meta)+';',h,count=1);h=h.replace('</head>','<link rel="stylesheet" href="main-media319.css"></head>').replace('v0.3.18 발아·파괴 보상','v0.3.19 본판 이미지·효과음');(P/'index.html').write_text(h)
