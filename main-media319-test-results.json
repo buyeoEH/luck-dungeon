@@ -1,6 +1,6 @@
 {
   "pass": true,
-  "assertions": 67,
+  "assertions": 71,
   "browser": "not run: Chromium binary missing in execution environment",
   "checks": [
     "actual event ordering and no fallback DNA",

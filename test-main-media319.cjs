@@ -21,7 +21,11 @@ for(const e of [{damage:0,pierce_source:'card'},{damage:10,skipped:true},{damage
 for(const [source,id]of [['card','fx-card_pierce'],['link','fx-link_transfer'],['followup','fx-followup'],['base','fx-slash']])ok(hp({damage:7,pierce_source:source,name:'적'})[0]===id,'actual damage source '+source);
 ok(hp({damage:7,pierce_source:'card',redistributed:true})[0]==='fx-pierce_redistribute','real redistribution');
 ok(hp({damage:7,pierce_source:'card',corePierceDamage:0,raw_overflow:0}).length===1,'no imaginary core/overflow');
-ok(hp({damage:7,pierce_source:'link',corePierceDamage:2,raw_overflow:3}).join(',')==='fx-link_transfer,fx-boss_direct,fx-overflow_pool','exclusive confirmed extras');
+ok(hp({damage:7,pierce_source:'link',corePierceDamage:2,raw_overflow:3}).join(',')==='fx-link_transfer,fx-boss_direct','exclusive confirmed extras');
+ok(hp({type:'aoe',damage:0,hits:[{damage:5}]}).join(',')==='fx-aoe','AoE uses actual hit sum');
+ok(hp({damage:7,pierce_source:'card',raw_overflow:3}).join(',')==='fx-card_pierce,fx-overflow_pool','only card/basic overflow collected');
+ok(hp({damage:7,pure:true,raw_overflow:3}).join(',')==='fx-followup','followup overflow not collected');
+ok(ids(plan('protection_gain',{kind:'gem',before:5,after:3,spent:0})).join(',')==='fx-resource_drain','gain reduction is not theft');
 // The presentation layer never changes gameplay state or requests randomness.
 q(d,"AutoLab.begin(319);window.__luckAutoLabBotActive=false;$('visualModeToggle').checked=false;window.mediaAudioCalls319=[];window.LuckGameAudio={motionCue:id=>mediaAudioCalls319.push(id),motionStop:()=>{}};var savedRandom319=Math.random;Math.random=()=>{throw Error('presentation must not roll')};");
 const snapshot=q(d,'JSON.stringify({deck,hand,draw,graveyard,stats,enemies,resource,gems,apState})');

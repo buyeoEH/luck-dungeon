@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,json,shutil,subprocess
 import build_v030_standalone as standalone
 R=Path(__file__).resolve().parent;P=R/'_site/preview/v0.3-ap-final'
-def build():
+def build(mode='embedded'):
  work=R/'main-media319-package';audio=work/'release-audio-candidates';audio.mkdir(parents=True,exist_ok=True)
  base=R/'release-audio-candidates';manifest=json.loads((base/'manifest.json').read_text())
  for row in manifest['tracks']:shutil.copyfile(base/row['file'],audio/row['file'])
@@ -19,5 +19,7 @@ def build():
  for t in media['audio']:
   source=P/'assets'/t['file'];target=audio/source.name;shutil.copyfile(source,target);manifest['tracks'].append({'id':t['id'],'file':target.name,'aliases':[t['file']],'sha256':hashlib.sha256(target.read_bytes()).hexdigest()})
  (audio/'manifest.json').write_text(json.dumps(manifest,indent=2));standalone.R=work;standalone.P=P;standalone.D=R/'main-media319-delivery'
- return standalone.build('embedded',max_package_bytes=35_000_000)
-if __name__=='__main__':build()
+ return standalone.build(mode,max_package_bytes=35_000_000)
+if __name__=='__main__':
+ import argparse
+ parser=argparse.ArgumentParser();parser.add_argument('--audio',choices=['embedded','external'],default='embedded');build(parser.parse_args().audio)

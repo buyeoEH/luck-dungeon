@@ -27,15 +27,16 @@
   if(type==='cards_drawn'&&p.actual>0)out.push(cue('draw','카드 드로우','실제 '+p.actual+'장'));
   if(type==='card_promoted')out.push(cue('promote','승급 완료',CARD_NAME[p.card_id]||''));
   if(type==='action_points'&&['refill','pierce_first_refund','luck_effect'].includes(p.kind)&&p.amount>0)out.push(cue('energy_gain','행동력 회복','+'+p.amount));
-  if(type==='protection_gain'){if(p.spent>0)out.push(cue('shield_block','보호 적용','손실 '+p.preserved+' 보존'));else if(p.after<p.before)out.push(cue(p.kind==='resource'?'resource_drain':'gem_theft','획득량 감소',p.before+' → '+p.after));}
+  if(type==='protection_gain'){if(p.spent>0)out.push(cue('shield_block','보호 적용','손실 '+p.preserved+' 보존'));else if(p.after<p.before)out.push(cue('resource_drain',(p.kind==='gem'?'보석':'자원')+' 획득량 감소',p.before+' → '+p.after));}
   return out;
  }
- function hitPlan(e){if(e.skipped||e.damage<=0)return [];const out=[];
+ function hitPlan(e){if(e.skipped)return [];const out=[];
   if(e.type==='aoe')return (e.hits||[]).some(h=>h.damage>0)?[cue('aoe','광역 타격','실제 피해 '+e.hits.reduce((n,h)=>n+h.damage,0))]:[];
+  if(!(e.damage>0))return [];
   const id=e.pure||e.pierce_source==='followup'?'followup':e.pierce_source==='link'?'link_transfer':e.redistributed?'pierce_redistribute':e.pierce_source==='card'?'card_pierce':'slash';
   out.push(cue(id,e.label||'기본 타격',e.name+' · 실제 피해 '+e.damage,{duration:520,battle:true}));
   if(e.corePierceDamage>0)out.push(cue('boss_direct','보스 진체력 직격','실제 '+e.corePierceDamage,{duration:220,battle:true}));
-  if(e.raw_overflow>0)out.push(cue('overflow_pool','실제 초과 피해 수집',String(e.raw_overflow),{duration:220,battle:true}));return out;
+  if(e.raw_overflow>0&&!e.pure&&['base','card'].includes(e.pierce_source))out.push(cue('overflow_pool','실제 초과 피해 수집',String(e.raw_overflow),{duration:220,battle:true}));return out;
  }
  function clear(){generation++;queue.length=0;active=null;clearTimeout(timer);cancelAnimationFrame(frame);timer=null;frame=null;if(element){element.remove();element=null;}global.LuckGameAudio?.motionStop?.();}
  function canPresent(){return !global.__luckAutoLabBotActive&&!document.hidden;}
@@ -54,7 +55,7 @@
  }
  function observe(type,event){try{if(type==='run_started'){clear();seen.clear();return;}if(!canPresent())return;const key=event.run_id+':'+event.seq;if(seen.has(key))return;seen.add(key);if(seen.size>4096)seen.delete(seen.values().next().value);for(const c of eventPlan(type,event.payload||{}))enqueue(c);}catch(error){console.warn('Presentation media unavailable',error.message);}}
  function hit(e){if(!canPresent()||!shouldPlayBattleMotion())return false;for(const c of hitPlan(e))enqueue(c);return hitPlan(e).length>0;}
- function status(s){const id=s.kind==='protected'?'shield_block':s.kind==='theft_success'?'gem_theft':s.kind==='debuff'?(s.title?.includes('연계')?'debuff_link':'debuff_attack'):null;if(id)enqueue(cue(id,s.title,s.detail));}
+ function status(s){const id=s.kind==='protected'?(s.title?.includes('약탈')?'theft_block':'shield_block'):s.kind==='theft_success'?'gem_theft':s.kind==='debuff'?(s.title?.includes('연계')?'debuff_link':'debuff_attack'):null;if(id)enqueue(cue(id,s.title,s.detail));}
  function decorate(){const panel=document.getElementById('permanent318'),s=typeof state318!=='undefined'?state318.seed:null;if(panel&&s&&!panel.querySelector('.sprout-icon319')){const im=new Image();im.src=media.icons['sprout_'+s.kind];im.alt=s.name;im.className='sprout-icon319';panel.prepend(im);}}
  global.LuckMainMedia319={observe,hit,clear,status,plan:eventPlan,hitPlan,snapshot:()=>({queued:queue.map(c=>c.id),active:active?.id||null,history:history.slice()}),decorate};
  for(const [id,path]of Object.entries(media.icons))if(!id.startsWith('sprout_'))LUCK_CARD_ICONS[id]=path;
