@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 100d65cd66f5465c2f2ca2dbd04cd1c99d838e07
+          ref: 5faa04d49c7dce440c1c25ef446df2736261d09f
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -42,7 +42,7 @@ jobs:
       - name: Fetch complete current Pages backup
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/14757891939/zip > baseline-pages.zip
+        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/15243418544/zip > baseline-pages.zip
       - name: Build and verify main media preview
         env:
           NODE_PATH: ${{ github.workspace }}/../ap-runtime/node_modules
@@ -52,7 +52,7 @@ jobs:
           import hashlib,json,zipfile,tarfile,subprocess,shutil,urllib.request,os
           from concurrent.futures import ThreadPoolExecutor
           H=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-          assert H(Path('baseline-pages.zip'))=='e7ce9bbc171ed140798d52789be2409b33eef8be7d9784b04cc96439e323662c'
+          assert H(Path('baseline-pages.zip'))=='3fddb2ca9d655033516cfdc3119e8717f34ba0dd98972044ba89e78999becd79'
           with zipfile.ZipFile('baseline-pages.zip') as z:
               assert z.testzip() is None and z.namelist()==['artifact.tar']
               z.extract('artifact.tar','_archive')
@@ -75,7 +75,7 @@ jobs:
           subprocess.run(['python','build_v0319.py'],check=True)
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
           assert meta['version']=='0.3.19-main-media.1' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='100d65cd66f5465c2f2ca2dbd04cd1c99d838e07'
+          assert meta['git_sha']=='5faa04d49c7dce440c1c25ef446df2736261d09f'
           os.environ['P5_JSDOM_PATH']=str(Path('../ap-runtime/node_modules/jsdom').resolve())
           for test in ['test-v0315.cjs','test-v0318.cjs','test-v0312.cjs','test-main-media319.cjs','test-v0318-browser.cjs','test-main-media319-browser.cjs']:
               subprocess.run(['node',test],check=True,timeout=180)
@@ -85,13 +85,15 @@ jobs:
           web=Path('main-media319-delivery/LUCK-v0.3.19-main-media.1-external')
           assert (web/'index.html').is_file()
           shutil.rmtree('_site');shutil.copytree(rollback,'_site')
-          target=Path('_site/preview/v0.3.19');assert not target.exists(),'preview already exists; inspect before overwriting'
+          target=Path('_site/preview/v0.3.19');assert target.exists(),'expected existing v0.3.19';shutil.rmtree(target)
           shutil.copytree(web,target)
           (target/'build.json').write_text(json.dumps(meta,indent=2))
           for name in ['V0319-MAIN-MEDIA.md','main-media319-test-results.json','main-media319-browser-results.json','main-media319-regression-results.json','v0318-test-results.json','v0318-browser-results.json']:
               shutil.copyfile(name,target/name)
           new={str(p.relative_to('_site')):H(p) for p in target.rglob('*') if p.is_file()}
-          assert all(H(Path('_site')/name)==h for name,h in old.items()),'existing Pages bytes changed'
+          allowed={'preview/v0.3.19/'+n for n in ['index.html','build.json','V0319-MAIN-MEDIA.md','main-media319-test-results.json','main-media319-browser-results.json']}
+          assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in allowed),'unrelated Pages bytes changed'
+          assert meta['media319']['icons']==17 and meta['media319']['effects']==51 and meta['media319']['new_sfx']==35
           Path('v0319-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta},indent=2))
           print('Preserved',len(old),'existing files; added',len(new),'preview files')
           PY
