@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 7a567de40a5b5ac37ee0cc1c28005584ba72938e
+          ref: 100d65cd66f5465c2f2ca2dbd04cd1c99d838e07
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -75,7 +75,7 @@ jobs:
           subprocess.run(['python','build_v0319.py'],check=True)
           meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
           assert meta['version']=='0.3.19-main-media.1' and not meta['source_tree_dirty']
-          assert meta['git_sha']=='7a567de40a5b5ac37ee0cc1c28005584ba72938e'
+          assert meta['git_sha']=='100d65cd66f5465c2f2ca2dbd04cd1c99d838e07'
           os.environ['P5_JSDOM_PATH']=str(Path('../ap-runtime/node_modules/jsdom').resolve())
           for test in ['test-v0315.cjs','test-v0318.cjs','test-v0312.cjs','test-main-media319.cjs','test-v0318-browser.cjs','test-main-media319-browser.cjs']:
               subprocess.run(['node',test],check=True,timeout=180)
