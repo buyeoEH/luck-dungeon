@@ -1,0 +1,178 @@
+name: v0.3.19 main media preview
+on:
+  push:
+    branches: [feature/game-v0.2.20-stabilization]
+    paths: [.github/workflows/v0319-preview.yml]
+permissions:
+  contents: read
+concurrency:
+  group: luck-pages-v0319
+  cancel-in-progress: true
+jobs:
+  publish:
+    if: contains(github.event.head_commit.message, '[deploy-v0319]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: https://buyeoeh.github.io/luck-dungeon/preview/v0.3.19/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 5faa04d49c7dce440c1c25ef446df2736261d09f
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install asset and test dependencies
+        run: |
+          python -m pip install pillow==12.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          npm install --prefix ../ap-runtime jsdom@26.1.0 playwright@1.51.1
+          ../ap-runtime/node_modules/.bin/playwright install --with-deps chromium
+      - name: Fetch complete current Pages backup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/buyeoEH/luck-dungeon/actions/artifacts/15243418544/zip > baseline-pages.zip
+      - name: Build and verify main media preview
+        env:
+          NODE_PATH: ${{ github.workspace }}/../ap-runtime/node_modules
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,zipfile,tarfile,subprocess,shutil,urllib.request,os
+          from concurrent.futures import ThreadPoolExecutor
+          H=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+          assert H(Path('baseline-pages.zip'))=='3fddb2ca9d655033516cfdc3119e8717f34ba0dd98972044ba89e78999becd79'
+          with zipfile.ZipFile('baseline-pages.zip') as z:
+              assert z.testzip() is None and z.namelist()==['artifact.tar']
+              z.extract('artifact.tar','_archive')
+          rollback=Path('_rollback');rollback.mkdir()
+          with tarfile.open('_archive/artifact.tar') as t:
+              for m in t.getmembers():
+                  assert m.isfile() or m.isdir(),m.name
+                  assert (rollback/m.name).resolve().is_relative_to(rollback.resolve()),m.name
+              t.extractall(rollback,filter='data')
+          old={str(p.relative_to(rollback)):H(p) for p in rollback.rglob('*') if p.is_file()}
+          protected=['index.html','preview/v0.2.20/index.html','preview/v0.3.0/index.html','preview/v0.3-boss/index.html','preview/v0.3.11/index.html','preview/v0.3.12/index.html','preview/v0.3.12-art/index.html','preview/v0.3.13/index.html','preview/v0.3.13/build.json','preview/v0.3.14/index.html','preview/v0.3.14/build.json','preview/v0.3.15/index.html','preview/v0.3.15/build.json','preview/v0.3.16/index.html','preview/v0.3.16/build.json','preview/v0.3.17/index.html','preview/v0.3.17/build.json','preview/v0.3.18/index.html','preview/v0.3.18/build.json']
+          base='https://buyeoeh.github.io/luck-dungeon/'
+          def check(name):
+              with urllib.request.urlopen(urllib.request.Request(base+name,headers={'Cache-Control':'no-cache'}),timeout=60) as r:raw=r.read();assert r.status==200
+              assert hashlib.sha256(raw).hexdigest()==old[name],name
+          with ThreadPoolExecutor(max_workers=5) as ex:list(ex.map(check,protected))
+          for script in ['prepare_site.py','build_v0219_preview.py','build_v0220.py','build_v030.py','build_action_points.py','build_v0318.py']:
+              subprocess.run(['python',script],check=True)
+          shutil.copytree('_site/preview/v0.3-ap-final','_qa_v318')
+          subprocess.run(['python','build_v0319.py'],check=True)
+          meta=json.loads(Path('_site/preview/v0.3-ap-final/build.json').read_text())
+          assert meta['version']=='0.3.19-main-media.1' and not meta['source_tree_dirty']
+          assert meta['git_sha']=='5faa04d49c7dce440c1c25ef446df2736261d09f'
+          os.environ['P5_JSDOM_PATH']=str(Path('../ap-runtime/node_modules/jsdom').resolve())
+          for test in ['test-v0315.cjs','test-v0318.cjs','test-v0312.cjs','test-main-media319.cjs','test-v0318-browser.cjs','test-main-media319-browser.cjs']:
+              subprocess.run(['node',test],check=True,timeout=180)
+          subprocess.run(['node','compare-main-media319.cjs'],check=True,timeout=240)
+          subprocess.run(['python','prepare_release_audio.py'],check=True)
+          subprocess.run(['python','package_main_media319.py','--audio','external'],check=True)
+          web=Path('main-media319-delivery/LUCK-v0.3.19-main-media.1-external')
+          assert (web/'index.html').is_file()
+          shutil.rmtree('_site');shutil.copytree(rollback,'_site')
+          target=Path('_site/preview/v0.3.19');assert target.exists(),'expected existing v0.3.19';shutil.rmtree(target)
+          shutil.copytree(web,target)
+          (target/'build.json').write_text(json.dumps(meta,indent=2))
+          for name in ['V0319-MAIN-MEDIA.md','main-media319-test-results.json','main-media319-browser-results.json','main-media319-regression-results.json','v0318-test-results.json','v0318-browser-results.json']:
+              shutil.copyfile(name,target/name)
+          new={str(p.relative_to('_site')):H(p) for p in target.rglob('*') if p.is_file()}
+          allowed={'preview/v0.3.19/'+n for n in ['index.html','build.json','V0319-MAIN-MEDIA.md','main-media319-test-results.json','main-media319-browser-results.json']}
+          assert all(H(Path('_site')/name)==h for name,h in old.items() if name not in allowed),'unrelated Pages bytes changed'
+          assert meta['media319']['icons']==17 and meta['media319']['effects']==51 and meta['media319']['new_sfx']==35
+          Path('v0319-deployment-manifest.json').write_text(json.dumps({'old':old,'new':new,'protected':protected,'game':meta},indent=2))
+          print('Preserved',len(old),'existing files; added',len(new),'preview files')
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: v0319-candidate-pages
+          path: _site
+          retention-days: 30
+      - name: Wait for candidate artifact metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess,time
+          for attempt in range(24):
+              result=subprocess.run(['gh','api',f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}/artifacts?name=v0319-candidate-pages"],capture_output=True,text=True)
+              if result.returncode==0 and any(a['name']=='v0319-candidate-pages' and not a['expired'] for a in json.loads(result.stdout).get('artifacts',[])):
+                  print('Candidate artifact metadata is available')
+                  break
+              time.sleep(5)
+          else:
+              raise RuntimeError('Candidate artifact metadata did not become available')
+          time.sleep(10)
+          PY
+      - uses: actions/deploy-pages@v4
+        id: deploy
+        continue-on-error: true
+        with:
+          artifact_name: v0319-candidate-pages
+          timeout: '1200000'
+      - name: Verify live preview and preserved games
+        id: verify
+        if: steps.deploy.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib,urllib.request,time
+          from concurrent.futures import ThreadPoolExecutor
+          m=json.loads(Path('v0319-deployment-manifest.json').read_text())
+          checks={k:m['old'][k] for k in m['protected']};checks.update(m['new'])
+          def check(item):
+              name,h=item
+              with urllib.request.urlopen(urllib.request.Request('https://buyeoeh.github.io/luck-dungeon/'+name,headers={'Cache-Control':'no-cache'}),timeout=60) as r:raw=r.read();assert r.status==200
+              assert hashlib.sha256(raw).hexdigest()==h,name
+              return {'path':name,'status':200,'sha256':h}
+          for attempt in range(12):
+              try:
+                  with ThreadPoolExecutor(max_workers=5) as ex:rows=list(ex.map(check,checks.items()))
+                  Path('v0319-live-verification.json').write_text(json.dumps({'pass':True,'checks':rows,'build_id':m['game']['build_id']},indent=2));break
+              except Exception as e:
+                  if attempt==11:raise
+                  print('CDN retry',attempt+1,str(e));time.sleep(5)
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.verify.outcome == 'failure') }}
+        with:
+          name: v0319-rollback-pages
+          path: _rollback
+          retention-days: 30
+      - uses: actions/deploy-pages@v4
+        if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.verify.outcome == 'failure') }}
+        with:
+          artifact_name: v0319-rollback-pages
+          timeout: '1200000'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v0319-preview-evidence
+          path: |
+            v0319-deployment-manifest.json
+            v0319-live-verification.json
+            main-media319-test-results.json
+            main-media319-browser-results.json
+            main-media319-regression-results.json
+            v0318-test-results.json
+            v0318-browser-results.json
+          retention-days: 90
+      - name: Fail if preview required rollback
+        if: ${{ always() && (steps.deploy.outcome == 'failure' || steps.verify.outcome == 'failure') }}
+        run: exit 1
+
